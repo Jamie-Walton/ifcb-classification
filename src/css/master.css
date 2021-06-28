@@ -1,0 +1,9 @@
+/* CSS Document */
+
+header {
+	width: 100%;
+	/* position: fixed; */
+	height: 15vw;
+	background: transparent linear-gradient(270deg, #02C3D7 0%, #0D74C2 100%) 0% 0% no-repeat padding-box;
+	z-index: 10000;
+}
