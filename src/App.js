@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import axios from "axios";
 
 class PlanktonImage extends React.Component {
@@ -57,33 +57,7 @@ class Annotations extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
-          classes: [ // change options to be admin defined later (likely with Django)
-              'Akashiwo', 
-              'Alexandrium Singlet', 
-              'AmyGonyProtoc', 
-              'Asterionellopsis',
-              'Centric',
-              'Ceratium',
-              'Chaetoceros',
-              'Cochlodinium',
-              'Cryptophyte, NanoP Less10, Small Misc',
-              'CylNitz',
-              'DetCerLau',
-              'Dictyocha',
-              'Dinophysis',
-              'Eucampia',
-              'GuinDact',
-              'Gymnodinium, Peridinium',
-              'Lingulodinium',
-              'Pennate',
-              'Prorocentrum',
-              'Pseudo-Nitzschia',
-              'Scrip Het',
-              'Skeletonema',
-              'Thalassionema',
-              'Thalassiosira',
-              'Unclassified'
-          ],
+          classes: [],
           classPicker: 'Unclassified',
           nameSpace: 'http://128.114.25.154:8888/IFCB104/', // change to dynamic on backend
           timestamp: 'D20210612T212626',
@@ -109,6 +83,13 @@ class Annotations extends React.Component {
           // use height and width of each image to calculate row (based on flexbox width) on backend
       }
   }
+
+  getClasses = () => {
+    axios
+      .get("/api/classes/")
+      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
+      .catch((err) => console.log(err));
+  };
   
   handlePlanktonClick(i) {
       const bin = this.state.bin;
@@ -187,8 +168,9 @@ class Annotations extends React.Component {
       );
   }
 
-  renderClassMenu() {
-      return <ClassMenu 
+  renderClassMenu() { 
+    this.getClasses();
+    return <ClassMenu 
           classes={this.state.classes}
           onClick={(name) => this.handleMenuClick(name)}
       />;

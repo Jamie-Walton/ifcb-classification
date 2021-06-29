@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.css';
 import './css/master.css';
 import './css/classify-styles.css';
 import Annotations from './App';
