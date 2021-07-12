@@ -1,0 +1,108 @@
+========= TODOS =========
+- Create time control menu
+    x Render components
+    - Render dropdowns
+    x Implement timeseries options function
+    - Implement timeseries update function
+    - Implement year update function
+    - Implement year options function
+    - Implement day update function
+    - Implement day options function
+    - Implement file update function
+    - Implement file options function
+- Update state changes to save history and create update button
+- Make navigable timeline
+- Pull images dynamically
+    x Retrieve from API
+    - Divide into sets
+    - Scale appropriately and pass along width of ten microns
+    - Get row spacing eventually
+- Add functional micrometer bar and image resizing
+- Save classifications to files
+- Fix formatting issues (white space, header, icons, etc.)
+- Add user authentification and record who makes changes to classification
+  (and make sure to reflect if bin has been edited by a person in the timeline)
+- Make Class Menu sticky
+- Change everything but Image Grid to pxs (and possibly add media queries)
+- Create abbreviations or cutoffs when names don't fit image size
+- Fix error when trying to use class menu option multiple times (issue with styling
+  seems to nullify the element it changes)
+
+
+// To be executed after creating a database up to the present
+
+
+========= SET UP SELECTION INTERFACE =========
+
+timeseries = userSelectedTimeSeries // taken from frontend
+volume = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+plotGBsPerDay()
+
+date = userSelectedDate
+bins = getBinsFromDate()
+// Display available bins on frontend
+
+
+========= USER SELECTED A BIN =========
+
+if ~selectedBinExistsInDataBase:
+    createNewBinInstance()
+    divideBinIntoSetInstances()
+    fillSetsWithTargetInstances() // make sure to include autoclass data
+
+populateFrontEndWithBin()
+
+
+========= HOLDING AREA =========
+
+const ids = document.getElementsByClassName('id');
+      const idTexts = document.getElementsByClassName('id-text');
+      for (let i=0; i<ids.length; i++) {
+          if (ids[i].style.backgroundColor !== '#FFFFFF') {
+            ids[i].style.backgroundColor = '#FFFFFF';
+            idTexts[i].style.color = '#4E4E4E';
+        }
+      }
+      
+      for (const target of this.state.targets) {
+          if (target.classification === name) {
+              const container = document.getElementById(target.id);
+              const text = document.getElementById(target.id+'_text');
+              container.style.backgroundColor = '#16609F';
+              text.style.color = '#FFFFFF';
+          }
+      }
+
+const targets = this.state.targets;
+targets[i].classification = this.state.classPicker;
+this.setState({ targets: targets });
+const container = document.getElementById(targets[i].number);
+const text = document.getElementById(targets[i].number+'_text');
+container.style.backgroundColor = '#16609F';
+text.style.color = '#FFFFFF';
+
+var selectedConts = document.querySelectorAll('.' + this.state.classPicker + '-cont');
+      selectedConts.forEach(element => element.classList.toggle('select-cont'));
+      var selectedTexts = document.querySelectorAll('.' + this.state.classPicker + '-text');
+      selectedTexts.forEach(element => element.classList.toggle('select-text'));
+      document.getElementById(this.state.classPicker).classList.toggle('select-menu')
+
+      this.setState({ classPicker : name });
+
+      var conts = document.querySelectorAll('.' + this.state.classPicker + '-cont');
+      conts.forEach(element => element.classList.toggle('select-cont'));
+      var texts = document.querySelectorAll('.' + this.state.classPicker + '-text');
+      texts.forEach(element => element.classList.toggle('select-text'));
+      document.getElementById(this.state.classPicker).classList.toggle('select-menu')
+
+var targets = this.state.targets;
+    const target = (obj => {return obj.number === i});
+    const k = targets.findIndex(target);
+    targets[k].classification = this.state.classPicker;
+    this.setState({ targets: targets });
+    
+    var selectedCont = document.getElementById(i + '-cont');
+    selectedCont.classList.toggle('select-cont');
+    
+    var selectedText = document.getElementById(i + '-text');
+    selectedText.classList.toggle('select-text');
