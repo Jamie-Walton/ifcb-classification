@@ -189,30 +189,41 @@ class Plankton extends React.Component {
   }
 }
 
-class ClassMenu extends React.Component {
-  render() {
-      const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
-      return(
-      <div className="class-menu">
-          <ul>{options}</ul>
-      </div>
-      );
-  }
-}
-
 class Micrometer extends React.Component {
     render() {
         return(
             <Draggable>
                 <div className="drag-box">
                     <div className="micrometer-block"
-                    style={{width: String(34*Number(this.props.scale)*0.07)+'vw'}}></div>
+                    style={{width: '1.904vw'}}></div>
                     <p className="micrometer-text">10µm</p>
                 </div>
             </Draggable>
         );
     }
+}
+
+class ClassMenu extends React.Component {
+  render() {
+      const options = this.props.classes.map((x) => 
+      <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
+      return(
+      <div className="sidebar">
+      <div className="class-menu">
+          <div className="control-box">
+            <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
+                <p className="control-text">Select All</p>
+            </div>
+            <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
+                <p className="control-text">Undo</p>
+            </div>
+          </div>
+          <ul>{options}</ul>
+      </div>
+      <Micrometer/>
+      </div>
+      );
+  }
 }
 
 class Annotations extends React.Component {
@@ -498,6 +509,8 @@ class Annotations extends React.Component {
     return <ClassMenu 
           classes={this.state.classes}
           onClick={(name) => this.handleMenuClick(name)}
+          handleSelectAllClick={() => this.handleSelectAllClick()}
+          handleUndoClick={() => this.handleUndoClick()}
       />;
   }
 
@@ -525,16 +538,6 @@ class Annotations extends React.Component {
         <div className="annotations">
             {this.renderClassMenu()}
             <div>
-                <div className="control-box">
-                    <div className="annotation-control" onClick={() =>  this.handleSelectAllClick()}>
-                        <img className="select-all" src={selectWhite} alt=""></img>
-                        <p className="control-text">Select All</p>
-                    </div>
-                    <div className="annotation-control" onClick={() =>  this.handleSelectAllClick()}>
-                        <p className="control-text">Undo</p>
-                    </div>
-                    {this.renderMicrometer()}
-                </div>
                 <div className="image-grid">
                     {
                     this.state.loading ? this.renderLoader() :
