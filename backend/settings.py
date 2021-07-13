@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'Rm(3}e$xPCBj_4)C[5K_[?;n7ddx9L
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://ifcb-classification.herokuapp.com/']
 
 
 # Application definition
@@ -141,7 +141,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # TODO: Change the server after development
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:3000'
+     'https://ifcb-classification.herokuapp.com/'
 ]
 
 # Heroku: Update database configuration from $DATABASE_URL.
