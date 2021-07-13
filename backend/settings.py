@@ -145,10 +145,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# TODO: Change the server after development
-CORS_ORIGIN_WHITELIST = [
-     'https://ifcb-classification.herokuapp.com/'
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Heroku: Update database configuration from $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
