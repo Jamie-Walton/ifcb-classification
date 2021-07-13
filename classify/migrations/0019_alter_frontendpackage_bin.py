@@ -10,7 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='frontendpackage',
+            name='bin',
+        ),
+        migrations.AddField(
             model_name='frontendpackage',
             name='bin',
             field=models.JSONField(),
