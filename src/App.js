@@ -126,7 +126,7 @@ class SetControl extends React.Component {
     }
     
     render() {
-        const options = this.props.options.map((x) => 
+        const options = this.props.options.sort().map((x) => 
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
             <div>
