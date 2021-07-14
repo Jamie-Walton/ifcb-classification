@@ -454,6 +454,7 @@ class Annotations extends React.Component {
     const text = document.getElementById(targets[k].number+'-text');
     container.style.backgroundColor = '#16609F';
     text.style.color = '#FFFFFF';
+    axios.post('/classify', targets[i]).catch((err) => console.log(err));
   }
 
   renderTimeSeriesControl() {
