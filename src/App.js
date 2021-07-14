@@ -3,13 +3,13 @@ import axios from "axios";
 import Draggable from 'react-draggable';
 
 import loader from "./loader.GIF";
-import toTop from "./icons/to-top.png"
-import selectWhite from "./icons/select-white.png";
+import toTop from "./icons/to-top.png";
 import dropdown from "./icons/dropdown.png";
 /*
 import calendar from "./icons/calendar.png";
 import dropup from "./icons/dropup.png";
 import selectGray from "./icons/select-gray.png";
+import selectWhite from "./icons/select-white.png";
 */
 
 class TimeSeriesControl extends React.Component {
@@ -126,7 +126,8 @@ class SetControl extends React.Component {
     }
     
     render() {
-        const options = this.props.options.map((x) => 
+        const classList = this.props.options.sort();
+        const options = classList.map((x) => 
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
             <div>
@@ -161,17 +162,15 @@ class Plankton extends React.Component {
   
   renderImage() {  
     return (
-      <div>
-          <PlanktonImage 
-              nameSpace={'http://128.114.25.154:8888/' + this.props.ifcb + '/'}
-              timestamp={this.props.timestamp}
-              ifcb={this.props.ifcb}
-              targetNum={this.props.targetNum}
-              classification={this.props.classification}
-              width={this.props.width}
-              scale={this.props.scale}
-          />
-      </div>
+        <PlanktonImage 
+            nameSpace={'http://128.114.25.154:8888/' + this.props.ifcb + '/'}
+            timestamp={this.props.timestamp}
+            ifcb={this.props.ifcb}
+            targetNum={this.props.targetNum}
+            classification={this.props.classification}
+            width={this.props.width}
+            scale={this.props.scale}
+        />
       );
   }
 
@@ -378,15 +377,19 @@ class Annotations extends React.Component {
   }
 
 
+  handleMouseOver(element) {
+    element.style.backgroundColor = '#16609F';
+  }
+
+  handleMouseOut(element) {
+    element.style.backgroundColor = '#079CCC';
+  }
+
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
       prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('mouseover', function() {
-        prevMenu.style.backgroundColor = '#16609F';
-      });
-      prevMenu.addEventListener('mouseout', function() {
-        prevMenu.style.backgroundColor = '#079CCC';
-      });
+      prevMenu.addEventListener('mouseover', this.handleMouseOver(prevMenu));
+      prevMenu.addEventListener('mouseout', this.handleMouseOut(prevMenu));
 
       const ids = document.getElementsByClassName('id');
       const idTexts = document.getElementsByClassName('id-text');
@@ -399,6 +402,7 @@ class Annotations extends React.Component {
 
       this.setState({ classPicker: name });
       const menu = document.getElementById(name);
+      menu.removeEventListener('mouseout', this.handleMouseOut(menu));
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
@@ -430,11 +434,11 @@ class Annotations extends React.Component {
   }
 
   handleSelectAllClick() {
-      const targets = this.state.targets;
+      var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
           targets[i].classification = this.state.classPicker;
           const container = document.getElementById(targets[i].number);
-          const text = document.getElementById(targets[i].number+'_text');
+          const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
           text.style.color = '#FFFFFF';
       }
@@ -520,14 +524,13 @@ class Annotations extends React.Component {
   }
 
   renderLoader() {
-    console.log('Loading...');
     return <img src={loader} alt="Loading targets..." width="80" loop="infinite"></img>
   }
 
   render() {  
     return(
       <div>
-        <h1>Manual Annotations</h1>
+        <h1>Manual Classifications</h1>
         <div className="time-controls">
             {this.renderTimeSeriesControl()}
             {this.renderYearControl()}
