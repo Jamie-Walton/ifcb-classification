@@ -205,7 +205,7 @@ class Micrometer extends React.Component {
 class ClassMenu extends React.Component {
   render() {
       const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
+      <li key={x}><button id={x} onmouseover={(this) => this.props.onHover(this)} onClick={() => this.props.onClick(x)}>{x}</button></li>);
       return(
       <div className="sidebar">
       <div className="class-menu">
@@ -388,7 +388,7 @@ class Annotations extends React.Component {
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
       prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('pointerover', this.handleMouseOver(prevMenu));
+      // prevMenu.addEventListener('pointerover', this.handleMouseOver(prevMenu));
       prevMenu.addEventListener('pointerout', this.handleMouseOut(prevMenu));
 
       const ids = document.getElementsByClassName('id');
@@ -513,6 +513,7 @@ class Annotations extends React.Component {
     return <ClassMenu 
           classes={this.state.classes}
           onClick={(name) => this.handleMenuClick(name)}
+          onHover={(element) => this.handleMouseOver(element)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
       />;
