@@ -401,6 +401,13 @@ class Annotations extends React.Component {
       this.setState({ classPicker: name });
       const menu = document.getElementById(name);
       menu.style.backgroundColor = '#16609F';
+
+      menu.removeEventListener('mouseover', function() {
+        menu.style.backgroundColor = '#16609F';
+      });
+      prevMenu.removeEventListener('mouseout', function() {
+        prevMenu.style.backgroundColor = '#079CCC';
+      });
       
       for (const target of this.state.targets) {
           if (target.classification === name) {
