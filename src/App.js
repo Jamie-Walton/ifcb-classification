@@ -126,7 +126,8 @@ class SetControl extends React.Component {
     }
     
     render() {
-        const options = this.props.options.sort().map((x) => 
+        const classList = this.props.options.sort();
+        const options = classList.map((x) => 
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
             <div>
@@ -430,11 +431,11 @@ class Annotations extends React.Component {
   }
 
   handleSelectAllClick() {
-      const targets = this.state.targets;
+      var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
           targets[i].classification = this.state.classPicker;
           const container = document.getElementById(targets[i].number);
-          const text = document.getElementById(targets[i].number+'_text');
+          const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
           text.style.color = '#FFFFFF';
       }
@@ -520,7 +521,6 @@ class Annotations extends React.Component {
   }
 
   renderLoader() {
-    console.log('Loading...');
     return <img src={loader} alt="Loading targets..." width="80" loop="infinite"></img>
   }
 
