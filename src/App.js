@@ -3,13 +3,13 @@ import axios from "axios";
 import Draggable from 'react-draggable';
 
 import loader from "./loader.GIF";
-import toTop from "./icons/to-top.png"
-import selectWhite from "./icons/select-white.png";
+import toTop from "./icons/to-top.png";
 import dropdown from "./icons/dropdown.png";
 /*
 import calendar from "./icons/calendar.png";
 import dropup from "./icons/dropup.png";
 import selectGray from "./icons/select-gray.png";
+import selectWhite from "./icons/select-white.png";
 */
 
 class TimeSeriesControl extends React.Component {
@@ -162,17 +162,15 @@ class Plankton extends React.Component {
   
   renderImage() {  
     return (
-      <div>
-          <PlanktonImage 
-              nameSpace={'http://128.114.25.154:8888/' + this.props.ifcb + '/'}
-              timestamp={this.props.timestamp}
-              ifcb={this.props.ifcb}
-              targetNum={this.props.targetNum}
-              classification={this.props.classification}
-              width={this.props.width}
-              scale={this.props.scale}
-          />
-      </div>
+        <PlanktonImage 
+            nameSpace={'http://128.114.25.154:8888/' + this.props.ifcb + '/'}
+            timestamp={this.props.timestamp}
+            ifcb={this.props.ifcb}
+            targetNum={this.props.targetNum}
+            classification={this.props.classification}
+            width={this.props.width}
+            scale={this.props.scale}
+        />
       );
   }
 
@@ -379,15 +377,19 @@ class Annotations extends React.Component {
   }
 
 
+  handleMouseOver(element) {
+    element.style.backgroundColor = '#16609F';
+  }
+
+  handleMouseOut(element) {
+    element.style.backgroundColor = '#079CCC';
+  }
+
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
       prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('mouseover', function() {
-        prevMenu.style.backgroundColor = '#16609F';
-      });
-      prevMenu.addEventListener('mouseout', function() {
-        prevMenu.style.backgroundColor = '#079CCC';
-      });
+      prevMenu.addEventListener('mouseover', handleMouseOver(prevMenu));
+      prevMenu.addEventListener('mouseout', handleMouseOut(prevMenu));
 
       const ids = document.getElementsByClassName('id');
       const idTexts = document.getElementsByClassName('id-text');
@@ -402,12 +404,8 @@ class Annotations extends React.Component {
       const menu = document.getElementById(name);
       menu.style.backgroundColor = '#16609F';
 
-      menu.removeEventListener('mouseover', function() {
-        menu.style.backgroundColor = '#16609F';
-      });
-      prevMenu.removeEventListener('mouseout', function() {
-        prevMenu.style.backgroundColor = '#079CCC';
-      });
+      menu.removeEventListener('mouseover', handleMouseOver(menu));
+      menu.removeEventListener('mouseout', handleMouseOut(menu));
       
       for (const target of this.state.targets) {
           if (target.classification === name) {
