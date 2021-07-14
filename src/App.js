@@ -388,8 +388,8 @@ class Annotations extends React.Component {
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
       prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('mouseover', handleMouseOver(prevMenu));
-      prevMenu.addEventListener('mouseout', handleMouseOut(prevMenu));
+      prevMenu.addEventListener('mouseover', this.handleMouseOver(prevMenu));
+      prevMenu.addEventListener('mouseout', this.handleMouseOut(prevMenu));
 
       const ids = document.getElementsByClassName('id');
       const idTexts = document.getElementsByClassName('id-text');
@@ -404,8 +404,8 @@ class Annotations extends React.Component {
       const menu = document.getElementById(name);
       menu.style.backgroundColor = '#16609F';
 
-      menu.removeEventListener('mouseover', handleMouseOver(menu));
-      menu.removeEventListener('mouseout', handleMouseOut(menu));
+      menu.removeEventListener('mouseover', this.handleMouseOver(menu));
+      menu.removeEventListener('mouseout', this.handleMouseOut(menu));
       
       for (const target of this.state.targets) {
           if (target.classification === name) {
