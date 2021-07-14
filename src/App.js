@@ -205,7 +205,7 @@ class Micrometer extends React.Component {
 class ClassMenu extends React.Component {
   render() {
       const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onmouseover={(this) => this.props.onHover(this)} onClick={() => this.props.onClick(x)}>{x}</button></li>);
+      <li key={x}><button id={x} onmouseover={this.props.onHover(this)} onClick={() => this.props.onClick(x)}>{x}</button></li>);
       return(
       <div className="sidebar">
       <div className="class-menu">
