@@ -179,8 +179,8 @@ class Plankton extends React.Component {
           <button className="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
               <div className="plankton">
                   {this.renderImage()}
-                  <div className={'id'} id={this.props.targetNum}>
-                      <p className={'id-text'} id={this.props.targetNum + '-text'}>{this.props.classification}</p>
+                  <div className='id' id={this.props.targetNum}>
+                      <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.classification}</p>
                   </div>
               </div>
           </button>
