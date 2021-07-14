@@ -388,8 +388,8 @@ class Annotations extends React.Component {
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
       prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('mouseover', this.handleMouseOver(prevMenu));
-      prevMenu.addEventListener('mouseout', this.handleMouseOut(prevMenu));
+      prevMenu.addEventListener('pointerover', this.handleMouseOver(prevMenu));
+      prevMenu.addEventListener('pointerout', this.handleMouseOut(prevMenu));
 
       const ids = document.getElementsByClassName('id');
       const idTexts = document.getElementsByClassName('id-text');
@@ -402,7 +402,7 @@ class Annotations extends React.Component {
 
       this.setState({ classPicker: name });
       const menu = document.getElementById(name);
-      menu.removeEventListener('mouseout', this.handleMouseOut(menu));
+      menu.removeEventListener('pointerout', this.handleMouseOut(menu));
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
@@ -530,7 +530,7 @@ class Annotations extends React.Component {
   render() {  
     return(
       <div>
-        <h1>Manual Annotations</h1>
+        <h1>Manual Classifications</h1>
         <div className="time-controls">
             {this.renderTimeSeriesControl()}
             {this.renderYearControl()}
