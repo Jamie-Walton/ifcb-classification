@@ -82,6 +82,14 @@ def new_timeseries(request, timeseries_name):
     return Response(front_end_package.data)
 
 
+@api_view(('POST',))
+def edit_target(request):
+    serializer = TargetSerializer(request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(('GET',))
 def new_targets(request, timeseries, file, set):
     b = Bin.objects.get(file=file)
