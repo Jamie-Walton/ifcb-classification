@@ -22,45 +22,6 @@ class BinView(viewsets.ModelViewSet):
 
 
 @api_view(('GET',))
-def new_targets(request, timeseries, file, set):
-    b = Bin.objects.get(file=file)
-    
-    if not Set.objects.filter(bin=b, number=set):
-        target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
-        target_bin = target_bin_response.json()
-        full_targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
-        target_count = len(full_targets)
-        if set == math.ceil((target_count)/500):
-            start = 500*(set-1)
-            targets = full_targets[start:]
-        else:
-            start = 500*(set-1)
-            targets = full_targets[start:start+500]
-        
-        scale = 0.8
-        s = Set(bin=b, number=set, scale=scale)
-        s.save()
-        
-        for target in targets:
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            s.target_set.create(number=num, width=width, classification='', scale=scale)
-    
-    s = Set.objects.get(bin=b, number=set)
-    model_targets = Target.objects.filter(set=s).order_by('-width')
-    target_serializer = TargetSerializer(model_targets, many=True)
-    return Response(target_serializer.data)
-
-
-@api_view(('POST',))
-def edit_target(request):
-    serializer = TargetSerializer(request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(('GET',))
 def new_timeseries(request, timeseries_name):
     timeseries = TimeSeriesOption.objects.get(name=timeseries_name).name
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
@@ -79,6 +40,7 @@ def new_timeseries(request, timeseries_name):
     if not Bin.objects.filter(year=year, day=day):
         nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=first_file)
         nearest_bin.save()
+        max_width = targets[0]['width']
         scale = 0.8
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
         nearest_set.save()
@@ -115,6 +77,71 @@ def new_timeseries(request, timeseries_name):
     set = {'number': 1}
 
     package = FrontEndPackage(bin=bin, set=set, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+    
+    return Response(front_end_package.data)
+
+
+@api_view(('GET',))
+def new_targets(request, timeseries, file, set):
+    b = Bin.objects.get(file=file)
+    
+    if not Set.objects.filter(bin=b, number=set):
+        target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
+        target_bin = target_bin_response.json()
+        full_targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
+        target_count = len(full_targets)
+        if set == math.ceil((target_count)/500):
+            start = 500*(set-1)
+            targets = full_targets[start:]
+        else:
+            start = 500*(set-1)
+            targets = full_targets[start:start+500]
+        
+        scale = 0.8
+        s = Set(bin=b, number=set, scale=scale)
+        s.save()
+        
+        for target in targets:
+            num = '{:0>5}'.format(int(target['targetNumber']))
+            width = int(target['width'])
+            s.target_set.create(number=num, width=width, classification='', scale=scale)
+    
+    s = Set.objects.get(bin=b, number=set)
+    model_targets = Target.objects.filter(set=s).order_by('-width')
+    target_serializer = TargetSerializer(model_targets, many=True)
+    return Response(target_serializer.data)
+
+@api_view(('GET',))
+def new_file(request, timeseries, file):
+    year = file[1:5]
+    day = file[5:7] + '-' + file[7:9]
+    if not Bin.objects.filter(file=file):
+        b = Bin(timeseries=timeseries, year=year, day=day, file=file)
+        b.save()
+    
+    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
+    target_bin = target_bin_response.json()
+    targets_full = target_bin['targets']
+    num_targets = len(targets_full)
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
+    
+    bin = {
+        'timeseries': timeseries, 
+        'year': year, 
+        'day': day, 
+        'file': file,
+    }
+    
+    options = {
+        'year_options': 'NA',
+        'day_options': 'NA',
+        'file_options': 'NA',
+        'set_options': set_options,
+    }
+
+    package = FrontEndPackage(bin=bin, set=1, options=options)
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
@@ -185,41 +212,6 @@ def new_year(request, timeseries_name):
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(first_year, last_year+1))
     return year_options
-
-
-@api_view(('GET',))
-def new_file(request, timeseries, file):
-    year = file[1:5]
-    day = file[5:7] + '-' + file[7:9]
-    if not Bin.objects.filter(file=file):
-        b = Bin(timeseries=timeseries, year=year, day=day, file=file)
-        b.save()
-    
-    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
-    target_bin = target_bin_response.json()
-    targets_full = target_bin['targets']
-    num_targets = len(targets_full)
-    num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
-    
-    bin = {
-        'timeseries': timeseries, 
-        'year': year, 
-        'day': day, 
-        'file': file,
-    }
-    
-    options = {
-        'year_options': 'NA',
-        'day_options': 'NA',
-        'file_options': 'NA',
-        'set_options': set_options,
-    }
-
-    package = FrontEndPackage(bin=bin, set=1, options=options)
-    front_end_package = FrontEndPackageSerializer(package)
-    
-    return Response(front_end_package.data)
 
 
 def get_files(bin_count, bins, timeseries):

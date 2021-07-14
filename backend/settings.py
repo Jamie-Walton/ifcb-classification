@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'Rm(3}e$xPCBj_4)C[5K_[?;n7ddx9L
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['https://ifcb-classification.herokuapp.com/']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -45,12 +45,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'classify',
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ]
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -145,7 +139,10 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_ALLOW_ALL = True
+# TODO: Change the server after development
+CORS_ORIGIN_WHITELIST = [
+     'http://localhost:3000'
+]
 
 # Heroku: Update database configuration from $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
