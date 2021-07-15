@@ -231,7 +231,6 @@ class Annotations extends React.Component {
       this.state = {
           loading: true,
           classes: [],
-          classAbbr: [],
           classPicker: 'Unclassified',
           bin: {timeseries:'', year:'', day:'', file:''},
           set: 1,
@@ -278,10 +277,7 @@ class Annotations extends React.Component {
 
     axios
       .get("/api/classes/")
-      .then((res) => this.setState({ 
-          classes: res.data.map((c) => (c.name)),
-          classAbbr: res.data.map((c) => ({[c.name]:c.abbr}))
-        }))
+      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
@@ -410,7 +406,7 @@ class Annotations extends React.Component {
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
-          if (target.classification === this.state.classAbbr[name]) {
+          if (target.classification === name) {
               const container = document.getElementById(target.number);
               const text = document.getElementById(target.number+'-text');
               container.style.backgroundColor = '#16609F';
@@ -440,7 +436,7 @@ class Annotations extends React.Component {
   handleSelectAllClick() {
       var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
-          targets[i].classification = this.state.classAbbr[this.state.classPicker];
+          targets[i].classification = this.state.classPicker;
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -452,8 +448,7 @@ class Annotations extends React.Component {
   handlePlanktonClick(i) {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
-    targets[k].classification = this.state.classAbbr[this.state.classPicker];
-    console.log(this.state.classAbbr);
+    targets[k].classification = this.state.classPicker;
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
