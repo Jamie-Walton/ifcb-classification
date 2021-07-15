@@ -453,7 +453,7 @@ class Annotations extends React.Component {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
     targets[k].classification = this.state.classAbbr[this.state.classPicker];
-    console.log(targets[k].classification);
+    console.log(this.state.classAbbr);
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
