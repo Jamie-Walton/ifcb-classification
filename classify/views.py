@@ -7,7 +7,7 @@ from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, Targe
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
 import requests
 import math
-import pandas # add to requirements
+import pandas as pd
 
 class ClassOptionView(viewsets.ModelViewSet):
     serializer_class = ClassOptionSerializer
@@ -41,7 +41,6 @@ def new_timeseries(request, timeseries_name):
     if not Bin.objects.filter(year=year, day=day):
         nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=first_file)
         nearest_bin.save()
-        max_width = targets[0]['width']
         scale = 0.8
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
         nearest_set.save()
