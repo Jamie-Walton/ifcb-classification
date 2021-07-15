@@ -204,7 +204,7 @@ class Micrometer extends React.Component {
 
 class ClassMenu extends React.Component {
   render() {
-      const options = this.props.classes.map((x) => 
+      const options = this.props.classes.keys().map((x) => 
       <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
       return(
       <div className="sidebar">
@@ -231,6 +231,7 @@ class Annotations extends React.Component {
       this.state = {
           loading: true,
           classes: [],
+          classAbbr: [],
           classPicker: 'Unclassified',
           bin: {timeseries:'', year:'', day:'', file:''},
           set: 1,
@@ -277,7 +278,10 @@ class Annotations extends React.Component {
 
     axios
       .get("/api/classes/")
-      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
+      .then((res) => this.setState({ 
+          classes: res.data.map((c) => (c.name)),
+          classAbbr: res.data.map((c) => ({[c.name]:c.abbr}))
+        }))
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
@@ -448,7 +452,7 @@ class Annotations extends React.Component {
   handlePlanktonClick(i) {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
-    targets[k].classification = this.state.classPicker;
+    targets[k].classification = this.state.classAbbr[this.state.classPicker];
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
