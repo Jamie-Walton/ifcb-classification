@@ -280,7 +280,7 @@ class Annotations extends React.Component {
       .get("/api/classes/")
       .then((res) => this.setState({ 
           classes: res.data.map((c) => (c.name)),
-          classAbbr: res.data
+          classAbbr: res.data.reduce((obj, item) => (obj[item.name] = item.abbr, obj) ,{})
         }))
       .catch((err) => console.log(err));
 

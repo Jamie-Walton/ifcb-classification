@@ -9,7 +9,7 @@ class TargetSerializer(serializers.ModelSerializer):
 class ClassOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassOption
-        fields = ('id', 'name', 'abbr')
+        fields = ('id', 'display_name', 'autoclass_name', 'abbr')
 
 class TimeSeriesOptionSerializer(serializers.ModelSerializer):
     class Meta:

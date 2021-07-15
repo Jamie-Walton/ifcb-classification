@@ -34,7 +34,8 @@ class Target(models.Model):
         return 'target_' + str(self.number)
 
 class ClassOption(models.Model):
-    name = models.CharField(max_length=100)
+    display_name = models.CharField(max_length=100)
+    autoclass_name = models.CharField(max_length=100)
     abbr = models.CharField(max_length=10)
 
 class FrontEndPackage(models.Model):
