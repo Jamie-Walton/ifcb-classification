@@ -82,7 +82,7 @@ def new_timeseries(request, timeseries_name):
     return Response(front_end_package.data)
 
 
-@api_view(('POST',))
+@api_view(('PUT',))
 def edit_target(request):
     serializer = TargetSerializer(request.data)
     if serializer.is_valid():
