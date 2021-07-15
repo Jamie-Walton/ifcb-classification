@@ -455,7 +455,7 @@ class Annotations extends React.Component {
     container.style.backgroundColor = '#16609F';
     text.style.color = '#FFFFFF';
     axios
-        .put('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/', targets[k])
+        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/', targets[k])
         .then(console.log('clik!'))
         .catch((err) => console.log(err));
   }
