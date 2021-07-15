@@ -90,35 +90,43 @@ def edit_target(request):
         return Response(status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(('GET',))
+@api_view(('GET','PUT'))
 def new_targets(request, timeseries, file, set):
-    b = Bin.objects.get(file=file)
-    
-    if not Set.objects.filter(bin=b, number=set):
-        target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
-        target_bin = target_bin_response.json()
-        full_targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
-        target_count = len(full_targets)
-        if set == math.ceil((target_count)/500):
-            start = 500*(set-1)
-            targets = full_targets[start:]
-        else:
-            start = 500*(set-1)
-            targets = full_targets[start:start+500]
+    if request.method == 'GET':
+        b = Bin.objects.get(file=file)
         
-        scale = 0.8
-        s = Set(bin=b, number=set, scale=scale)
-        s.save()
+        if not Set.objects.filter(bin=b, number=set):
+            target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
+            target_bin = target_bin_response.json()
+            full_targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
+            target_count = len(full_targets)
+            if set == math.ceil((target_count)/500):
+                start = 500*(set-1)
+                targets = full_targets[start:]
+            else:
+                start = 500*(set-1)
+                targets = full_targets[start:start+500]
+            
+            scale = 0.8
+            s = Set(bin=b, number=set, scale=scale)
+            s.save()
+            
+            for target in targets:
+                num = '{:0>5}'.format(int(target['targetNumber']))
+                width = int(target['width'])
+                s.target_set.create(number=num, width=width, classification='', scale=scale)
         
-        for target in targets:
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            s.target_set.create(number=num, width=width, classification='', scale=scale)
-    
-    s = Set.objects.get(bin=b, number=set)
-    model_targets = Target.objects.filter(set=s).order_by('-width')
-    target_serializer = TargetSerializer(model_targets, many=True)
-    return Response(target_serializer.data)
+        s = Set.objects.get(bin=b, number=set)
+        model_targets = Target.objects.filter(set=s).order_by('-width')
+        target_serializer = TargetSerializer(model_targets, many=True)
+        return Response(target_serializer.data)
+        
+    elif request.method == 'PUT':
+        serializer = TargetSerializer(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(('GET',))
 def new_file(request, timeseries, file):
