@@ -5,7 +5,7 @@ class TargetAdmin(admin.ModelAdmin):
     list_display = ('set', 'number', 'classification', 'scale')
 
 class ClassOptionAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'autoclass_name', 'abbr')
+    list_display = ('display_name', 'autoclass_name', 'abbr', 'timeseries')
 
 class TimeSeriesOptionAdmin(admin.ModelAdmin):
     list_display = ('name',)
