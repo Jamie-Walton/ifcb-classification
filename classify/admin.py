@@ -4,8 +4,12 @@ from .models import Target, ClassOption, TimeSeriesOption, Bin, Set, Target
 class TargetAdmin(admin.ModelAdmin):
     list_display = ('set', 'number', 'classification', 'scale')
 
+class TimeSeriesInline(admin.TabularInline):
+    model = ClassOption.timeseries.through
+
 class ClassOptionAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'autoclass_name', 'abbr', 'timeseries')
+    inlines = [TimeSeriesInline]
 
 class TimeSeriesOptionAdmin(admin.ModelAdmin):
     list_display = ('name',)
