@@ -410,7 +410,7 @@ class Annotations extends React.Component {
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
-          if (target.classification === name) {
+          if (target.classification === this.state.classAbbr[name]) {
               const container = document.getElementById(target.number);
               const text = document.getElementById(target.number+'-text');
               container.style.backgroundColor = '#16609F';
@@ -440,7 +440,7 @@ class Annotations extends React.Component {
   handleSelectAllClick() {
       var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
-          targets[i].classification = this.state.classPicker;
+          targets[i].classification = this.state.classAbbr[this.state.classPicker];
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -453,6 +453,7 @@ class Annotations extends React.Component {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
     targets[k].classification = this.state.classAbbr[this.state.classPicker];
+    console.log(targets[k].classification);
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
