@@ -231,7 +231,7 @@ class Annotations extends React.Component {
       this.state = {
           loading: true,
           classes: [],
-          classAbbr: {},
+          classAbbr: [],
           classPicker: 'Unclassified',
           bin: {timeseries:'', year:'', day:'', file:''},
           set: 1,
@@ -280,7 +280,7 @@ class Annotations extends React.Component {
       .get("/api/classes/")
       .then((res) => this.setState({ 
           classes: res.data.map((c) => (c.name)),
-          classAbbr: res.data.reduce((obj, item) => (obj[item.name] = item.abbr, obj) ,{})
+          classAbbr: res.data.map((c) => ({[c.name]:c.abbr}))
         }))
       .catch((err) => console.log(err));
 
