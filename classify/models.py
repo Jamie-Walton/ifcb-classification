@@ -35,6 +35,7 @@ class Target(models.Model):
 
 class ClassOption(models.Model):
     name = models.CharField(max_length=100)
+    abbr = models.CharField(max_length=10)
 
 class FrontEndPackage(models.Model):
     bin = models.JSONField()

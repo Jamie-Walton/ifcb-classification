@@ -7,6 +7,7 @@ from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, Targe
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
 import requests
 import math
+import pandas # add to requirements
 
 class ClassOptionView(viewsets.ModelViewSet):
     serializer_class = ClassOptionSerializer
