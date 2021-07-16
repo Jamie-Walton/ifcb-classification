@@ -126,7 +126,7 @@ class SetControl extends React.Component {
     }
     
     render() {
-        const classList = this.props.options.sort();
+        const classList = this.props.options();
         const options = classList.map((x) => 
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
@@ -204,7 +204,7 @@ class Micrometer extends React.Component {
 
 class ClassMenu extends React.Component {
   render() {
-      const options = this.props.classes.map((x) => 
+      const options = this.props.classes.sort().map((x) => 
       <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
       return(
       <div className="sidebar">
