@@ -51,8 +51,8 @@ def new_timeseries(request, timeseries_name):
         header = list(df.columns.values)
         timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
         if timeseries_name == 'IFCB104':
-            header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
-                header[12:18] + [header[18] + '/' + header[19]] + header[20:]
+            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
+                header[12:18] + [header[18] + '_' + header[19]] + header[20:]
         for i in range(0,500):
             target = targets[i]
             for option in header[1:]:
@@ -143,7 +143,7 @@ def new_targets(request, timeseries, file, set):
                 for option in header[1:]:
                     if ClassOption.objects.filter(timeseries=timeseries_obj, autoclass_name=option):
                         c = ClassOption.objects.get(autoclass_name=option)
-                        if df.loc[i][option] <= c.threshold:
+                        if df.loc[i][option] >= c.threshold:
                             class_name = c.display_name
                             class_abbr = c.abbr
                             break
