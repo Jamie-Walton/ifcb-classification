@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='target',
             name='class_abbr',
-            field=models.CharField(max_length=10),
+            field=models.CharField(max_length=10, default="UNC"),
         ),
     ]

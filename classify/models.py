@@ -29,7 +29,7 @@ class Target(models.Model):
     number = models.CharField(max_length=5)
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
-    class_abbr = models.CharField(max_length=10)
+    class_abbr = models.CharField(max_length=10, default="UNC")
     scale = models.DecimalField(max_digits=4, decimal_places=2)
     # TODO: Add who classified Target
 
