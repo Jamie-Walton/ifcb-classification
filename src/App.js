@@ -126,7 +126,7 @@ class SetControl extends React.Component {
     }
     
     render() {
-        const classList = this.props.options();
+        const classList = this.props.options;
         const options = classList.map((x) => 
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
