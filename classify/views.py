@@ -48,13 +48,14 @@ def new_timeseries(request, timeseries_name):
         nearest_set.save()
         df = pd.read_csv(bin_url + '_class_scores.csv')
         header = list(df.columns.values)
+        timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
         if timeseries_name == 'IFCB104':
             header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
                 header[12:18] + [header[18] + '/' + header[19]] + header[20:]
         for i in range(0,500):
             target = targets[i]
             for option in header[1:]:
-                if ClassOption.objects.filter(timesseriesoptions__name=timeseries_name, autoclass_name=option):
+                if ClassOption.objects.filter(timesseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
                     if df.loc[i][option] <= c.threshold:
                         class_name = c.display_name
@@ -132,13 +133,14 @@ def new_targets(request, timeseries, file, set):
 
             df = pd.read_csv(bin_url + '_class_scores.csv')
             header = list(df.columns.values)
+            timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
             if timeseries == 'IFCB104':
                 header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
                     header[12:18] + [header[18] + '/' + header[19]] + header[20:]
             for i in rng:
                 target = targets[i]
                 for option in header[1:]:
-                    if ClassOption.objects.filter(timesseriesoptions__name=timeseries, autoclass_name=option):
+                    if ClassOption.objects.filter(timesseries=timeseries_obj, autoclass_name=option):
                         c = ClassOption.objects.get(autoclass_name=option)
                         if df.loc[i][option] <= c.threshold:
                             class_name = c.display_name
