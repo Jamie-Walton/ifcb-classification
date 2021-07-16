@@ -114,30 +114,47 @@ def new_targets(request, timeseries, file, set):
         b = Bin.objects.get(file=file)
         
         if not Set.objects.filter(bin=b, number=set):
-            target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
+            bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries
+            target_bin_response = requests.get(bin_url)
             target_bin = target_bin_response.json()
-            full_targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
-            target_count = len(full_targets)
+            targets = sorted(target_bin['targets'], key = lambda i: i['width'],reverse=True)
+            target_count = len(targets)
             if set == math.ceil((target_count)/500):
                 start = 500*(set-1)
-                targets = full_targets[start:]
+                rng = range(start, len(targets))
             else:
                 start = 500*(set-1)
-                targets = full_targets[start:start+500]
+                rng = range(start, start+500)
             
             scale = 0.8
             s = Set(bin=b, number=set, scale=scale)
             s.save()
-            
-            for target in targets:
+
+            df = pd.read_csv(bin_url + '_class_scores.csv')
+            header = df.columns.values
+            if timeseries == 'IFCB104':
+                header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
+                    header[12:18] + [header[18] + '/' + header[19]] + header[20:]
+            for i in rng:
+                target = targets[i]
+                for option in header[1:]:
+                    if ClassOption.objects.filter(timesseriesoptions__name=timeseries, autoclass_name=option):
+                        c = ClassOption.objects.get(autoclass_name=option)
+                        if df.loc[i][option] <= c.threshold:
+                            class_name = c.display_name
+                            class_abbr = c.abbr
+                            break
+                    else:
+                        class_name = 'Unclassified'
+                        class_abbr = 'UNC'
                 num = '{:0>5}'.format(int(target['targetNumber']))
                 width = int(target['width'])
-                s.target_set.create(number=num, width=width, classification='', scale=scale)
-        
-        s = Set.objects.get(bin=b, number=set)
-        model_targets = Target.objects.filter(set=s).order_by('-width')
-        target_serializer = TargetSerializer(model_targets, many=True)
-        return Response(target_serializer.data)
+                s.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+            
+            s = Set.objects.get(bin=b, number=set)
+            model_targets = Target.objects.filter(set=s).order_by('-width')
+            target_serializer = TargetSerializer(model_targets, many=True)
+            return Response(target_serializer.data)
         
     elif request.method == 'PUT':
         serializer = TargetSerializer(request.data)
