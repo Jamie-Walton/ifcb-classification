@@ -51,7 +51,7 @@ def new_timeseries(request, timeseries_name):
         header = list(df.columns.values)
         timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
         if timeseries_name == 'IFCB104':
-            del df[24]
+            df.drop('Skeletonema', inplace=True, axis=1)
             df.drop('Thalassionema', inplace=True, axis=1)
             df.drop('Thalassiosira', inplace=True, axis=1)
             df.drop('unclassified', inplace=True, axis=1)
