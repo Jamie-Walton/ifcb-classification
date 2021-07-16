@@ -2,6 +2,8 @@ from django.db import models
 
 class TimeSeriesOption(models.Model):
     name = models.CharField(max_length=15)
+    def _str_(self):
+        return self.name
 
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
@@ -38,6 +40,9 @@ class ClassOption(models.Model):
     autoclass_name = models.CharField(max_length=100)
     abbr = models.CharField(max_length=10)
     timeseries = models.ManyToManyField(TimeSeriesOption)
+
+    def _str_(self):
+        return self.display_name
 
 class FrontEndPackage(models.Model):
     bin = models.JSONField()
