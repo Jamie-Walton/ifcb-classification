@@ -151,10 +151,10 @@ def new_targets(request, timeseries, file, set):
                 width = int(target['width'])
                 s.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
             
-            s = Set.objects.get(bin=b, number=set)
-            model_targets = Target.objects.filter(set=s).order_by('-width')
-            target_serializer = TargetSerializer(model_targets, many=True)
-            return Response(target_serializer.data)
+        s = Set.objects.get(bin=b, number=set)
+        model_targets = Target.objects.filter(set=s).order_by('-width')
+        target_serializer = TargetSerializer(model_targets, many=True)
+        return Response(target_serializer.data)
         
     elif request.method == 'PUT':
         serializer = TargetSerializer(request.data)
