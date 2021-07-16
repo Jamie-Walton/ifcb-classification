@@ -249,7 +249,7 @@ class Annotations extends React.Component {
   getNewTimeSeries(option) {
     this.setState({loading: true});
     axios
-      .get('/api/classes/' + option + '/')
+      .get('/classes/' + option + '/')
       .then((res) => {
         console.log(res);
         this.setState({ 
