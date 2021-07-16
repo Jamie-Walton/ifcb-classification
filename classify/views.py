@@ -156,7 +156,7 @@ def new_targets(request, timeseries, file, set):
                         c = ClassOption.objects.get(autoclass_name=option)
                         if df.loc[i][option] >= c.threshold:
                             class_name = c.display_name
-                            class_abbr = c.abbr
+                            class_abbr = df.loc[i][option]
                             break
                     else:
                         class_name = 'Unclassified'
