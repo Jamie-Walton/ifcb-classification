@@ -136,8 +136,8 @@ def new_targets(request, timeseries, file, set):
             header = list(df.columns.values)
             timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
             if timeseries == 'IFCB104':
-                header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
-                    header[12:18] + [header[18] + '/' + header[19]] + header[20:]
+                header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
+                    header[12:18] + [header[18] + '_' + header[19]] + header[20:]
             for i in rng:
                 target = targets[i]
                 for option in header[1:]:
