@@ -231,7 +231,9 @@ class Annotations extends React.Component {
       this.state = {
           loading: true,
           classes: [],
+          classAbbrs: [],
           classPicker: 'Unclassified',
+          classMark: 'UNC',
           bin: {timeseries:'', year:'', day:'', file:''},
           set: 1,
           timeSeriesOptions: [],
@@ -269,7 +271,10 @@ class Annotations extends React.Component {
     });
     axios
       .get('/api/classes/' + option)
-      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
+      .then((res) => this.setState({ 
+          classes: res.data.map((c) => (c.display_name)),
+          classAbbrs: res.data.map((c) => (c.abbr))
+        }))
       .catch((err) => console.log(err));
   };
 
@@ -404,13 +409,16 @@ class Annotations extends React.Component {
         }
       }
 
-      this.setState({ classPicker: name });
+      this.setState({ 
+          classPicker: name,
+          classMark: classAbbrs[classes.findIndex(name)]
+        });
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
-          if (target.classification === name) {
+          if (target.class_name === name) {
               const container = document.getElementById(target.number);
               const text = document.getElementById(target.number+'-text');
               container.style.backgroundColor = '#16609F';
@@ -441,6 +449,7 @@ class Annotations extends React.Component {
       var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
           targets[i].class_name = this.state.classPicker;
+          targets[i].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)];
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -452,7 +461,8 @@ class Annotations extends React.Component {
   handlePlanktonClick(i) {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
-    targets[k].classification = this.state.classPicker;
+    targets[k].class_name = this.state.classPicker;
+    targets[k].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)]; // use class abbr
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
