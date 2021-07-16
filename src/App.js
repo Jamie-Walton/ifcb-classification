@@ -167,7 +167,7 @@ class Plankton extends React.Component {
             timestamp={this.props.timestamp}
             ifcb={this.props.ifcb}
             targetNum={this.props.targetNum}
-            classification={this.props.classification}
+            classification={this.props.class_name}
             width={this.props.width}
             scale={this.props.scale}
         />
@@ -180,7 +180,7 @@ class Plankton extends React.Component {
               <div className="plankton">
                   {this.renderImage()}
                   <div className='id' id={this.props.targetNum}>
-                      <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.classification}</p>
+                      <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
                   </div>
               </div>
           </button>
@@ -440,7 +440,7 @@ class Annotations extends React.Component {
   handleSelectAllClick() {
       var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
-          targets[i].classification = this.state.classPicker;
+          targets[i].class_name = this.state.classPicker;
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -510,7 +510,8 @@ class Annotations extends React.Component {
               timestamp={this.state.bin.file}
               id={i}
               targetNum={this.state.targets[i].number}
-              classification={this.state.targets[i].classification}
+              class_name={this.state.targets[i].class_name}
+              class_abbr={this.state.targets[i].class_abbr}
               scale={this.state.targets[i].scale}
               width={this.state.targets[i].width}
               onClick={(i) => this.handlePlanktonClick(i)}

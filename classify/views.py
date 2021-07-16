@@ -20,7 +20,8 @@ class BinView(viewsets.ModelViewSet):
 
 @api_view(('GET',))
 def get_classes(request, timeseries):
-    classes = ClassOption.objects.filter(timeseries=timeseries)
+    timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
+    classes = ClassOption.objects.filter(timeseries=timeseries_obj)
     serializer = ClassOptionSerializer(classes, many=True)
 
 
