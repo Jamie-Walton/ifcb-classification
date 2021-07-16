@@ -47,7 +47,7 @@ def new_timeseries(request, timeseries_name):
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
         nearest_set.save()
         df = pd.read_csv(bin_url + '_class_scores.csv')
-        header = df.columns.values
+        header = list(df.columns.values)
         if timeseries_name == 'IFCB104':
             header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
                 header[12:18] + [header[18] + '/' + header[19]] + header[20:]
@@ -131,7 +131,7 @@ def new_targets(request, timeseries, file, set):
             s.save()
 
             df = pd.read_csv(bin_url + '_class_scores.csv')
-            header = df.columns.values
+            header = list(df.columns.values)
             if timeseries == 'IFCB104':
                 header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
                     header[12:18] + [header[18] + '/' + header[19]] + header[20:]
