@@ -250,10 +250,12 @@ class Annotations extends React.Component {
     this.setState({loading: true});
     axios
       .get('/api/classes/' + option)
-      .then((res) => this.setState({ 
+      .then((res) => {
+        console.log(res);
+        this.setState({ 
           classes: res.data.map((c) => (c.display_name)),
           classAbbrs: res.data.map((c) => (c.abbr))
-        }))
+        });})
       .catch((err) => console.log(err));
     console.log(this.state.classes);
     console.log(this.state.classAbbrs);
