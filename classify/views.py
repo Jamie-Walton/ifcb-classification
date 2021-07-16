@@ -54,7 +54,7 @@ def new_timeseries(request, timeseries_name):
         for i in range(0,500):
             target = targets[i]
             for option in header[1:]:
-                if ClassOption.objects.filter(timesSeriesOptions__name=timeseries_name, autoclass_name=option):
+                if ClassOption.objects.filter(timesseriesoptions__name=timeseries_name, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
                     if df.loc[i][option] <= c.threshold:
                         class_name = c.display_name
