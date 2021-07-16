@@ -23,6 +23,7 @@ def get_classes(request, timeseries):
     timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
     classes = ClassOption.objects.filter(timeseries=timeseries_obj)
     serializer = ClassOptionSerializer(classes, many=True)
+    return Response(serializer.data)
 
 
 @api_view(('GET',))
