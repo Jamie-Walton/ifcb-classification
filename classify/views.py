@@ -56,7 +56,7 @@ def new_timeseries(request, timeseries_name):
             df.drop('Thalassiosira', inplace=True, axis=1)
             df.drop('unclassified', inplace=True, axis=1)
             header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                header[12:18] + [header[18] + '_' + header[19]] + header[20:]
+                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
             df.columns = header
         for i in range(0,500):
             target = targets[i]
@@ -146,7 +146,7 @@ def new_targets(request, timeseries, file, set):
                 df.drop('Thalassiosira', inplace=True, axis=1)
                 df.drop('unclassified', inplace=True, axis=1)
                 header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                    header[12:18] + [header[18] + '_' + header[19]] + header[20:]
+                    header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
                 
                 df.columns = header
             for i in rng:
