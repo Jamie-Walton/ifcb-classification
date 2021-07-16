@@ -140,7 +140,7 @@ def new_targets(request, timeseries, file, set):
             for i in rng:
                 target = targets[i]
                 for option in header[1:]:
-                    if ClassOption.objects.filter(timesseries=timeseries_obj, autoclass_name=option):
+                    if ClassOption.objects.filter(timeseries=timeseries_obj, autoclass_name=option):
                         c = ClassOption.objects.get(autoclass_name=option)
                         if df.loc[i][option] <= c.threshold:
                             class_name = c.display_name
