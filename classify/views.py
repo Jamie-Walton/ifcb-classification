@@ -51,6 +51,10 @@ def new_timeseries(request, timeseries_name):
         header = list(df.columns.values)
         timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
         if timeseries_name == 'IFCB104':
+            df.drop('Skeletonema', inplace=True, axis=1)
+            df.drop('Thalassionema', inplace=True, axis=1)
+            df.drop('Thalassiosira', inplace=True, axis=1)
+            df.drop('unclassified', inplace=True, axis=1)
             header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
                 header[12:18] + [header[18] + '_' + header[19]] + header[20:]
             df.columns = header
@@ -137,8 +141,13 @@ def new_targets(request, timeseries, file, set):
             header = list(df.columns.values)
             timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
             if timeseries == 'IFCB104':
+                df.drop('Skeletonema', inplace=True, axis=1)
+                df.drop('Thalassionema', inplace=True, axis=1)
+                df.drop('Thalassiosira', inplace=True, axis=1)
+                df.drop('unclassified', inplace=True, axis=1)
                 header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
                     header[12:18] + [header[18] + '_' + header[19]] + header[20:]
+                
                 df.columns = header
             for i in rng:
                 target = targets[i]
