@@ -1,5 +1,5 @@
 from django.http.response import JsonResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -9,9 +9,12 @@ import requests
 import math
 import pandas as pd
 
-class ClassOptionView(viewsets.ModelViewSet):
+class ClassOptionView(generics.ListAPIView):
     serializer_class = ClassOptionSerializer
-    queryset = ClassOption.objects.all()
+
+    def get_queryset(self):
+        timeseries = self.request.user
+        return ClassOption.objects.filter(timeseries=TimeSeriesOption.objects.get(name=timeseries))
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -24,30 +27,45 @@ class BinView(viewsets.ModelViewSet):
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
-    timeseries = TimeSeriesOption.objects.get(name=timeseries_name).name
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
     volume = volume_response.json()
     year = volume[len(volume)-1]['day'][0:4]
     day = volume[len(volume)-1]['day'][5:]
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
+    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     bin_url = bins['pid']
     first_file = bin_url[35:51]
-    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + first_file + '_' + timeseries)
+    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/' + first_file + '_' + timeseries_name)
     target_bin = target_bin_response.json()
     targets_full = target_bin['targets']
     targets = sorted(targets_full, key = lambda i: i['width'],reverse=True)
 
     if not Bin.objects.filter(year=year, day=day):
-        nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=first_file)
+        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file)
         nearest_bin.save()
         scale = 0.8
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
         nearest_set.save()
-        for target in targets[0:500]:
+        df = pd.read_csv(bin_url + '_class_scores.csv')
+        header = df.columns.values
+        if timeseries_name == 'IFCB104':
+            header = header[0:9] + [header[9] + '/' + header[10] + '/' + header[11]] + \
+                header[12:18] + [header[18] + '/' + header[19]] + header[20:]
+        for i in range(0,500):
+            target = targets[i]
+            for option in header[1:]:
+                if ClassOption.objects.filter(timesSeriesOptions__name=timeseries_name, autoclass_name=option):
+                    c = ClassOption.objects.get(autoclass_name=option)
+                    if df.loc[i][option] <= c.threshold:
+                        class_name = c.display_name
+                        class_abbr = c.abbr
+                        break
+                else:
+                    class_name = 'Unclassified'
+                    class_abbr = 'UNC'
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
-            nearest_set.target_set.create(number=num, width=width, classification='', scale=scale)
+            nearest_set.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
@@ -68,7 +86,7 @@ def new_timeseries(request, timeseries_name):
     }
 
     bin = {
-        'timeseries': timeseries, 
+        'timeseries': timeseries_name, 
         'year': year, 
         'day': day, 
         'file': first_file,

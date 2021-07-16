@@ -28,7 +28,8 @@ class Target(models.Model):
     set = models.ForeignKey(Set, on_delete=models.CASCADE)
     number = models.CharField(max_length=5)
     width = models.IntegerField(default=0)
-    classification = models.CharField(max_length=120)
+    class_name = models.CharField(max_length=120)
+    class_abbr = models.CharField(max_length=10)
     scale = models.DecimalField(max_digits=4, decimal_places=2)
     # TODO: Add who classified Target
 
@@ -39,6 +40,7 @@ class ClassOption(models.Model):
     display_name = models.CharField(max_length=100)
     autoclass_name = models.CharField(max_length=100)
     abbr = models.CharField(max_length=10)
+    threshold = models.FloatField(default=0.5)
     timeseries = models.ManyToManyField(TimeSeriesOption)
 
     def _str_(self):

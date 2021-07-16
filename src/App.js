@@ -266,7 +266,11 @@ class Annotations extends React.Component {
                         loading: false,
                      });
                 });
-        });
+    });
+    axios
+      .get('/api/classes/' + option)
+      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
+      .catch((err) => console.log(err));
   };
 
   componentDidMount() {
@@ -276,7 +280,7 @@ class Annotations extends React.Component {
       .catch((err) => console.log(err));
 
     axios
-      .get("/api/classes/")
+      .get("/api/classes/IFCB104")
       .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
       .catch((err) => console.log(err));
 
