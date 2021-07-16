@@ -53,6 +53,7 @@ def new_timeseries(request, timeseries_name):
         if timeseries_name == 'IFCB104':
             header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
                 header[12:18] + [header[18] + '_' + header[19]] + header[20:]
+            df.columns = header
         for i in range(0,500):
             target = targets[i]
             for option in header[1:]:
@@ -138,6 +139,7 @@ def new_targets(request, timeseries, file, set):
             if timeseries == 'IFCB104':
                 header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
                     header[12:18] + [header[18] + '_' + header[19]] + header[20:]
+                df.columns = header
             for i in rng:
                 target = targets[i]
                 for option in header[1:]:
