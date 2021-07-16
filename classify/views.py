@@ -13,7 +13,7 @@ class ClassOptionView(generics.ListAPIView):
     serializer_class = ClassOptionSerializer
 
     def get_queryset(self):
-        timeseries = self.request.user
+        timeseries = self.request.timeseries
         return ClassOption.objects.filter(timeseries=TimeSeriesOption.objects.get(name=timeseries))
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
