@@ -9,12 +9,6 @@ import requests
 import math
 import pandas as pd
 
-class ClassOptionView(generics.ListAPIView):
-    serializer_class = ClassOptionSerializer
-
-    def get_queryset(self, timeseries):
-        return ClassOption.objects.filter(timeseries=TimeSeriesOption.objects.get(name=timeseries))
-
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
     queryset = TimeSeriesOption.objects.all()
@@ -22,6 +16,12 @@ class TimeSeriesOptionView(viewsets.ModelViewSet):
 class BinView(viewsets.ModelViewSet):
     serializer_class = BinSerializer
     queryset = Bin.objects.all()
+
+
+@api_view(('GET',))
+def get_classes(request, timeseries):
+    classes = ClassOption.objects.filter(timeseries=timeseries)
+    serializer = ClassOptionSerializer(classes, many=True)
 
 
 @api_view(('GET',))
