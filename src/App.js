@@ -204,8 +204,8 @@ class Micrometer extends React.Component {
 
 class ClassMenu extends React.Component {
   render() {
-      const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
+      //const options = this.props.classes.map((x) => 
+      // <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
       return(
       <div className="sidebar">
       <div className="class-menu">
@@ -217,7 +217,7 @@ class ClassMenu extends React.Component {
                 <p className="control-text">Undo</p>
             </div>
           </div>
-          <ul>{options}</ul>
+          <ul>options</ul>
       </div>
       <Micrometer/>
       </div>
@@ -276,6 +276,8 @@ class Annotations extends React.Component {
           classAbbrs: res.data.map((c) => (c.abbr))
         }))
       .catch((err) => console.log(err));
+    console.log(this.state.classes);
+    console.log(this.state.classAbbrs);
   };
 
   componentDidMount() {
@@ -411,7 +413,7 @@ class Annotations extends React.Component {
 
       this.setState({ 
           classPicker: name,
-          classMark: classAbbrs[classes.findIndex(name)]
+          // classMark: classAbbrs[classes.findIndex(name)]
         });
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
@@ -449,7 +451,7 @@ class Annotations extends React.Component {
       var targets = this.state.targets;
       for (let i = 0; i < targets.length; i++) {
           targets[i].class_name = this.state.classPicker;
-          targets[i].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)];
+          // targets[i].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)];
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -462,7 +464,7 @@ class Annotations extends React.Component {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
     targets[k].class_name = this.state.classPicker;
-    targets[k].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)]; // use class abbr
+    // targets[k].class_abbr = classAbbrs[classes.findIndex(this.state.classPicker)]; // use class abbr
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
@@ -530,7 +532,7 @@ class Annotations extends React.Component {
 
   renderClassMenu() {
     return <ClassMenu 
-          classes={this.state.classes}
+          // classes={this.state.classes}
           onClick={(name) => this.handleMenuClick(name)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
