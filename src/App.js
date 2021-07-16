@@ -249,6 +249,15 @@ class Annotations extends React.Component {
   getNewTimeSeries(option) {
     this.setState({loading: true});
     axios
+      .get('/api/classes/' + option)
+      .then((res) => this.setState({ 
+          classes: res.data.map((c) => (c.display_name)),
+          classAbbrs: res.data.map((c) => (c.abbr))
+        }))
+      .catch((err) => console.log(err));
+    console.log(this.state.classes);
+    console.log(this.state.classAbbrs);
+    axios
         .get('/process/timeseries/' + option + '/')
         .then((binResponse) => {
             this.setState({ 
@@ -269,26 +278,12 @@ class Annotations extends React.Component {
                      });
                 });
     });
-    axios
-      .get('/api/classes/' + option)
-      .then((res) => this.setState({ 
-          classes: res.data.map((c) => (c.display_name)),
-          classAbbrs: res.data.map((c) => (c.abbr))
-        }))
-      .catch((err) => console.log(err));
-    console.log(this.state.classes);
-    console.log(this.state.classAbbrs);
   };
 
   componentDidMount() {
     axios
       .get("/api/timeseries/")
       .then((res) => {this.setState({ timeSeriesOptions: res.data.map((c) => (c.name)) })})
-      .catch((err) => console.log(err));
-
-    axios
-      .get("/api/classes/IFCB104")
-      .then((res) => this.setState({ classes: res.data.map((c) => (c.name)) }))
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
