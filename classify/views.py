@@ -12,8 +12,7 @@ import pandas as pd
 class ClassOptionView(generics.ListAPIView):
     serializer_class = ClassOptionSerializer
 
-    def get_queryset(self):
-        timeseries = self.request.timeseries
+    def get_queryset(self, timeseries):
         return ClassOption.objects.filter(timeseries=TimeSeriesOption.objects.get(name=timeseries))
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
