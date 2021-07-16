@@ -60,6 +60,8 @@ def new_timeseries(request, timeseries_name):
             df.columns = header
         for i in range(0,500):
             target = targets[i]
+            class_name = 'Unclassified'
+            class_abbr = 'UNC'
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
@@ -67,9 +69,6 @@ def new_timeseries(request, timeseries_name):
                         class_name = c.display_name
                         class_abbr = df.loc[i][option]
                         break
-                else:
-                    class_name = 'Unclassified'
-                    class_abbr = 'UNC'
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
             nearest_set.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
@@ -151,6 +150,8 @@ def new_targets(request, timeseries, file, set):
                 df.columns = header
             for i in rng:
                 target = targets[i]
+                class_name = 'Unclassified'
+                class_abbr = 'UNC'
                 for option in header[1:]:
                     if ClassOption.objects.filter(timeseries=timeseries_obj, autoclass_name=option):
                         c = ClassOption.objects.get(autoclass_name=option)
@@ -158,9 +159,6 @@ def new_targets(request, timeseries, file, set):
                             class_name = c.display_name
                             class_abbr = df.loc[i][option]
                             break
-                    else:
-                        class_name = 'Unclassified'
-                        class_abbr = 'UNC'
                 num = '{:0>5}'.format(int(target['targetNumber']))
                 width = int(target['width'])
                 s.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
