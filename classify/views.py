@@ -109,7 +109,8 @@ def new_timeseries(request, timeseries_name):
     target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/' + first_file + '_' + timeseries_name)
     target_bin = target_bin_response.json()
     targets_full = target_bin['targets']
-    targets = sorted(targets_full, key = lambda i: i['width'],reverse=True)
+    targets = sorted(targets_full, key = lambda i: i['width'], reverse=True)
+    indices = sorted(range(len(targets_full)),key=targets_full.__getitem__)
 
     if not Bin.objects.filter(year=year, day=day):
         nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file)
@@ -135,7 +136,7 @@ def new_timeseries(request, timeseries_name):
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[i][option] >= c.threshold:
+                    if df.loc[indices[i]][option] >= c.threshold:
                         class_name = c.display_name
                         class_abbr = c.abbr
                         break
