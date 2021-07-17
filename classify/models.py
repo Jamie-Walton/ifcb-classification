@@ -8,10 +8,9 @@ class TimeSeriesOption(models.Model):
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
     year = models.CharField(max_length=4)
-    day = models.CharField(max_length=5) # currently in MM-DD format
+    day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)
-
-    # TODO: Add whether it has been edited or not later
+    edited = models.BooleanField(default=False)
 
     def _str_(self):
         return self.file

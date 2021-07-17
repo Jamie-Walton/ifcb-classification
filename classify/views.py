@@ -110,10 +110,9 @@ def new_timeseries(request, timeseries_name):
     target_bin = target_bin_response.json()
     targets_full = target_bin['targets']
     targets = sorted(targets_full, key = lambda i: i['width'], reverse=True)
-    indices = sorted(range(len(targets_full)),key=targets_full.__getitem__)
 
     if not Bin.objects.filter(year=year, day=day):
-        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file)
+        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file, edited=False)
         nearest_bin.save()
         scale = 0.8
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
@@ -136,7 +135,7 @@ def new_timeseries(request, timeseries_name):
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[indices[i]][option] >= c.threshold:
+                    if df.loc[i][option] >= c.threshold:
                         class_name = c.display_name
                         class_abbr = c.abbr
                         break
@@ -154,6 +153,7 @@ def new_timeseries(request, timeseries_name):
     num_targets = len(targets_full)
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
+    edited = Bin.objects.get(file=first_file).edited
 
     options = {
         'year_options': year_options,
@@ -167,6 +167,7 @@ def new_timeseries(request, timeseries_name):
         'year': year, 
         'day': day, 
         'file': first_file,
+        'edited': edited
     }
 
     set = {'number': 1}
@@ -182,7 +183,7 @@ def new_file(request, timeseries, file):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     if not Bin.objects.filter(file=file):
-        b = Bin(timeseries=timeseries, year=year, day=day, file=file)
+        b = Bin(timeseries=timeseries, year=year, day=day, file=file, edited=False)
         b.save()
     
     target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
@@ -191,12 +192,14 @@ def new_file(request, timeseries, file):
     num_targets = len(targets_full)
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
+    edited = Bin.objects.get(file=file).edited
     
     bin = {
         'timeseries': timeseries, 
         'year': year, 
         'day': day, 
         'file': file,
+        'edited': edited
     }
     
     options = {
@@ -267,12 +270,14 @@ def new_day(request, timeseries, year, day):
     num_targets = len(targets_full)
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
+    edited = Bin.objects.get(file=first_file).edited
     
     bin = {
         'timeseries': timeseries, 
         'year': year, 
         'day': day, 
         'file': first_file,
+        'edited': edited,
     }
     
     options = {
