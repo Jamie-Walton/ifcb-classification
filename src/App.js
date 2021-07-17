@@ -118,33 +118,6 @@ class FileControl extends React.Component {
     }
 }
 
-class SetControl extends React.Component {
-    handleDropdown() {
-        document.getElementById('set_dropdown').classList.toggle('show');
-        document.getElementById('set_label').classList.toggle('hide');
-        document.getElementById('set_bar').classList.toggle('accommodate-dropdown');
-    }
-    
-    render() {
-        const classList = this.props.options;
-        const options = classList.map((x) => 
-        <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
-        return(
-            <div>
-                <div className="set" id="set_bar">
-                <p className="time-selection">{this.props.set}</p>
-                <img src={dropdown} className="time-icon"
-                alt={'Select Set'} onClick={() => this.handleDropdown()}></img>
-                </div>
-                <div className="set-dropdown" id='set_dropdown'>
-                    <ul className="set-option">{options}</ul>
-                </div>
-                <p className="time-label" id="set_label">Set</p>
-            </div>
-        );
-    }
-}
-
 class PlanktonImage extends React.Component {
 
   render() {
@@ -235,12 +208,10 @@ class Annotations extends React.Component {
           classPicker: 'Unclassified',
           classMark: '',
           bin: {timeseries:'', year:'', day:'', file:''},
-          set: 1,
           timeSeriesOptions: [],
           yearOptions: [],
           dayOptions: [],
           fileOptions: [],
-          setOptions: [],
           targets: [],
           scale: 1,
       }
@@ -264,11 +235,9 @@ class Annotations extends React.Component {
         .then((binResponse) => {
             this.setState({ 
                 bin: binResponse.data.bin,
-                set: binResponse.data.set.number,
                 yearOptions: binResponse.data.options.year_options.reverse(),
                 dayOptions: binResponse.data.options.day_options.reverse(),
                 fileOptions: binResponse.data.options.file_options,
-                setOptions: binResponse.data.options.set_options,
             });
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
@@ -284,7 +253,7 @@ class Annotations extends React.Component {
 
   componentDidMount() {
     axios
-      .get("/api/timeseries/")
+      .get('/api/timeseries/')
       .then((res) => {this.setState({ timeSeriesOptions: res.data.map((c) => (c.name)) })})
       .catch((err) => console.log(err));
 
@@ -292,7 +261,18 @@ class Annotations extends React.Component {
   }
   
   getNewYear(option) {
-      console.log(option);
+    this.setState({ loading: true });  
+    axios
+        .get('/process/year/' + this.state.bin.timeseries + '/' + option)
+        .then((yearResponse) => {
+            this.setState({ 
+                bin: yearResponse.data.bin,
+                dayOptions: yearResponse.data.options.day_options.reverse(),
+                fileOptions: yearResponse.data.options.file_options,
+                loading: false,
+             })
+        })
+        .catch((err) => console.log(err));
   }
 
   handleNewDay(option) {
@@ -306,25 +286,19 @@ class Annotations extends React.Component {
             timeseries: this.state.bin.timeseries,
             year: this.state.bin.year,
             day: option,
-            file: this.state.bin.file
-        },
-        set: 1
+            file: this.state.bin.file,
+            edited: false
+        }
     });
     axios
         .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/')
         .then((dayResponse) => {
             this.setState({ 
-                bin: {
-                    timeseries: this.state.bin.timeseries,
-                    year: this.state.bin.year,
-                    day: option,
-                    file: this.dayResponse.bin.file
-                },
-                fileOptions: dayResponse.data.options.file_options,
-                setOptions: dayResponse.data.options.set_option
+                bin: dayResponse.data.bin,
+                fileOptions: dayResponse.data.options.file_options
             });
             axios
-                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/')
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file)
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -349,16 +323,16 @@ class Annotations extends React.Component {
             timeseries: this.state.bin.timeseries,
             year: this.state.bin.year,
             day: this.state.bin.day,
-            file: file
-        },
-        set: 1
+            file: file,
+            edited: false
+        }
     });
     axios
         .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/')
-        .then((res) => this.setState({ setOptions: res.data.options.set_options }))
+        .then((res) => this.setState({ bin: res.data.bin }))
         .catch((err) => console.log(err));
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/')
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + file)
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -366,22 +340,6 @@ class Annotations extends React.Component {
                 loading: false,
              });
         });
-  }
-
-  handleNewSet(option) {
-    this.setState({
-        loading: true,
-        set: option,
-        targets: [],
-    });
-    axios
-      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
-      .then((res) => {this.setState({ 
-          targets: res.data,
-          scale: res.data[0].scale,
-        })})
-      .catch((err) => console.log(err));
-    this.setState({loading: false});
   }
 
 
@@ -504,14 +462,6 @@ class Annotations extends React.Component {
         onClick={(option) => this.handleNewFile(option)} 
     />;
   }
-
-  renderSetControl() {
-    return <SetControl
-        set={this.state.set} 
-        options={this.state.setOptions}
-        onClick={(option) => this.handleNewSet(option)} 
-    />;
-  }
   
   renderPlankton(i) {
       return <Plankton 
@@ -554,7 +504,6 @@ class Annotations extends React.Component {
             {this.renderYearControl()}
             {this.renderDayControl()}
             {this.renderFileControl()}
-            {this.renderSetControl()}
         </div>
         <div className="annotations">
             {this.renderClassMenu()}

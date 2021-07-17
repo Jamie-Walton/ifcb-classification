@@ -52,6 +52,8 @@ def new_targets(request, timeseries, file):
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
+    # get timeline bars instead of day options
+    
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
     volume = volume_response.json()
     year = volume[len(volume)-1]['day'][0:4]
@@ -258,13 +260,40 @@ def new_day(request, timeseries, year, day):
     
 
 @api_view(('GET',))
-def new_year(request, timeseries_name):
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
+def new_year(request, timeseries, year):
+    # get timeline bars instead of day options
+    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
     first_year = int(volume[len(volume)-1]['day'][0:4])
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(first_year, last_year+1))
-    return year_options
+    day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
+
+    day = day_options[len(day_options)]
+    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
+    bins = bins_response.json()
+    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+
+    edited = Bin.objects.get(file=file_options[0]).edited
+
+    options = {
+        'year_options': 'NA',
+        'day_options': day_options,
+        'file_options': file_options,
+    }
+
+    bin = {
+        'timeseries': timeseries, 
+        'year': year, 
+        'day': day, 
+        'file': file_options[0],
+        'edited': edited
+    }
+
+    package = FrontEndPackage(bin=bin, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+    
+    return Response(front_end_package.data)
 
 
 def get_files(bin_count, bins, timeseries):
