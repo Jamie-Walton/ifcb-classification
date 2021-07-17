@@ -92,7 +92,7 @@ def new_timeseries(request, timeseries_name):
                         break
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
-            nearest_bin.target_bin.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
@@ -161,7 +161,7 @@ def new_file(request, timeseries, file):
                         break
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
-            nearest_bin.target_bin.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
     
     edited = Bin.objects.get(file=file).edited
     
@@ -230,7 +230,7 @@ def new_day(request, timeseries, year, day):
                         break
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
-            nearest_bin.target_bin.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
 
