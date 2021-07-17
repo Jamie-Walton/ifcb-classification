@@ -24,7 +24,7 @@ class Set(models.Model):
 
 
 class Target(models.Model):
-    set = models.ForeignKey(Set, on_delete=models.CASCADE)
+    bin = models.ForeignKey(Bin, on_delete=models.CASCADE)
     number = models.CharField(max_length=5)
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)

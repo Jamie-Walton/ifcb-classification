@@ -4,7 +4,7 @@ from .models import Bin, FrontEndPackage, Set, Target, ClassOption, TimeSeriesOp
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
-        fields = ('id', 'set', 'number', 'width', 'class_name', 'class_abbr', 'scale')
+        fields = ('id', 'bin', 'number', 'width', 'class_name', 'class_abbr', 'scale')
 
 class ClassOptionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,4 +29,4 @@ class SetSerializer(serializers.ModelSerializer):
 class FrontEndPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FrontEndPackage
-        fields = ('id', 'bin', 'set', 'options')
+        fields = ('id', 'bin', 'options')
