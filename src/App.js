@@ -496,7 +496,7 @@ class Annotations extends React.Component {
   }
 
   render() {  
-    targets = this.state.targets;
+    const targets = this.state.targets;
     return(
       <div>
         <h1>Manual Classifications</h1>
