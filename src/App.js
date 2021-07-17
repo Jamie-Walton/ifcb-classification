@@ -249,6 +249,7 @@ class Annotations extends React.Component {
                      });
                 });
     });
+    console.log(this.state.targets)
   };
 
   componentDidMount() {
