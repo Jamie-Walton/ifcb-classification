@@ -228,8 +228,6 @@ class Annotations extends React.Component {
           classAbbrs: res.data.map((c) => (c.abbr))
         });})
       .catch((err) => console.log(err));
-    console.log(this.state.classes);
-    console.log(this.state.classAbbrs);
     axios
         .get('/process/timeseries/' + option + '/')
         .then((binResponse) => {
@@ -240,7 +238,7 @@ class Annotations extends React.Component {
                 fileOptions: binResponse.data.options.file_options,
             });
             axios
-                .get('/process/targets/' + option + '/' + binResponse.data.bin.file)
+                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
