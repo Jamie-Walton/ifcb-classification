@@ -248,6 +248,7 @@ class Annotations extends React.Component {
                 });
     });
     console.log(this.state.targets)
+    console.log(this.state.scale)
   };
 
   componentDidMount() {
@@ -510,8 +511,8 @@ class Annotations extends React.Component {
             <div>
                 <div className="image-grid">
                     {
-                    // this.state.loading ? this.renderLoader() :
-                    // targets.map((target, i) => this.renderPlankton(i))
+                    this.state.loading ? this.renderLoader() :
+                    targets.map((target, i) => this.renderPlankton(i))
                     }
                     <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
                 </div>
