@@ -233,7 +233,7 @@ class Annotations extends React.Component {
           classes: [],
           classAbbrs: [],
           classPicker: 'Unclassified',
-          classMark: 'UNC',
+          classMark: '',
           bin: {timeseries:'', year:'', day:'', file:''},
           set: 1,
           timeSeriesOptions: [],

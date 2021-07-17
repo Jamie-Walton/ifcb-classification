@@ -82,7 +82,7 @@ def new_timeseries(request, timeseries_name):
         for i in range(0,len(targets)):
             target = targets[i]
             class_name = 'Unclassified'
-            class_abbr = 'UNC'
+            class_abbr = ''
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
@@ -151,7 +151,7 @@ def new_file(request, timeseries, file):
         for i in range(0,len(targets)):
             target = targets[i]
             class_name = 'Unclassified'
-            class_abbr = 'UNC'
+            class_abbr = ''
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
@@ -220,7 +220,7 @@ def new_day(request, timeseries, year, day):
         for i in range(0,len(targets)):
             target = targets[i]
             class_name = 'Unclassified'
-            class_abbr = 'UNC'
+            class_abbr = ''
             for option in header[1:]:
                 if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
                     c = ClassOption.objects.get(autoclass_name=option)
