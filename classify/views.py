@@ -99,7 +99,16 @@ def new_timeseries(request, timeseries_name):
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
 
-    day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
+    days = [x['day'] for x in volume if year in x['day']]
+    gbs = [x['gb'] for x in volume if year in x['day']]
+    i = 1
+    day_options = []
+    for day in pd.date_range(start='1-1-' + year, end='12-31' + year):
+        if day == pd.Timestamp(days[i]):
+            day_options = day_options + [gbs[i]]
+        else:
+            day_options = day_options + [0]
+
 
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
 
@@ -264,9 +273,6 @@ def new_year(request, timeseries, year):
     # get timeline bars instead of day options
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
-    first_year = int(volume[len(volume)-1]['day'][0:4])
-    last_year = int(volume[0]['day'][0:4])
-    year_options = list(range(first_year, last_year+1))
     day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
 
     day = day_options[len(day_options)]
