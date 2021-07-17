@@ -240,7 +240,7 @@ class Annotations extends React.Component {
                 fileOptions: binResponse.data.options.file_options,
             });
             axios
-                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
+                .get('/process/targets/' + option + '/' + binResponse.data.bin.file)
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
