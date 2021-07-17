@@ -496,6 +496,7 @@ class Annotations extends React.Component {
   }
 
   render() {  
+    targets = this.state.targets;
     return(
       <div>
         <h1>Manual Classifications</h1>
@@ -511,7 +512,7 @@ class Annotations extends React.Component {
                 <div className="image-grid">
                     {
                     this.state.loading ? this.renderLoader() :
-                    this.state.targets.map((target, i) => this.renderPlankton(i))
+                    targets.map((target, i) => this.renderPlankton(i))
                     }
                     <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
                 </div>
