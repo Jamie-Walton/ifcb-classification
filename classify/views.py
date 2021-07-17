@@ -26,86 +26,6 @@ def get_classes(request, timeseries):
     return Response(serializer.data)
 
 
-@api_view(('GET',))
-def new_timeseries(request, timeseries_name):
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
-    volume = volume_response.json()
-    year = volume[len(volume)-1]['day'][0:4]
-    day = volume[len(volume)-1]['day'][5:]
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
-    bins = bins_response.json()
-    bin_url = bins['pid']
-    first_file = bin_url[35:51]
-    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/' + first_file + '_' + timeseries_name)
-    target_bin = target_bin_response.json()
-    targets_full = target_bin['targets']
-    targets = sorted(targets_full, key = lambda i: i['width'],reverse=True)
-
-    if not Bin.objects.filter(year=year, day=day):
-        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file)
-        nearest_bin.save()
-        scale = 0.8
-        nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
-        nearest_set.save()
-        df = pd.read_csv(bin_url + '_class_scores.csv')
-        header = list(df.columns.values)
-        timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
-        if timeseries_name == 'IFCB104':
-            df.drop('Skeletonema', inplace=True, axis=1)
-            df.drop('Thalassionema', inplace=True, axis=1)
-            df.drop('Thalassiosira', inplace=True, axis=1)
-            df.drop('unclassified', inplace=True, axis=1)
-            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
-            df.columns = header
-        for i in range(0,500):
-            target = targets[i]
-            class_name = 'Unclassified'
-            class_abbr = 'UNC'
-            for option in header[1:]:
-                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
-                    c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[i][option] >= c.threshold:
-                        class_name = c.display_name
-                        class_abbr = df.loc[i][option]
-                        break
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            nearest_set.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
-    
-    last_year = int(volume[0]['day'][0:4])
-    year_options = list(range(last_year, int(year)+1))
-
-    day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
-
-    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
-
-    num_targets = len(targets_full)
-    num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
-
-    options = {
-        'year_options': year_options,
-        'day_options': day_options,
-        'file_options': file_options,
-        'set_options': set_options,
-    }
-
-    bin = {
-        'timeseries': timeseries_name, 
-        'year': year, 
-        'day': day, 
-        'file': first_file,
-    }
-
-    set = {'number': 1}
-
-    package = FrontEndPackage(bin=bin, set=set, options=options)
-    front_end_package = FrontEndPackageSerializer(package)
-    
-    return Response(front_end_package.data)
-
-
 @api_view(('PUT',))
 def edit_target(request):
     serializer = TargetSerializer(request.data)
@@ -157,7 +77,7 @@ def new_targets(request, timeseries, file, set):
                         c = ClassOption.objects.get(autoclass_name=option)
                         if df.loc[i][option] >= c.threshold:
                             class_name = c.display_name
-                            class_abbr = df.loc[i][option]
+                            class_abbr = c.abbr
                             break
                 num = '{:0>5}'.format(int(target['targetNumber']))
                 width = int(target['width'])
@@ -174,6 +94,87 @@ def new_targets(request, timeseries, file, set):
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(('GET',))
+def new_timeseries(request, timeseries_name):
+    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
+    volume = volume_response.json()
+    year = volume[len(volume)-1]['day'][0:4]
+    day = volume[len(volume)-1]['day'][5:]
+    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
+    bins = bins_response.json()
+    bin_url = bins['pid']
+    first_file = bin_url[35:51]
+    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/' + first_file + '_' + timeseries_name)
+    target_bin = target_bin_response.json()
+    targets_full = target_bin['targets']
+    targets = sorted(targets_full, key = lambda i: i['width'],reverse=True)
+
+    if not Bin.objects.filter(year=year, day=day):
+        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file)
+        nearest_bin.save()
+        scale = 0.8
+        nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
+        nearest_set.save()
+        df = pd.read_csv(bin_url + '_class_scores.csv')
+        header = list(df.columns.values)
+        timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
+        if timeseries_name == 'IFCB104':
+            df.drop('Skeletonema', inplace=True, axis=1)
+            df.drop('Thalassionema', inplace=True, axis=1)
+            df.drop('Thalassiosira', inplace=True, axis=1)
+            df.drop('unclassified', inplace=True, axis=1)
+            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
+                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
+            df.columns = header
+        for i in range(0,500):
+            target = targets[i]
+            class_name = 'Unclassified'
+            class_abbr = 'UNC'
+            for option in header[1:]:
+                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
+                    c = ClassOption.objects.get(autoclass_name=option)
+                    if df.loc[i][option] >= c.threshold:
+                        class_name = c.display_name
+                        class_abbr = c.abbr
+                        break
+            num = '{:0>5}'.format(int(target['targetNumber']))
+            width = int(target['width'])
+            nearest_set.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+    
+    last_year = int(volume[0]['day'][0:4])
+    year_options = list(range(last_year, int(year)+1))
+
+    day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
+
+    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
+
+    num_targets = len(targets_full)
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
+
+    options = {
+        'year_options': year_options,
+        'day_options': day_options,
+        'file_options': file_options,
+        'set_options': set_options,
+    }
+
+    bin = {
+        'timeseries': timeseries_name, 
+        'year': year, 
+        'day': day, 
+        'file': first_file,
+    }
+
+    set = {'number': 1}
+
+    package = FrontEndPackage(bin=bin, set=set, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+    
+    return Response(front_end_package.data)
+
 
 @api_view(('GET',))
 def new_file(request, timeseries, file):
@@ -228,14 +229,34 @@ def new_day(request, timeseries, year, day):
     if not Bin.objects.filter(year=year, day=day):
         nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=first_file)
         nearest_bin.save()
-        max_width = targets[0]['width']
         scale = 0.8
         nearest_set = Set(bin=nearest_bin, number=1, scale=scale)
         nearest_set.save()
-        for target in targets[0:200]:
+        df = pd.read_csv(bin_url + '_class_scores.csv')
+        header = list(df.columns.values)
+        timeseries = TimeSeriesOption.objects.get(name=timeseries)
+        if timeseries == 'IFCB104':
+            df.drop('Skeletonema', inplace=True, axis=1)
+            df.drop('Thalassionema', inplace=True, axis=1)
+            df.drop('Thalassiosira', inplace=True, axis=1)
+            df.drop('unclassified', inplace=True, axis=1)
+            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
+                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
+            df.columns = header
+        for i in range(0,500):
+            target = targets[i]
+            class_name = 'Unclassified'
+            class_abbr = 'UNC'
+            for option in header[1:]:
+                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
+                    c = ClassOption.objects.get(autoclass_name=option)
+                    if df.loc[i][option] >= c.threshold:
+                        class_name = c.display_name
+                        class_abbr = c.abbr
+                        break
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
-            nearest_set.target_set.create(number=num, width=width, classification='', scale=scale)
+            nearest_set.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
     
     target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + first_file + '_' + timeseries)
     target_bin = target_bin_response.json()
