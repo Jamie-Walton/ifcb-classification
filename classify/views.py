@@ -42,11 +42,11 @@ def new_targets(request, timeseries, file, set):
         model_targets = Target.objects.filter(bin=b).order_by('-width')
 
         if set == math.ceil((len(model_targets))/500):
-            start = 500*(set-1)
+            start = 100*(set-1)
             end = len(model_targets)
         else:
-            start = 500*(set-1)
-            end = start+500
+            start = 100*(set-1)
+            end = start+100
 
         target_serializer = TargetSerializer(model_targets[start:end], many=True)
         return Response(target_serializer.data)
