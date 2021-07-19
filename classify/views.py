@@ -81,17 +81,18 @@ def new_timeseries(request, timeseries_name):
             header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
                 header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
             df.columns = header
+        df.drop('pid', inplace=True, axis=1)
+        maxes = df.max(axis='columns')
+        classes = df.idxmax(axis='columns')
         for i in range(0,len(targets)):
             target = targets[i]
             class_name = 'Unclassified'
             class_abbr = ''
-            for option in header[1:]:
-                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
-                    c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[i][option] >= c.threshold:
-                        class_name = c.display_name
-                        class_abbr = c.abbr
-                        break
+            c = ClassOption.objects.get(autoclass_name=classes[i])
+            if maxes[i] >= c.threshold:
+                class_name = c.display_name
+                class_abbr = c.abbr
+                break
             num = '{:0>5}'.format(int(target['targetNumber']))
             width = int(target['width'])
             nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)

@@ -29,7 +29,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'Rm(3}e$xPCBj_4)C[5K_[?;n7ddx9L
 DEBUG = True
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['https://ifcb-classification-test.herokuapp.com/']
+ALLOWED_HOSTS = [
+    'https://ifcb-classification-test.herokuapp.com/',
+    'localhost:8000'
+]
 
 
 # Application definition
