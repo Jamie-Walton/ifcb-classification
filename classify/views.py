@@ -87,12 +87,18 @@ def new_timeseries(request, timeseries_name):
         #else:
             #day_options = day_options + [0]
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
+
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=first_file)))
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
+
     edited = Bin.objects.get(file=first_file).edited
 
     options = {
         'year_options': year_options,
         'day_options': day_options,
         'file_options': file_options,
+        'set_options': set_options
     }
 
     bin = {
@@ -117,6 +123,9 @@ def new_file(request, timeseries, file):
         bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries
         create_targets(bin_url, timeseries, year, day, file)
     
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
     edited = Bin.objects.get(file=file).edited
     
     bin = {
@@ -131,6 +140,7 @@ def new_file(request, timeseries, file):
         'year_options': 'NA',
         'day_options': 'NA',
         'file_options': 'NA',
+        'set_options': set_options
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -155,6 +165,10 @@ def new_day(request, timeseries, year, day):
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
 
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=first_file)))
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
+
     edited = Bin.objects.get(file=first_file).edited
     
     bin = {
@@ -169,6 +183,7 @@ def new_day(request, timeseries, year, day):
         'year_options': 'NA',
         'day_options': 'NA',
         'file_options': file_options,
+        'set_options': set_options
     }
 
     package = FrontEndPackage(bin=bin, set=1, options=options)
@@ -189,6 +204,9 @@ def new_year(request, timeseries, year):
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file_options[0])))
+    num_sets = math.ceil((num_targets)/500)
+    set_options = list(range(1, num_sets+1))
 
     if not Bin.objects.filter(year=year, day=day):
         bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file_options[0] + '_' + timeseries
@@ -200,6 +218,7 @@ def new_year(request, timeseries, year):
         'year_options': 'NA',
         'day_options': day_options,
         'file_options': file_options,
+        'set_options': set_options
     }
 
     bin = {

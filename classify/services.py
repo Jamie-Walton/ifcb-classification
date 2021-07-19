@@ -44,6 +44,7 @@ def create_targets(bin_url, timeseries, year, day, file):
         num = '{:0>5}'.format(int(target['targetNumber']))
         width = int(target['width'])
         nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+    
 
 
 def get_files(bin_count, bins, timeseries):

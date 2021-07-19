@@ -118,6 +118,33 @@ class FileControl extends React.Component {
     }
 }
 
+class SetControl extends React.Component {
+    handleDropdown() {
+        document.getElementById('set_dropdown').classList.toggle('show');
+        document.getElementById('set_label').classList.toggle('hide');
+        document.getElementById('set_bar').classList.toggle('accommodate-dropdown');
+    }
+    
+    render() {
+        const classList = this.props.options;
+        const options = classList.map((x) => 
+        <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
+        return(
+            <div>
+                <div className="set" id="set_bar">
+                <p className="time-selection">{this.props.set}</p>
+                <img src={dropdown} className="time-icon"
+                alt={'Select Set'} onClick={() => this.handleDropdown()}></img>
+                </div>
+                <div className="set-dropdown" id='set_dropdown'>
+                    <ul className="set-option">{options}</ul>
+                </div>
+                <p className="time-label" id="set_label">Set</p>
+            </div>
+        );
+    }
+}
+
 class PlanktonImage extends React.Component {
 
   render() {
@@ -212,8 +239,10 @@ class Annotations extends React.Component {
           yearOptions: [],
           dayOptions: [],
           fileOptions: [],
+          setOptions: [],
           targets: [],
           scale: 1,
+          set: 1,
       }
   }
 
@@ -236,6 +265,8 @@ class Annotations extends React.Component {
                 yearOptions: binResponse.data.options.year_options.reverse(),
                 dayOptions: binResponse.data.options.day_options.reverse(),
                 fileOptions: binResponse.data.options.file_options,
+                setOptions: binResponse.data.options.set_options,
+                set: 1
             });
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
@@ -268,6 +299,8 @@ class Annotations extends React.Component {
                 bin: yearResponse.data.bin,
                 dayOptions: yearResponse.data.options.day_options.reverse(),
                 fileOptions: yearResponse.data.options.file_options,
+                setOptions: binResponse.data.options.set_options,
+                set: 1,
                 loading: false,
              })
         })
@@ -294,7 +327,9 @@ class Annotations extends React.Component {
         .then((dayResponse) => {
             this.setState({ 
                 bin: dayResponse.data.bin,
-                fileOptions: dayResponse.data.options.file_options
+                fileOptions: dayResponse.data.options.file_options,
+                setOptions: binResponse.data.options.set_options,
+                set: 1
             });
             axios
                 .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/')
@@ -323,6 +358,8 @@ class Annotations extends React.Component {
             year: this.state.bin.year,
             day: this.state.bin.day,
             file: file,
+            setOptions: binResponse.data.options.set_options,
+            set: 1,
             edited: false
         }
     });
@@ -460,6 +497,30 @@ class Annotations extends React.Component {
         options={this.state.fileOptions}
         onClick={(option) => this.handleNewFile(option)} 
     />;
+  }
+
+  renderFileControl() {
+    return <FileControl
+        set={this.state.set} 
+        options={this.state.setOptions}
+        onClick={(option) => this.handleNewSet(option)} 
+    />;
+  }
+
+  handleNewSet(option) {
+    this.setState({
+        loading: true,
+        set: option,
+        targets: [],
+    });
+    axios
+      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
+      .then((res) => {this.setState({ 
+          targets: res.data,
+          scale: res.data[0].scale,
+        })})
+      .catch((err) => console.log(err));
+    this.setState({loading: false});
   }
   
   renderPlankton(i) {
