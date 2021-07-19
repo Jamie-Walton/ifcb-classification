@@ -299,7 +299,7 @@ class Annotations extends React.Component {
                 bin: yearResponse.data.bin,
                 dayOptions: yearResponse.data.options.day_options.reverse(),
                 fileOptions: yearResponse.data.options.file_options,
-                setOptions: binResponse.data.options.set_options,
+                setOptions: yearResponse.data.options.set_options,
                 set: 1,
                 loading: false,
              })
@@ -328,7 +328,7 @@ class Annotations extends React.Component {
             this.setState({ 
                 bin: dayResponse.data.bin,
                 fileOptions: dayResponse.data.options.file_options,
-                setOptions: binResponse.data.options.set_options,
+                setOptions: dayResponse.data.options.set_options,
                 set: 1
             });
             axios
@@ -358,14 +358,16 @@ class Annotations extends React.Component {
             year: this.state.bin.year,
             day: this.state.bin.day,
             file: file,
-            setOptions: binResponse.data.options.set_options,
             set: 1,
             edited: false
         }
     });
     axios
         .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/')
-        .then((res) => this.setState({ bin: res.data.bin }))
+        .then((res) => this.setState({ 
+            bin: res.data.bin, 
+            setOptions: res.data.options.set_options 
+        }))
         .catch((err) => console.log(err));
     axios
         .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/')
