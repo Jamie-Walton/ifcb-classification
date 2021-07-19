@@ -70,20 +70,29 @@ def new_timeseries(request, timeseries_name):
         nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file, edited=False)
         nearest_bin.save()
         scale = 0.8
-        df = pd.read_csv(bin_url + '_class_scores.csv')
-        header = list(df.columns.values)
+        
         timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
-        if timeseries_name == 'IFCB104':
-            df.drop('Skeletonema', inplace=True, axis=1)
-            df.drop('Thalassionema', inplace=True, axis=1)
-            df.drop('Thalassiosira', inplace=True, axis=1)
-            df.drop('unclassified', inplace=True, axis=1)
-            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
-            df.columns = header
-        df.drop('pid', inplace=True, axis=1)
-        maxes = df.max(axis='columns')
-        classes = df.idxmax(axis='columns')
+        classes = None
+        maxes = None
+        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+            if timeseries_name == 'IFCB104':
+                header = list(chunk.columns.values)
+                chunk.drop('Skeletonema', inplace=True, axis=1)
+                chunk.drop('Thalassionema', inplace=True, axis=1)
+                chunk.drop('Thalassiosira', inplace=True, axis=1)
+                chunk.drop('unclassified', inplace=True, axis=1)
+                header = header[0:8] + [header[8] + '_' + header[9] + '_' + header[10]] + \
+                    header[11:17] + [header[17] + '_' + header[18]] + header[19:27]
+                chunk.columns = header
+            chunk_classes = chunk.idxmax(axis='columns')
+            chunk_maxes = chunk.max(axis='columns')
+            if classes is None:
+                classes = chunk_classes
+                maxes = chunk_maxes
+            else:
+                classes = classes.add(chunk_classes, fill_value='')
+                maxes = maxes.add(chunk_maxes, fill_value=0)
+
         for i in range(0,len(targets)):
             target = targets[i]
             class_name = 'Unclassified'
