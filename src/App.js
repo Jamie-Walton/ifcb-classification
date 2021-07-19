@@ -222,11 +222,11 @@ class Annotations extends React.Component {
     axios
       .get('/classes/' + option + '/')
       .then((res) => {
-        console.log(res);
         this.setState({ 
           classes: res.data.map((c) => (c.display_name)),
           classAbbrs: res.data.map((c) => (c.abbr))
-        });})
+        });
+      })
       .catch((err) => console.log(err));
     axios
         .get('/process/timeseries/' + option + '/')
@@ -245,10 +245,9 @@ class Annotations extends React.Component {
                         scale: targetResponse.data[0].scale,
                         loading: false,
                      });
+                    console.log(targetResponse.data.length);
                 });
     });
-    console.log(this.state.targets)
-    console.log(this.state.scale)
   };
 
   componentDidMount() {
@@ -258,6 +257,7 @@ class Annotations extends React.Component {
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
+    console.log(this.state.targets);
   }
   
   getNewYear(option) {

@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
+from .services import create_targets
 import requests
 import math
 import pandas as pd
@@ -62,53 +63,12 @@ def new_timeseries(request, timeseries_name):
     bins = bins_response.json()
     bin_url = bins['pid']
     first_file = bin_url[35:51]
-    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/' + first_file + '_' + timeseries_name)
-    target_bin = target_bin_response.json()
-    targets = target_bin['targets']
 
-    if not Bin.objects.filter(year=year, day=day):
-        nearest_bin = Bin(timeseries=timeseries_name, year=year, day=day, file=first_file, edited=False)
-        nearest_bin.save()
-        scale = 0.8
-        
-        timeseries = TimeSeriesOption.objects.get(name=timeseries_name)
-        classes = None
-        maxes = None
-        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-            if timeseries_name == 'IFCB104':
-                header = list(chunk.columns.values)
-                chunk.drop('Skeletonema', inplace=True, axis=1)
-                chunk.drop('Thalassionema', inplace=True, axis=1)
-                chunk.drop('Thalassiosira', inplace=True, axis=1)
-                chunk.drop('unclassified', inplace=True, axis=1)
-                header = header[0:8] + [header[8] + '_' + header[9] + '_' + header[10]] + \
-                    header[11:17] + [header[17] + '_' + header[18]] + header[19:27]
-                chunk.columns = header
-            chunk_classes = chunk.idxmax(axis='columns')
-            chunk_maxes = chunk.max(axis='columns')
-            if classes is None:
-                classes = chunk_classes
-                maxes = chunk_maxes
-            else:
-                classes = classes.add(chunk_classes, fill_value='')
-                maxes = maxes.add(chunk_maxes, fill_value=0)
-
-        for i in range(0,len(targets)):
-            target = targets[i]
-            class_name = 'Unclassified'
-            class_abbr = ''
-            c = ClassOption.objects.get(autoclass_name=classes[i])
-            if maxes[i] >= c.threshold:
-                class_name = c.display_name
-                class_abbr = c.abbr
-                break
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+    if not Bin.objects.filter(year=year, day=day):        
+        create_targets(bin_url, timeseries_name, year, day, first_file)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
-
     #days = [x['day'] for x in volume if year in x['day']]
     #gbs = [x['gb'] for x in volume if year in x['day']]
     #i = 1
@@ -118,10 +78,7 @@ def new_timeseries(request, timeseries_name):
             #day_options = day_options + [gbs[i]]
         #else:
             #day_options = day_options + [0]
-
-
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
-
     edited = Bin.objects.get(file=first_file).edited
 
     options = {
@@ -149,40 +106,8 @@ def new_file(request, timeseries, file):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     if not Bin.objects.filter(file=file):
-        nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=file, edited=False)
-        nearest_bin.save()
-
         bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries
-        target_bin_response = requests.get(bin_url)
-        target_bin = target_bin_response.json()
-        targets = target_bin['targets']
-
-        scale = 0.8
-        df = pd.read_csv(bin_url + '_class_scores.csv')
-        header = list(df.columns.values)
-        timeseries = TimeSeriesOption.objects.get(name=timeseries)
-        if timeseries == 'IFCB104':
-            df.drop('Skeletonema', inplace=True, axis=1)
-            df.drop('Thalassionema', inplace=True, axis=1)
-            df.drop('Thalassiosira', inplace=True, axis=1)
-            df.drop('unclassified', inplace=True, axis=1)
-            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
-            df.columns = header
-        for i in range(0,len(targets)):
-            target = targets[i]
-            class_name = 'Unclassified'
-            class_abbr = ''
-            for option in header[1:]:
-                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
-                    c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[i][option] >= c.threshold:
-                        class_name = c.display_name
-                        class_abbr = c.abbr
-                        break
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+        create_targets(bin_url, timeseries, year, day, file)
     
     edited = Bin.objects.get(file=file).edited
     
@@ -218,40 +143,7 @@ def new_day(request, timeseries, year, day):
     first_file = bin_url[35:51]
 
     if not Bin.objects.filter(year=year, day=day):
-        nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=first_file, edited=False)
-        nearest_bin.save()
-
-        bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + first_file + '_' + timeseries
-        target_bin_response = requests.get(bin_url)
-        target_bin = target_bin_response.json()
-        targets = target_bin['targets']
-
-        scale = 0.8
-        df = pd.read_csv(bin_url + '_class_scores.csv')
-        header = list(df.columns.values)
-        timeseries = TimeSeriesOption.objects.get(name=timeseries)
-        if timeseries == 'IFCB104':
-            df.drop('Skeletonema', inplace=True, axis=1)
-            df.drop('Thalassionema', inplace=True, axis=1)
-            df.drop('Thalassiosira', inplace=True, axis=1)
-            df.drop('unclassified', inplace=True, axis=1)
-            header = header[0:9] + [header[9] + '_' + header[10] + '_' + header[11]] + \
-                header[12:18] + [header[18] + '_' + header[19]] + header[20:28]
-            df.columns = header
-        for i in range(0,len(targets)):
-            target = targets[i]
-            class_name = 'Unclassified'
-            class_abbr = ''
-            for option in header[1:]:
-                if ClassOption.objects.filter(timeseries=timeseries, autoclass_name=option):
-                    c = ClassOption.objects.get(autoclass_name=option)
-                    if df.loc[i][option] >= c.threshold:
-                        class_name = c.display_name
-                        class_abbr = c.abbr
-                        break
-            num = '{:0>5}'.format(int(target['targetNumber']))
-            width = int(target['width'])
-            nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+        create_targets(bin_url, timeseries, year, day, first_file)
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
 
@@ -289,6 +181,10 @@ def new_year(request, timeseries, year):
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+
+    if not Bin.objects.filter(year=year, day=day):
+        bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file_options[0] + '_' + timeseries
+        create_targets(bin_url, timeseries, year, day, file_options[0])
 
     edited = Bin.objects.get(file=file_options[0]).edited
 
