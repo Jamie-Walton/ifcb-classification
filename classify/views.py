@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
-from .services import create_targets
+from .services import create_targets, get_files
 import requests
 import math
 import pandas as pd
@@ -42,11 +42,11 @@ def new_targets(request, timeseries, file, set):
         model_targets = Target.objects.filter(bin=b).order_by('-width')
 
         if set == math.ceil((len(model_targets))/500):
-            start = 100*(set-1)
+            start = 500*(set-1)
             end = len(model_targets)
         else:
-            start = 100*(set-1)
-            end = start+100
+            start = 500*(set-1)
+            end = start+500
 
         target_serializer = TargetSerializer(model_targets[start:end], many=True)
         return Response(target_serializer.data)
@@ -72,7 +72,7 @@ def new_timeseries(request, timeseries_name):
     bin_url = bins['pid']
     first_file = bin_url[35:51]
 
-    if not Bin.objects.filter(year=year, day=day):        
+    if not Bin.objects.filter(year=year, day=day):
         create_targets(bin_url, timeseries_name, year, day, first_file)
     
     last_year = int(volume[0]['day'][0:4])
@@ -214,12 +214,3 @@ def new_year(request, timeseries, year):
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
-
-
-def get_files(bin_count, bins, timeseries):
-    files  = [bins['date'][10:]] + [0]*(bin_count-1)
-    for b in range(1, bin_count):
-        bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/after/pid/' + bins['pid'])
-        bins = bins_response.json()[0]
-        files[b] = bins['date'][10:]
-    return files

@@ -44,3 +44,12 @@ def create_targets(bin_url, timeseries, year, day, file):
         num = '{:0>5}'.format(int(target['targetNumber']))
         width = int(target['width'])
         nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+
+
+def get_files(bin_count, bins, timeseries):
+    files  = [bins['date'][10:]] + [0]*(bin_count-1)
+    for b in range(1, bin_count):
+        bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/after/pid/' + bins['pid'])
+        bins = bins_response.json()[0]
+        files[b] = bins['date'][10:]
+    return files
