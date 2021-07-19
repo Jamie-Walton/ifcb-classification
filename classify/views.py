@@ -39,7 +39,7 @@ def edit_target(request):
 def new_targets(request, timeseries, file, set):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
-        model_targets = Target.objects.filter(bin=b).order_by('-width')
+        model_targets = Target.objects.filter(bin=b).order_by('-class_name')
 
         if set == math.ceil((len(model_targets))/500):
             start = 500*(set-1)
