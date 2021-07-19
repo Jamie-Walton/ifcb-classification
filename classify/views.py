@@ -37,7 +37,7 @@ def edit_target(request):
 @api_view(('GET','PUT'))
 def new_targets(request, timeseries, file):
     if request.method == 'GET':
-        b = Bin.objects.get(file=file)
+        b = Bin.objects.get(timeseries=timeseries, file=file)
         model_targets = Target.objects.filter(bin=b).order_by('-width')
         target_serializer = TargetSerializer(model_targets, many=True)
         return Response(target_serializer.data)

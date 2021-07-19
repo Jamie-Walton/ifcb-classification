@@ -3,6 +3,7 @@ from django.urls import path, include, re_path
 from rest_framework import routers
 from classify import views
 from django.views.generic import TemplateView
+import debug_toolbar
 
 router = routers.DefaultRouter()
 router.register(r'timeseries', views.TimeSeriesOptionView, 'timeseries')
@@ -18,4 +19,5 @@ urlpatterns = [
     path('process/year/<str:timeseries_name>/year/<str:year>', views.new_year),
     path('process/targets/<str:timeseries>/<str:file>/', views.new_targets),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
+    path('__debug__/', include(debug_toolbar.urls)),
 ]

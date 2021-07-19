@@ -263,7 +263,7 @@ class Annotations extends React.Component {
   getNewYear(option) {
     this.setState({ loading: true });  
     axios
-        .get('/process/year/' + this.state.bin.timeseries + '/' + option)
+        .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/')
         .then((yearResponse) => {
             this.setState({ 
                 bin: yearResponse.data.bin,
@@ -298,7 +298,7 @@ class Annotations extends React.Component {
                 fileOptions: dayResponse.data.options.file_options
             });
             axios
-                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file)
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -332,7 +332,7 @@ class Annotations extends React.Component {
         .then((res) => this.setState({ bin: res.data.bin }))
         .catch((err) => console.log(err));
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file)
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/')
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -426,7 +426,7 @@ class Annotations extends React.Component {
     container.style.backgroundColor = '#16609F';
     text.style.color = '#FFFFFF';
     axios
-        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/', targets[k])
+        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/', targets[k])
         .then(console.log('clik!'))
         .catch((err) => console.log(err));
   }
