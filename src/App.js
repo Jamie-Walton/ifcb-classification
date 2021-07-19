@@ -238,14 +238,14 @@ class Annotations extends React.Component {
                 fileOptions: binResponse.data.options.file_options,
             });
             axios
-                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/')
+                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
                         scale: targetResponse.data[0].scale,
                         loading: false,
                      });
-                    console.log(targetResponse.data.length);
+                    console.log(targetResponse.data);
                 });
     });
   };
@@ -257,7 +257,6 @@ class Annotations extends React.Component {
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
-    console.log(this.state.targets);
   }
   
   getNewYear(option) {
@@ -298,7 +297,7 @@ class Annotations extends React.Component {
                 fileOptions: dayResponse.data.options.file_options
             });
             axios
-                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -332,7 +331,7 @@ class Annotations extends React.Component {
         .then((res) => this.setState({ bin: res.data.bin }))
         .catch((err) => console.log(err));
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/')
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/')
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -426,7 +425,7 @@ class Annotations extends React.Component {
     container.style.backgroundColor = '#16609F';
     text.style.color = '#FFFFFF';
     axios
-        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/', targets[k])
+        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/', targets[k])
         .then(console.log('clik!'))
         .catch((err) => console.log(err));
   }
@@ -497,6 +496,7 @@ class Annotations extends React.Component {
 
   render() {  
     const targets = this.state.targets;
+    console.log(targets);
     return(
       <div>
         <h1>Manual Classifications</h1>
