@@ -64,16 +64,29 @@ class YearControl extends React.Component {
     }
 }
 
+class Bar extends React.Component {
+    // make into buttons
+    render() {
+      return(
+      <div className="bar" style={{height: this.props.height*200}}></div>
+      );}
+  }
+
 class DayControl extends React.Component {
     handleDropdown() {
         document.getElementById('day_dropdown').classList.toggle('show');
         document.getElementById('day_label').classList.toggle('hide');
         document.getElementById('day_bar').classList.toggle('accommodate-dropdown');
     }
+
+    renderBar(gb) {
+        return(
+          <Bar height={gb}/>
+        );
+      }
     
     render() {
-        const options = this.props.options.map((x) => 
-        <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
+        // add axis
         return(
             <div>
                 <div className="time" id='day_bar'>
@@ -81,8 +94,8 @@ class DayControl extends React.Component {
                     <img src={dropdown} className="time-icon" 
                     alt={'Select Day'} onClick={() => this.handleDropdown()}></img>
                 </div>
-                <div className="time-dropdown" id='day_dropdown'>
-                    <ul className="day-option">{options}</ul>
+                <div className="day-dropdown" id='day_dropdown'>
+                    {this.props.options.map((gb) => this.renderBar(gb))}
                 </div>
                 <p className="time-label" id='day_label'>Day</p>
             </div>

@@ -138,6 +138,18 @@ li {
 	overflow-y: auto;
 }
 
+.day-dropdown {
+	display: none;
+	box-shadow: 0px 3px 10px #00000012;
+	border: 1px solid #DEDDDD;
+	border-radius: 0 0 1.4vw 1.4vw;
+	margin: 1vw 0.75vw 0 0;
+	padding: 0.5vw 0vw;
+	width: 80vw;
+	z-index: 1;
+	height: 20vw;
+}
+
 .time-dropdown button {
 	background-color: #FFFFFF;
 	border: none;
