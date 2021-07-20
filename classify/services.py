@@ -1,4 +1,5 @@
-from .models import Bin, ClassOption, TimeSeriesOption
+from django.db.models.query_utils import Q
+from .models import Bin, ClassOption, TimeSeriesOption, Target
 import pandas as pd
 import requests
 
@@ -86,3 +87,19 @@ def get_days(volume, year):
         else:
             day_options = day_options + [0]
     return day_options
+
+
+def get_rows(b):
+    # add height to targets (models, admin, serializer, creation)
+    targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+    rows = [[]]
+    space = 76
+    row = 0
+    for target in targets:
+        if space - (target.height*0.056) - 1 < 0:
+            rows += []
+            row += 1
+            space = 76 - target.height
+        else:
+            space -= (target.height + 1)
+    rows[row] += target.number
