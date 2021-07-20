@@ -62,7 +62,6 @@ def new_targets(request, timeseries, file, set):
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
-    # get timeline bars instead of day options
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
     volume = volume_response.json()
@@ -152,7 +151,7 @@ def new_file(request, timeseries, file):
 def new_day(request, timeseries, year, day):
     
     dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
-    day = str(dates[0])[5:10]
+    day = str(dates[day])[5:10]
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
