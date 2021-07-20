@@ -12,6 +12,7 @@ router.register(r'bins', views.BinView, 'bin')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('', include('accounts.urls')),
     path('classes/<str:timeseries>/', views.get_classes),
     path('process/timeseries/<str:timeseries_name>/', views.new_timeseries),
     path('process/file/<str:timeseries>/<str:file>/', views.new_file),
