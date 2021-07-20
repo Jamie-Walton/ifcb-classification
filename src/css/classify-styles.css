@@ -149,6 +149,7 @@ li {
 	width: 60vw;
 	z-index: 1;
 	height: 20vw;
+	overflow-x: scroll;
 }
   
   .bar {
