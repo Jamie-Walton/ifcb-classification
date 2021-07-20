@@ -1,10 +1,25 @@
-from .models import Bin, ClassOption
+from .models import Bin, ClassOption, TimeSeriesOption
 import pandas as pd
 import requests
 
-def create_targets(bin_url, timeseries, year, day, file):
+def create_targets(timeseries, year, day, file):
     
-    target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries)
+    ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
+    try:
+        target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + ifcb)
+    except:
+        try:
+            if not ifcb == 'IFCB104':
+                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB104')
+            else:
+                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB113')
+        except:
+            if not ifcb == 'IFCB117':
+                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB117')
+            else:
+                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB113')
+
+    bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + ifcb
     target_bin = target_bin_response.json()
     targets = target_bin['targets']
     

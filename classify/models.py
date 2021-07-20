@@ -8,7 +8,6 @@ class TimeSeriesOption(models.Model):
 
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
-    ifcb = models.CharField(max_length=15)
     year = models.CharField(max_length=4)
     day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)

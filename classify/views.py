@@ -73,7 +73,7 @@ def new_timeseries(request, timeseries_name):
     first_file = bin_url[35:51]
 
     if not Bin.objects.filter(year=year, day=day):
-        create_targets(bin_url, timeseries_name, year, day, first_file)
+        create_targets(timeseries_name, year, day, first_file)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
@@ -120,8 +120,7 @@ def new_file(request, timeseries, file):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     if not Bin.objects.filter(file=file):
-        bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + timeseries
-        create_targets(bin_url, timeseries, year, day, file)
+        create_targets(timeseries, year, day, file)
     
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
@@ -161,7 +160,7 @@ def new_day(request, timeseries, year, day):
     first_file = bin_url[35:51]
 
     if not Bin.objects.filter(year=year, day=day):
-        create_targets(bin_url, timeseries, year, day, first_file)
+        create_targets(timeseries, year, day, first_file)
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
 
@@ -209,8 +208,7 @@ def new_year(request, timeseries, year):
     set_options = list(range(1, num_sets+1))
 
     if not Bin.objects.filter(year=year, day=day):
-        bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file_options[0] + '_' + timeseries
-        create_targets(bin_url, timeseries, year, day, file_options[0])
+        create_targets(timeseries, year, day, file_options[0])
 
     edited = Bin.objects.get(file=file_options[0]).edited
 
