@@ -94,9 +94,6 @@ class DayControl extends React.Component {
                     <img src={dropdown} className="time-icon" 
                     alt={'Select Day'} onClick={() => this.handleDropdown()}></img>
                 </div>
-                <div className="day-dropdown" id='day_dropdown'>
-                    {this.props.options.map((gb) => this.renderBar(gb))}
-                </div>
                 <p className="time-label" id='day_label'>Day</p>
             </div>
         );
@@ -333,9 +330,10 @@ class Annotations extends React.Component {
 
   handleNewDay(option) {
     document.getElementById('day_dropdown').classList.toggle('show');
+    document.getElementById('day_dropdown').appendChild(this.props.options.map((gb) => this.renderBar(gb)));
     document.getElementById('day_label').classList.toggle('hide');
     document.getElementById('day_bar').classList.toggle('accommodate-dropdown');
-    
+
     this.setState({
         loading: true,
         bin: {
@@ -593,6 +591,8 @@ class Annotations extends React.Component {
             {this.renderDayControl()}
             {this.renderFileControl()}
             {this.renderSetControl()}
+        </div>
+        <div className="day-dropdown" id='day_dropdown'>
         </div>
         <div className="annotations">
             {this.renderClassMenu()}
