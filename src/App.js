@@ -67,7 +67,7 @@ class YearControl extends React.Component {
 class Bar extends React.Component {
     render() {
       return(
-      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: String(Number(this.props.height)*8) + 'vw'}}></div>
+      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: String(Number(this.props.height)*8) + 'vw', width: '2vw'}}></div>
       );}
   }
 
