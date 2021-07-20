@@ -163,8 +163,9 @@ class Plankton extends React.Component {
   renderImage() {  
     return (
         <PlanktonImage 
-            nameSpace={'http://128.114.25.154:8888/' + this.props.ifcb + '/'}
+            nameSpace={'http://128.114.25.154:8888/' + this.props.timeseries + '/'}
             timestamp={this.props.timestamp}
+            timeseries={this.props.timeseries}
             ifcb={this.props.ifcb}
             targetNum={this.props.targetNum}
             classification={this.props.class_name}
@@ -536,7 +537,7 @@ class Annotations extends React.Component {
   
   renderPlankton(i) {
       return <Plankton 
-              ifcb={this.state.bin.timeseries}
+              timeseries={this.state.bin.timeseries}
               timestamp={this.state.bin.file}
               id={i}
               targetNum={this.state.targets[i].number}
@@ -545,6 +546,7 @@ class Annotations extends React.Component {
               width={this.state.targets[i].width}
               onClick={(i) => this.handlePlanktonClick(i)}
               scale={this.state.scale}
+              ifcb={this.state.bin.ifcb}
           />;
   }
 
