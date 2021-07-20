@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
-from .services import create_targets, get_files
+from .services import create_targets, get_files, get_days
 import requests
 import math
 import pandas as pd
@@ -78,16 +78,7 @@ def new_timeseries(request, timeseries_name):
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
-    days = [x['day'] for x in volume if year in x['day']]
-    gbs = [x['gb'] for x in volume if year in x['day']]
-    i = 0
-    day_options = []
-    for d in pd.date_range(start='1-1-' + year, end='12-31-' + year):
-        if i < len(days) and d == pd.Timestamp(days[i]):
-            day_options = day_options + [gbs[i]]
-            i += 1
-        else:
-            day_options = day_options + [0]
+    day_options = get_days(volume)
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
 
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=first_file)))
@@ -160,6 +151,9 @@ def new_file(request, timeseries, file):
 @api_view(('GET',))
 def new_day(request, timeseries, year, day):
     
+    dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
+    day = str(dates[0])[5:10]
+    
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
     
@@ -206,12 +200,14 @@ def new_day(request, timeseries, year, day):
 
 @api_view(('GET',))
 def new_year(request, timeseries, year):
-    # get timeline bars instead of day options
+    
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
-    day_options = [day['day'][6:] for day in volume[len(volume)-10:len(volume)-1]]
 
-    day = day_options[len(day_options)]
+    day_options = get_days(volume)
+    full_year = volume[len(volume)-10:len(volume)-1]
+    day = full_year[len(full_year)]['day'][6:]
+    
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)

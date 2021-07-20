@@ -150,6 +150,23 @@ li {
 	height: 20vw;
 }
 
+.timeline {
+	display: flex;
+	flex-direction: row;
+  }
+  
+  .bar {
+	background-color:#7dad0b;
+	display: block;
+	width: 1vw;
+	margin: 0 0.05vw;
+	align-self: flex-end;
+  }
+
+  .bar:hover {
+	background-color:#5d8108;
+  }
+
 .time-dropdown button {
 	background-color: #FFFFFF;
 	border: none;

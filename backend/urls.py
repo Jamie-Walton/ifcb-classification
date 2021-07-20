@@ -15,7 +15,7 @@ urlpatterns = [
     path('classes/<str:timeseries>/', views.get_classes),
     path('process/timeseries/<str:timeseries_name>/', views.new_timeseries),
     path('process/file/<str:timeseries>/<str:file>/', views.new_file),
-    path('process/day/<str:timeseries>/<str:year>/<str:day>/', views.new_day),
+    path('process/day/<str:timeseries>/<str:year>/<int:day>/', views.new_day),
     path('process/year/<str:timeseries_name>/year/<str:year>', views.new_year),
     path('process/targets/<str:timeseries>/<str:file>/<int:set>/', views.new_targets),
     re_path('.*',TemplateView.as_view(template_name='index.html')),

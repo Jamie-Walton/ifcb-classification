@@ -68,7 +68,7 @@ class Bar extends React.Component {
     // make into buttons
     render() {
       return(
-      <div className="bar" style={{height: this.props.height*200}}></div>
+      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: this.props.height*200}}></div>
       );}
   }
 
@@ -320,19 +320,11 @@ class Annotations extends React.Component {
         .catch((err) => console.log(err));
   }
 
-  handleNewDay(option) {
+  handleBar(option) {
     document.getElementById('day_dropdown').classList.toggle('show');
 
     this.setState({
         loading: true,
-        bin: {
-            timeseries: this.state.bin.timeseries,
-            ifcb: this.state.bin.ifcb,
-            year: this.state.bin.year,
-            day: option,
-            file: this.state.bin.file,
-            edited: false
-        }
     });
     axios
         .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/')
@@ -564,8 +556,12 @@ class Annotations extends React.Component {
       scale={this.state.scale}/>
   }
 
-  renderBar(gb) {
-    return <Bar height={gb}/>;
+  renderBar(gb, i) {
+    return <Bar 
+        onClick={(i) => this.handleBar(i)}
+        number={i}
+        height={gb}
+    />;
   }
 
   renderLoader() {
@@ -586,7 +582,7 @@ class Annotations extends React.Component {
             {this.renderSetControl()}
         </div>
         <div className="day-dropdown" id='day_dropdown'>
-            {this.state.dayOptions.map((gb) => this.renderBar(gb))}
+            {this.state.dayOptions.map((gb, i) => this.renderBar(gb, i))}
         </div>
         <div className="annotations">
             {this.renderClassMenu()}

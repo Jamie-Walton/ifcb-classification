@@ -73,3 +73,16 @@ def get_files(bin_count, bins, timeseries):
         bins = bins_response.json()[0]
         files[b] = bins['date'][10:]
     return files
+
+def get_days(volume, year):
+    days = [x['day'] for x in volume if year in x['day']]
+    gbs = [x['gb'] for x in volume if year in x['day']]
+    i = 0
+    day_options = []
+    for d in pd.date_range(start='1-1-' + year, end='12-31-' + year):
+        if i < len(days) and d == pd.Timestamp(days[i]):
+            day_options = day_options + [gbs[i]]
+            i += 1
+        else:
+            day_options = day_options + [0]
+    return day_options
