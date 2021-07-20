@@ -30,7 +30,7 @@ class Target(models.Model):
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")
-    # TODO: Add who classified Target
+    # add editor and when edited
 
     def _str_(self):
         return 'target_' + str(self.number)
