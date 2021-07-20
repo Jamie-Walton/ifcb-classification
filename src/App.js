@@ -65,10 +65,9 @@ class YearControl extends React.Component {
 }
 
 class Bar extends React.Component {
-    // make into buttons
     render() {
       return(
-      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: this.props.height*200}}></div>
+      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: this.props.height*150}}></div>
       );}
   }
 

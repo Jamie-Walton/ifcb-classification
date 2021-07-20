@@ -153,8 +153,8 @@ li {
   .bar {
 	background-color:#7dad0b;
 	display: block;
-	width: 1vw;
-	margin: 0 0.05vw;
+	width: 2vw;
+	margin: 0 0.2vw;
 	align-self: flex-end;
   }
 
