@@ -74,7 +74,7 @@ def new_timeseries(request, timeseries_name):
     first_file = re.split('/|_', bin_url)[4]
 
     if not Bin.objects.filter(year=year, day=day):
-        create_targets(timeseries_name, year, day, first_file)
+        ifcb = create_targets(timeseries_name, year, day, first_file)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
@@ -105,6 +105,7 @@ def new_timeseries(request, timeseries_name):
 
     bin = {
         'timeseries': timeseries_name, 
+        'ifcb': ifcb,
         'year': year, 
         'day': day, 
         'file': first_file,
@@ -122,7 +123,7 @@ def new_file(request, timeseries, file):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     if not Bin.objects.filter(file=file):
-        create_targets(timeseries, year, day, file)
+        ifcb = create_targets(timeseries, year, day, file)
     
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
@@ -131,6 +132,7 @@ def new_file(request, timeseries, file):
     
     bin = {
         'timeseries': timeseries, 
+        'ifcb': ifcb,
         'year': year, 
         'day': day, 
         'file': file,
@@ -162,7 +164,7 @@ def new_day(request, timeseries, year, day):
     first_file = re.split('/|_', bin_url)[4]
 
     if not Bin.objects.filter(year=year, day=day):
-        create_targets(timeseries, year, day, first_file)
+        ifcb = create_targets(timeseries, year, day, first_file)
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
 
@@ -173,7 +175,8 @@ def new_day(request, timeseries, year, day):
     edited = Bin.objects.get(file=first_file).edited
     
     bin = {
-        'timeseries': timeseries, 
+        'timeseries': timeseries,
+        'ifcb': ifcb,
         'year': year, 
         'day': day, 
         'file': first_file,
@@ -210,7 +213,7 @@ def new_year(request, timeseries, year):
     set_options = list(range(1, num_sets+1))
 
     if not Bin.objects.filter(year=year, day=day):
-        create_targets(timeseries, year, day, file_options[0])
+        ifcb = create_targets(timeseries, year, day, file_options[0])
 
     edited = Bin.objects.get(file=file_options[0]).edited
 
@@ -222,7 +225,8 @@ def new_year(request, timeseries, year):
     }
 
     bin = {
-        'timeseries': timeseries, 
+        'timeseries': timeseries,
+        'ifcb': ifcb,
         'year': year, 
         'day': day, 
         'file': file_options[0],

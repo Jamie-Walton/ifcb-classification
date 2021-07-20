@@ -63,6 +63,7 @@ def create_targets(timeseries, year, day, file):
         width = int(target['width'])
         nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr)
     
+    return ifcb
 
 
 def get_files(bin_count, bins, timeseries):
