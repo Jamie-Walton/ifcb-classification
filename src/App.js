@@ -153,7 +153,7 @@ class PlanktonImage extends React.Component {
           <img src={url} className="image" 
           alt={this.props.classification} 
           id={this.props.targetNum + '-image'}
-          style={{height: String(Number(this.props.width)*Number(this.props.scale)*0.07)+'vw'}}></img>
+          style={{height: String(Number(this.props.width)*this.state.scale)+'vw'}}></img>
       );
   }
 }
@@ -189,6 +189,7 @@ class Plankton extends React.Component {
 }
 
 class Micrometer extends React.Component {
+    // Double check that scale is correct?
     render() {
         return(
             <Draggable>
@@ -241,7 +242,7 @@ class Annotations extends React.Component {
           fileOptions: [],
           setOptions: [],
           targets: [],
-          scale: 1,
+          scale: 0.056,
           set: 1,
       }
   }
@@ -274,7 +275,6 @@ class Annotations extends React.Component {
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
-                        scale: targetResponse.data[0].scale,
                         loading: false,
                      });
                 });
@@ -336,7 +336,6 @@ class Annotations extends React.Component {
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
-                        scale: targetResponse.data[0].scale,
                         loading: false,
                     });
                 });
@@ -374,7 +373,6 @@ class Annotations extends React.Component {
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
-                scale: targetResponse.data[0].scale,
                 loading: false,
              });
         });
@@ -390,7 +388,6 @@ class Annotations extends React.Component {
       .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
       .then((res) => {this.setState({ 
           targets: res.data,
-          scale: res.data[0].scale,
         })})
       .catch((err) => console.log(err));
     this.setState({loading: false});
@@ -533,9 +530,9 @@ class Annotations extends React.Component {
               targetNum={this.state.targets[i].number}
               class_name={this.state.targets[i].class_name}
               class_abbr={this.state.targets[i].class_abbr}
-              scale={this.state.targets[i].scale}
               width={this.state.targets[i].width}
               onClick={(i) => this.handlePlanktonClick(i)}
+              scale={this.state.scale}
           />;
   }
 

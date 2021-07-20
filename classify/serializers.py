@@ -4,7 +4,7 @@ from .models import Bin, FrontEndPackage, Set, Target, ClassOption, TimeSeriesOp
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
-        fields = ('id', 'bin', 'number', 'width', 'class_name', 'class_abbr', 'scale')
+        fields = ('id', 'bin', 'number', 'width', 'class_name', 'class_abbr')
 
 class ClassOptionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,12 +14,12 @@ class ClassOptionSerializer(serializers.ModelSerializer):
 class TimeSeriesOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSeriesOption
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'ifcb')
 
 class BinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bin
-        fields = ('id', 'timeseries', 'year', 'day', 'file', 'edited')
+        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file', 'edited')
 
 class SetSerializer(serializers.ModelSerializer):
     class Meta:

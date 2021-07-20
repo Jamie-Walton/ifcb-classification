@@ -10,7 +10,6 @@ def create_targets(bin_url, timeseries, year, day, file):
     
     nearest_bin = Bin(timeseries=timeseries, year=year, day=day, file=file, edited=False)
     nearest_bin.save()
-    scale = 0.8
     
     classes = None
     maxes = None
@@ -43,7 +42,7 @@ def create_targets(bin_url, timeseries, year, day, file):
             class_abbr = c.abbr
         num = '{:0>5}'.format(int(target['targetNumber']))
         width = int(target['width'])
-        nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr, scale=scale)
+        nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr)
     
 
 

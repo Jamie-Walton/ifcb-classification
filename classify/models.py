@@ -2,11 +2,13 @@ from django.db import models
 
 class TimeSeriesOption(models.Model):
     name = models.CharField(max_length=15)
+    ifcb = models.CharField(max_length=15)
     def _str_(self):
         return self.name
 
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
+    ifcb = models.CharField(max_length=15)
     year = models.CharField(max_length=4)
     day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)
@@ -29,7 +31,6 @@ class Target(models.Model):
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")
-    scale = models.DecimalField(max_digits=4, decimal_places=2)
     # TODO: Add who classified Target
 
     def _str_(self):

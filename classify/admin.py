@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Target, ClassOption, TimeSeriesOption, Bin, Set, Target
 
 class TargetAdmin(admin.ModelAdmin):
-    list_display = ('bin', 'number', 'class_name', 'class_abbr', 'scale')
+    list_display = ('bin', 'number', 'class_name', 'class_abbr')
 
 class TimeSeriesInline(admin.TabularInline):
     model = ClassOption.timeseries.through
@@ -12,10 +12,10 @@ class ClassOptionAdmin(admin.ModelAdmin):
     inlines = [TimeSeriesInline]
 
 class TimeSeriesOptionAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'ifcb')
 
 class BinAdmin(admin.ModelAdmin):
-    list_display = ('timeseries','year', 'day', 'file', 'edited')
+    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file', 'edited')
 
 class SetAdmin(admin.ModelAdmin):
     list_display = ('bin', 'number', 'scale')
