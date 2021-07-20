@@ -94,7 +94,9 @@ def new_timeseries(request, timeseries_name):
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
 
-    edited = Bin.objects.get(file=first_file).edited
+    b = Bin.objects.get(file=first_file)
+    ifcb = b.ifcb
+    edited = b.edited
 
     options = {
         'year_options': year_options,
@@ -128,7 +130,10 @@ def new_file(request, timeseries, file):
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
-    edited = Bin.objects.get(file=file).edited
+
+    b = Bin.objects.get(file=file)
+    ifcb = b.ifcb
+    edited = b.edited
     
     bin = {
         'timeseries': timeseries, 
@@ -172,7 +177,9 @@ def new_day(request, timeseries, year, day):
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
 
-    edited = Bin.objects.get(file=first_file).edited
+    b = Bin.objects.get(file=first_file)
+    ifcb = b.ifcb
+    edited = b.edited
     
     bin = {
         'timeseries': timeseries,
@@ -215,7 +222,9 @@ def new_year(request, timeseries, year):
     if not Bin.objects.filter(year=year, day=day):
         ifcb = create_targets(timeseries, year, day, file_options[0])
 
-    edited = Bin.objects.get(file=file_options[0]).edited
+    b = Bin.objects.get(file=file_options[0])
+    ifcb = b.ifcb
+    edited = b.edited
 
     options = {
         'year_options': 'NA',
