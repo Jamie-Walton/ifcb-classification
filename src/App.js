@@ -146,6 +146,20 @@ class SetControl extends React.Component {
     }
 }
 
+class Sort extends React.Component {
+    
+    render() {
+        return(
+            <div>
+                <div className="set" id="sort_bar" onClick={() => this.props.onClick(this.props.sort)}>
+                <p className="time-selection">{this.props.sort}</p>
+                </div>
+                <p className="time-label" id="set_label">Sort</p>
+            </div>
+        );
+    }
+}
+
 class PlanktonImage extends React.Component {
 
   render() {
@@ -246,6 +260,7 @@ class Annotations extends React.Component {
           targets: [],
           scale: 0.056,
           set: 1,
+          sort: 'A to Z'
       }
   }
 
@@ -283,7 +298,7 @@ class Annotations extends React.Component {
             });
             console.log(this.state.setOptions)
             axios
-                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
+                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/1/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -335,7 +350,7 @@ class Annotations extends React.Component {
                 set: 1
             });
             axios
-                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/')
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/1/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -373,7 +388,7 @@ class Annotations extends React.Component {
         }))
         .catch((err) => console.log(err));
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/')
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/1/')
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -389,7 +404,24 @@ class Annotations extends React.Component {
         targets: [],
     });
     axios
-      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
+      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/1/1/')
+      .then((res) => {this.setState({ 
+          targets: res.data,
+        })})
+      .catch((err) => console.log(err));
+    this.setState({loading: false});
+  }
+
+  handleNewSort(option) {
+    const sort = (this.state.sort == 'A to Z') ? 'Z to A' : 'A to Z';
+    const num = (this.state.sort == 'A to Z') ? 2 : 1;
+    this.setState({
+        loading: true,
+        sort: sort,
+        targets: [],
+    });
+    axios
+      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + num + '/')
       .then((res) => {this.setState({ 
           targets: res.data,
         })})
@@ -523,6 +555,13 @@ class Annotations extends React.Component {
         set={this.state.set} 
         options={this.state.setOptions}
         onClick={(option) => this.handleNewSet(option)} 
+    />;
+  }
+
+  renderSort() {
+    return <Sort
+        sort={this.state.sort}
+        onClick={(option) => this.handleSort(option)}
     />;
   }
   

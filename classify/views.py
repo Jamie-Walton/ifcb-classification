@@ -37,10 +37,13 @@ def edit_target(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(('GET','PUT'))
-def new_targets(request, timeseries, file, set):
+def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
-        model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+        if sort == 1:
+            model_targets = Target.objects.filter(bin=b).order_by('class_name', '-width')
+        else:
+            model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
 
         if set == math.ceil((len(model_targets))/500):
             start = 500*(set-1)
