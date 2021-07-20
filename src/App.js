@@ -618,6 +618,7 @@ class Annotations extends React.Component {
             {this.renderDayControl()}
             {this.renderFileControl()}
             {this.renderSetControl()}
+            {this.renderSort()}
         </div>
         <div className="day-dropdown" id='day_dropdown'>
             {this.state.dayOptions.map((gb, i) => this.renderBar(gb, i))}
