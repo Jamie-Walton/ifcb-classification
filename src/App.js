@@ -76,12 +76,6 @@ class DayControl extends React.Component {
     handleDropdown() {
         document.getElementById('day_dropdown').classList.toggle('show');
     }
-
-    renderBar(gb) {
-        return(
-          <Bar height={gb}/>
-        );
-      }
     
     render() {
         // add axis
@@ -568,6 +562,10 @@ class Annotations extends React.Component {
   renderMicrometer() {
       return <Micrometer
       scale={this.state.scale}/>
+  }
+
+  renderBar(gb) {
+    return <Bar height={gb}/>;
   }
 
   renderLoader() {
