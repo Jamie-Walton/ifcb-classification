@@ -268,6 +268,7 @@ class Annotations extends React.Component {
                 setOptions: binResponse.data.options.set_options,
                 set: 1
             });
+            console.log(this.state.setOptions)
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/')
                 .then((targetResponse) => {
@@ -276,7 +277,6 @@ class Annotations extends React.Component {
                         scale: targetResponse.data[0].scale,
                         loading: false,
                      });
-                    console.log(targetResponse.data);
                 });
     });
   };
@@ -378,6 +378,22 @@ class Annotations extends React.Component {
                 loading: false,
              });
         });
+  }
+
+  handleNewSet(option) {
+    this.setState({
+        loading: true,
+        set: option,
+        targets: [],
+    });
+    axios
+      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
+      .then((res) => {this.setState({ 
+          targets: res.data,
+          scale: res.data[0].scale,
+        })})
+      .catch((err) => console.log(err));
+    this.setState({loading: false});
   }
 
 
@@ -501,28 +517,12 @@ class Annotations extends React.Component {
     />;
   }
 
-  renderFileControl() {
+  renderSetControl() {
     return <FileControl
         set={this.state.set} 
         options={this.state.setOptions}
         onClick={(option) => this.handleNewSet(option)} 
     />;
-  }
-
-  handleNewSet(option) {
-    this.setState({
-        loading: true,
-        set: option,
-        targets: [],
-    });
-    axios
-      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/')
-      .then((res) => {this.setState({ 
-          targets: res.data,
-          scale: res.data[0].scale,
-        })})
-      .catch((err) => console.log(err));
-    this.setState({loading: false});
   }
   
   renderPlankton(i) {
@@ -568,6 +568,7 @@ class Annotations extends React.Component {
             {this.renderYearControl()}
             {this.renderDayControl()}
             {this.renderFileControl()}
+            {this.renderSetControl()}
         </div>
         <div className="annotations">
             {this.renderClassMenu()}
