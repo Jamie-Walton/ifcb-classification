@@ -15,7 +15,7 @@ class TimeSeriesOptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'ifcb')
 
 class BinAdmin(admin.ModelAdmin):
-    list_display = ('timeseries', 'year', 'day', 'file', 'edited')
+    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file', 'edited')
 
 class SetAdmin(admin.ModelAdmin):
     list_display = ('bin', 'number', 'scale')

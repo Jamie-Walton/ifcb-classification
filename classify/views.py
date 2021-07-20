@@ -78,15 +78,15 @@ def new_timeseries(request, timeseries_name):
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
-    #days = [x['day'] for x in volume if year in x['day']]
-    #gbs = [x['gb'] for x in volume if year in x['day']]
-    #i = 1
+    days = [x['day'] for x in volume if year in x['day']]
+    gbs = [x['gb'] for x in volume if year in x['day']]
+    i = 1
     day_options = []
-    #for day in pd.date_range(start='1-1-' + year, end='12-31' + year):
-        #if day == pd.Timestamp(days[i]):
-            #day_options = day_options + [gbs[i]]
-        #else:
-            #day_options = day_options + [0]
+    for day in pd.date_range(start='1-1-' + year, end='12-31' + year):
+        if day == pd.Timestamp(days[i]):
+            day_options = day_options + [gbs[i]]
+        else:
+            day_options = day_options + [0]
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
 
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=first_file)))

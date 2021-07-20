@@ -235,7 +235,7 @@ class Annotations extends React.Component {
           classAbbrs: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
-          bin: {timeseries:'', year:'', day:'', file:''},
+          bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
           yearOptions: [],
           dayOptions: [],
@@ -248,7 +248,17 @@ class Annotations extends React.Component {
   }
 
   getNewTimeSeries(option) {
-    this.setState({loading: true});
+    this.setState({
+        loading: true,
+        bin: {
+            timeseries: option,
+            ifcb: this.state.bin.ifcb,
+            year: this.state.bin.year,
+            day: this.state.bin.day,
+            file: this.state.bin.file,
+            edited: false
+        }
+    });
     axios
       .get('/classes/' + option + '/')
       .then((res) => {
@@ -316,6 +326,7 @@ class Annotations extends React.Component {
         loading: true,
         bin: {
             timeseries: this.state.bin.timeseries,
+            ifcb: this.state.bin.ifcb,
             year: this.state.bin.year,
             day: option,
             file: this.state.bin.file,
@@ -354,12 +365,13 @@ class Annotations extends React.Component {
         loading: true,
         bin: {
             timeseries: this.state.bin.timeseries,
+            ifcb: this.state.bin.ifcb,
             year: this.state.bin.year,
             day: this.state.bin.day,
             file: file,
-            set: 1,
             edited: false
-        }
+        },
+        set: 1,
     });
     axios
         .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/')
