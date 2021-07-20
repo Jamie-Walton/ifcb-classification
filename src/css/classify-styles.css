@@ -155,8 +155,8 @@ li {
   .bar {
 	background-color:#7dad0b;
 	display: block;
-	width: 3vw;
-	margin: 0 0.05vw;
+	width: 5vw;
+	margin: 0 0.1vw;
 	align-self: flex-end;
   }
 
