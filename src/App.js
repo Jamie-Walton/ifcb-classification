@@ -561,7 +561,7 @@ class Annotations extends React.Component {
   renderSort() {
     return <Sort
         sort={this.state.sort}
-        onClick={(option) => this.handleSort(option)}
+        onClick={(option) => this.handleNewSort(option)}
     />;
   }
   
