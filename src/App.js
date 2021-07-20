@@ -518,7 +518,7 @@ class Annotations extends React.Component {
   }
 
   renderSetControl() {
-    return <FileControl
+    return <SetControl
         set={this.state.set} 
         options={this.state.setOptions}
         onClick={(option) => this.handleNewSet(option)} 
