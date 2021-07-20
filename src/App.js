@@ -75,8 +75,6 @@ class Bar extends React.Component {
 class DayControl extends React.Component {
     handleDropdown() {
         document.getElementById('day_dropdown').classList.toggle('show');
-        document.getElementById('day_label').classList.toggle('hide');
-        document.getElementById('day_bar').classList.toggle('accommodate-dropdown');
     }
 
     renderBar(gb) {
@@ -330,9 +328,6 @@ class Annotations extends React.Component {
 
   handleNewDay(option) {
     document.getElementById('day_dropdown').classList.toggle('show');
-    document.getElementById('day_dropdown').appendChild(this.props.options.map((gb) => this.renderBar(gb)));
-    document.getElementById('day_label').classList.toggle('hide');
-    document.getElementById('day_bar').classList.toggle('accommodate-dropdown');
 
     this.setState({
         loading: true,
@@ -593,6 +588,7 @@ class Annotations extends React.Component {
             {this.renderSetControl()}
         </div>
         <div className="day-dropdown" id='day_dropdown'>
+            {this.state.dayOptions.map((gb) => this.renderBar(gb))}
         </div>
         <div className="annotations">
             {this.renderClassMenu()}
