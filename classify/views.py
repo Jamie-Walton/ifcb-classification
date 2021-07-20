@@ -9,6 +9,7 @@ from .services import create_targets, get_files
 import requests
 import math
 import pandas as pd
+import re
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -70,7 +71,7 @@ def new_timeseries(request, timeseries_name):
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     bin_url = bins['pid']
-    first_file = bin_url[35:51]
+    first_file = re.split('/|_', bin_url)[4]
 
     if not Bin.objects.filter(year=year, day=day):
         create_targets(timeseries_name, year, day, first_file)
@@ -157,7 +158,7 @@ def new_day(request, timeseries, year, day):
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     bin_url = bins['pid']
-    first_file = bin_url[35:51]
+    first_file = re.split('/|_', bin_url)[4]
 
     if not Bin.objects.filter(year=year, day=day):
         create_targets(timeseries, year, day, first_file)
