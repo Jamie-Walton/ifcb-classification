@@ -149,11 +149,6 @@ li {
 	z-index: 1;
 	height: 20vw;
 }
-
-.timeline {
-	display: flex;
-	flex-direction: row;
-  }
   
   .bar {
 	background-color:#7dad0b;
@@ -222,6 +217,11 @@ li {
 .show {
 	display: flex;
 	flex-direction: column;
+}
+
+.show-day {
+	display: flex;
+	flex-direction: row;
 }
 
 .hide {display: none;}

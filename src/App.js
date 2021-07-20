@@ -74,7 +74,7 @@ class Bar extends React.Component {
 
 class DayControl extends React.Component {
     handleDropdown() {
-        document.getElementById('day_dropdown').classList.toggle('show');
+        document.getElementById('day_dropdown').classList.toggle('show-day');
     }
     
     render() {
@@ -321,7 +321,7 @@ class Annotations extends React.Component {
   }
 
   handleBar(option) {
-    document.getElementById('day_dropdown').classList.toggle('show');
+    document.getElementById('day_dropdown').classList.toggle('show-day');
 
     this.setState({
         loading: true,
