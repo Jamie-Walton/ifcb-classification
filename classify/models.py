@@ -6,17 +6,10 @@ class TimeSeriesOption(models.Model):
     def _str_(self):
         return self.name
 
-class Day(models.Model):
-    date = models.CharField(max_length=5)
-    number = models.CharField(default=0)
-    gb = models.DecimalField(default=0.0)
-    edited = models.BooleanField(default=False)
-
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
     ifcb = models.CharField(max_length=15)
     year = models.CharField(max_length=4)
-    day_obj = models.ForeignKey(Day, on_delete=models.CASCADE)
     day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)
     edited = models.BooleanField(default=False)
@@ -35,7 +28,6 @@ class Target(models.Model):
     bin = models.ForeignKey(Bin, on_delete=models.CASCADE)
     number = models.CharField(max_length=5)
     width = models.IntegerField(default=0)
-    height = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")
     # TODO: Add who classified Target
