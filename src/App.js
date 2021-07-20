@@ -413,8 +413,8 @@ class Annotations extends React.Component {
   }
 
   handleNewSort(option) {
-    const sort = (this.state.sort == 'A to Z') ? 'Z to A' : 'A to Z';
-    const num = (this.state.sort == 'A to Z') ? 2 : 1;
+    const sort = (this.state.sort === 'A to Z') ? 'Z to A' : 'A to Z';
+    const num = (this.state.sort === 'A to Z') ? 2 : 1;
     this.setState({
         loading: true,
         sort: sort,
