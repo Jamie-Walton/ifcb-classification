@@ -78,7 +78,7 @@ def new_timeseries(request, timeseries_name):
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
-    day_options = get_days(volume)
+    day_options = get_days(volume, year)
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
 
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=first_file)))
@@ -204,7 +204,7 @@ def new_year(request, timeseries, year):
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
 
-    day_options = get_days(volume)
+    day_options = get_days(volume, year)
     full_year = volume[len(volume)-10:len(volume)-1]
     day = full_year[len(full_year)]['day'][6:]
     
