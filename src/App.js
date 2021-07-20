@@ -153,7 +153,7 @@ class PlanktonImage extends React.Component {
           <img src={url} className="image" 
           alt={this.props.classification} 
           id={this.props.targetNum + '-image'}
-          style={{height: String(Number(this.props.width)*this.state.scale)+'vw'}}></img>
+          style={{height: String(Number(this.props.width)*this.props.scale)+'vw'}}></img>
       );
   }
 }
