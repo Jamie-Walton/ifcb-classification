@@ -154,6 +154,6 @@ label {
     margin: 0.5vw 0 0 0;
 }
 
-register-submit:hover {
-    background-color: #0f93c7;
+.register-submit:hover {
+    background-color: #0d79a3;
 }
