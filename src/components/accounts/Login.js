@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import '../../css/auth-styles.css';
+import Header from '../layout/Header';
 
 export class Login extends Component {
     state = {
@@ -17,41 +19,55 @@ export class Login extends Component {
     render() {
         const { username, password } = this.state;
         return (
-            <div className="col-md-6 m-auto">
-                <div className="card card-body mt-5">
-                <h2 className="text-center">Login</h2>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                    <label>Username</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="username"
-                        onChange={this.onChange}
-                        value={username}
-                    />
-                    </div>
-                    <div className="form-group">
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        name="password"
-                        onChange={this.onChange}
-                        value={password}
-                    />
-                    </div>
-                    <div className="form-group">
-                    <button type="submit" className="btn btn-primary">
-                        Register
-                    </button>
-                    </div>
-                    <p>
-                    Don't have an account? <Link to="/register">Register</Link>
-                    </p>
-                </form>
+            <body>
+                <main className="login-main">
+                <div className="header">
+                    <ul className="navbar">
+                        <li className="nav-item">
+                            <Link to="/register" className="nav-link">Register</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/login" className="nav-link">Login</Link>
+                        </li>
+                    </ul>
                 </div>
-            </div>
+                <div className="main-container">
+                    <div className="sub-container">
+                    <h2>Welcome back.</h2>
+                    <p>Sign in to start classifying.</p>
+                    <form onSubmit={this.onSubmit}>
+                        <div className="form-group">
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="username"
+                            onChange={this.onChange}
+                            value={username}
+                        />
+                        <label>Username</label>
+                        </div>
+                        <div className="form-group">
+                        <input
+                            type="password"
+                            className="form-control"
+                            name="password"
+                            onChange={this.onChange}
+                            value={password}
+                        />
+                        <label>Password</label>
+                        </div>
+                        <div className="form-group">
+                        <button type="submit" className="login-submit">
+                            Login
+                        </button>
+                        </div>
+                        <p>
+                        </p>
+                    </form>
+                    </div>
+                </div>
+            </main>
+            </body>
         );
     }
 }

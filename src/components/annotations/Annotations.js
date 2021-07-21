@@ -1,7 +1,9 @@
 import React from "react";
 import axios from "axios";
 import Draggable from 'react-draggable';
+import Header from '../layout/Header';
 
+import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
 import toTop from "./icons/to-top.png";
 import dropdown from "./icons/dropdown.png";
@@ -610,32 +612,46 @@ class Annotations extends React.Component {
     const targets = this.state.targets;
     console.log(targets);
     return(
-      <div>
-        <h1>Manual Classifications</h1>
-        <div className="time-controls">
-            {this.renderTimeSeriesControl()}
-            {this.renderYearControl()}
-            {this.renderDayControl()}
-            {this.renderFileControl()}
-            {this.renderSetControl()}
-            {this.renderSort()}
-        </div>
-        <div className="day-dropdown" id='day_dropdown'>
-            {this.state.dayOptions.map((gb, i) => this.renderBar(gb, i))}
-        </div>
-        <div className="annotations">
-            {this.renderClassMenu()}
+        <body>
+        <Header />
+        <main>
+            <div class="page">
+
+            <div class="content">
             <div>
-                <div className="image-grid">
-                    {
-                    this.state.loading ? this.renderLoader() :
-                    targets.map((target, i) => this.renderPlankton(i))
-                    }
-                    <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
+                <h1>Manual Classifications</h1>
+                <div className="time-controls">
+                    {this.renderTimeSeriesControl()}
+                    {this.renderYearControl()}
+                    {this.renderDayControl()}
+                    {this.renderFileControl()}
+                    {this.renderSetControl()}
+                    {this.renderSort()}
+                </div>
+                <div className="day-dropdown" id='day_dropdown'>
+                    {this.state.dayOptions.map((gb, i) => this.renderBar(gb, i))}
+                </div>
+                <div className="annotations">
+                    {this.renderClassMenu()}
+                    <div>
+                        <div className="image-grid">
+                            {
+                            this.state.loading ? this.renderLoader() :
+                            targets.map((target, i) => this.renderPlankton(i))
+                            }
+                            <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-      </div>
+            </div>
+
+            </div>
+        </main>
+
+        <footer>
+        </footer>
+    </body>
       );
   }
 }

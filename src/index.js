@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './css/master.css';
-import './css/classify-styles.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

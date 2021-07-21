@@ -3,7 +3,7 @@ import {
     USER_LOADED,
     USER_LOADING,
     AUTH_ERROR
-} from '..actions/types';
+} from '../actions/types';
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {
