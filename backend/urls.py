@@ -19,6 +19,7 @@ urlpatterns = [
     path('process/day/<str:timeseries>/<str:year>/<int:day>/', views.new_day),
     path('process/year/<str:timeseries_name>/year/<str:year>', views.new_year),
     path('process/targets/<str:timeseries>/<str:file>/<int:set>/<int:sort>/', views.new_targets),
+    path('edit/target/<str:timeseries>/<str:file>/<str:number>/', views.edit_target),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
 ]

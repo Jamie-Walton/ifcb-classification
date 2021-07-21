@@ -1,7 +1,11 @@
 import React from "react";
 import axios from "axios";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import Header from '../layout/Header';
+
+import { classifyTarget } from "../../actions/targets";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
@@ -266,6 +270,10 @@ class Annotations extends React.Component {
       }
   }
 
+  static propTypes = {
+    classifyTarget: PropTypes.func.isRequired,
+  };
+
   getNewTimeSeries(option) {
     this.setState({
         loading: true,
@@ -298,7 +306,6 @@ class Annotations extends React.Component {
                 setOptions: binResponse.data.options.set_options,
                 set: 1
             });
-            console.log(this.state.setOptions)
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/1/')
                 .then((targetResponse) => {
@@ -455,9 +462,10 @@ class Annotations extends React.Component {
         }
       }
 
+      const nameAbbr = (element) => element === name;
       this.setState({ 
           classPicker: name,
-          classMark: this.state.classAbbrs[this.state.classes.findIndex(name)]
+          classMark: this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)]
         });
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
@@ -507,17 +515,17 @@ class Annotations extends React.Component {
   handlePlanktonClick(i) {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
+    const classAbbr = (element) => element === this.state.classPicker;
     targets[k].class_name = this.state.classPicker;
-    targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(this.state.classPicker)]; // use class abbr
+    targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)]; // use class abbr
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
     container.style.backgroundColor = '#16609F';
     text.style.color = '#FFFFFF';
-    axios
-        .put('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/', targets[k])
-        .then(console.log('clik!'))
-        .catch((err) => console.log(err));
+
+    this.props.classifyTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
+    
   }
 
   renderTimeSeriesControl() {
@@ -610,7 +618,6 @@ class Annotations extends React.Component {
 
   render() {  
     const targets = this.state.targets;
-    console.log(targets);
     return(
         <div className='body'>
         <Header />
@@ -651,4 +658,4 @@ class Annotations extends React.Component {
   }
 }
 
-export default Annotations;
+export default connect(null, { classifyTarget })(Annotations);
