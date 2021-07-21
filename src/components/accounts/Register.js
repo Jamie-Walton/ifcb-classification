@@ -22,6 +22,7 @@ export class Register extends Component {
             <body>
                 <main className="register-main">
                 <div className="header">
+                    <h3>IFCB Classification</h3>
                     <ul className="navbar">
                         <li className="nav-item">
                             <Link to="/register" className="nav-link">Register</Link>
