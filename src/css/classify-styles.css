@@ -50,6 +50,10 @@ header {
 	cursor: pointer;
 }
 
+.logout:hover {
+	background-color: #0d79a3;
+}
+
 .main {
 	background-color: #F0F0F0;
 	z-index: -1;

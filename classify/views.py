@@ -32,10 +32,14 @@ def get_classes(request, timeseries):
 def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
-        if sort == 1:
+        if sort == 'AZ':
             model_targets = Target.objects.filter(bin=b).order_by('class_name', '-width')
-        else:
+        elif sort == 'ZA':
             model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+        elif sort == 'LS':
+            model_targets = Target.objects.filter(bin=b).order_by('-width')
+        elif sort == 'SL':
+            model_targets = Target.objects.filter(bin=b).order_by('width')
 
         if set == math.ceil((len(model_targets))/500):
             start = 500*(set-1)
