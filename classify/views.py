@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
@@ -28,22 +28,18 @@ def get_classes(request, timeseries):
     return Response(serializer.data)
 
 
-@api_view(('PUT',))
-def edit_target(request):
-    serializer = TargetSerializer(request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(('GET','PUT'))
+@api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
-        if sort == 1:
+        if sort == 'AZ':
             model_targets = Target.objects.filter(bin=b).order_by('class_name', '-width')
-        else:
+        elif sort == 'ZA':
             model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+        elif sort == 'LS':
+            model_targets = Target.objects.filter(bin=b).order_by('-width')
+        elif sort == 'SL':
+            model_targets = Target.objects.filter(bin=b).order_by('width')
 
         if set == math.ceil((len(model_targets))/500):
             start = 500*(set-1)
@@ -54,13 +50,21 @@ def new_targets(request, timeseries, file, set, sort):
 
         target_serializer = TargetSerializer(model_targets[start:end], many=True)
         return Response(target_serializer.data)
-        
-    elif request.method == 'PUT':
-        serializer = TargetSerializer(request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(('PUT',))
+def edit_target(request, timeseries, file, number):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    t = Target.objects.get(bin=b, number=number)
+    serializer = TargetSerializer(t, data=request.data,context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(('GET',))

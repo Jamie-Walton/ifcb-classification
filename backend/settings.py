@@ -48,11 +48,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'classify',
     'debug_toolbar',
+    'knox',
+    'accounts'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
     ]
 }
 

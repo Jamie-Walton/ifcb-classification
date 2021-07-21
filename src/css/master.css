@@ -3,7 +3,28 @@
 header {
 	width: 100%;
 	/* position: fixed; */
-	height: 15vw;
-	background: transparent linear-gradient(270deg, #02C3D7 0%, #0D74C2 100%) 0% 0% no-repeat padding-box;
+	height: 10vw;
 	z-index: 10000;
+}
+
+.navbar {
+	display: flex;
+	float: right;
+	margin: 5vw 5vw;
+    padding: 1vw;
+    border-radius: 2vw;
+}
+
+.nav-item {
+	margin: 0 1vw;
+}
+
+.nav-link {
+	font-family: proxima-nova, sans-serif;
+	text-decoration: none;
+	text-transform: uppercase;
+	letter-spacing: 0.15vw;
+	color: #FFFFFF;
+	font-size: 1vw;
+	font-weight: 400;
 }
