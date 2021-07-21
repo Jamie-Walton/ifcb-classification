@@ -75,7 +75,7 @@ h2 {
 	font-size: 3vw;
 }
 
-p {
+.auth-text {
     font-size: 1.25vw;
     color: #FFFFFF;
     margin: 0.5vw 0 3vw 0;

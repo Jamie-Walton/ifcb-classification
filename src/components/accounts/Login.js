@@ -48,7 +48,7 @@ export class Login extends Component {
                 <div className="main-container">
                     <div className="sub-container">
                     <h2>Welcome back.</h2>
-                    <p>Sign in to start classifying.</p>
+                    <p className='auth-text'>Sign in to start classifying.</p>
                     <form onSubmit={this.onSubmit}>
                         <div className="form-group">
                         <input
@@ -75,8 +75,6 @@ export class Login extends Component {
                             Login
                         </button>
                         </div>
-                        <p>
-                        </p>
                     </form>
                     </div>
                 </div>
