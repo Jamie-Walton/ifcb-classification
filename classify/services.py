@@ -79,13 +79,16 @@ def get_days(volume, year):
     days = [x['day'] for x in volume if year in x['day']]
     gbs = [x['gb'] for x in volume if year in x['day']]
     i = 0
-    day_options = []
+    heights = []
+    short_days = []
     for d in pd.date_range(start='1-1-' + year, end='12-31-' + year):
+        short_days += [str(d)[5:10]]
         if i < len(days) and d == pd.Timestamp(days[i]):
-            day_options = day_options + [gbs[i]]
+            heights = heights + [gbs[i]]
             i += 1
         else:
-            day_options = day_options + [0]
+            heights = heights + [0]
+    day_options = [heights, short_days]
     return day_options
 
 

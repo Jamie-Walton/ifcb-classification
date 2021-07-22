@@ -71,10 +71,20 @@ class YearControl extends React.Component {
 }
 
 class Bar extends React.Component {
+    handleHover() {
+        document.getElementById('day' + this.props.number).classList.toggle('show');
+    }
     render() {
-      return(
-      <div className="bar" onClick={() => this.props.onClick(this.props.number)} style={{height: String(this.props.height*8) + 'vw'}}>{this.props.number}</div>
-      );}
+        return(
+            <div className="bar-container">
+                <div className="day" id={'day' + this.props.number}>{this.props.day}</div>
+                <div className="bar" id={'bar' + this.props.number} 
+                    onClick={() => this.props.onClick(this.props.number)}
+                    onMouseEnter={() => this.handleHover()}
+                    onMouseLeave={() => this.handleHover()}
+                    style={{height: String(this.props.height*8) + 'vw'}}></div>
+            </div>
+        );}
   }
 
 class DayControl extends React.Component {
@@ -83,11 +93,10 @@ class DayControl extends React.Component {
     }
     
     render() {
-        // add axis
         return(
             <div>
                 <div className="time" id='day_bar'>
-                    <p className="time-selection">{this.props.day}</p>
+                    <p className="time-selection" id="day_text">{this.props.day}</p>
                     <img src={dropdown} className="time-icon" 
                     alt={'Select Day'} onClick={() => this.handleDropdown()}></img>
                 </div>
@@ -273,6 +282,7 @@ class Annotations extends React.Component {
           timeSeriesOptions: [],
           yearOptions: [],
           dayOptions: [],
+          barHeights: [],
           fileOptions: [],
           setOptions: [],
           targets: [],
@@ -314,7 +324,8 @@ class Annotations extends React.Component {
             this.setState({ 
                 bin: binResponse.data.bin,
                 yearOptions: binResponse.data.options.year_options.reverse(),
-                dayOptions: binResponse.data.options.day_options.reverse(),
+                barHeights: binResponse.data.options.day_options[0],
+                dayOptions: binResponse.data.options.day_options[1],
                 fileOptions: binResponse.data.options.file_options,
                 setOptions: binResponse.data.options.set_options,
                 set: 1
@@ -346,7 +357,8 @@ class Annotations extends React.Component {
         .then((yearResponse) => {
             this.setState({ 
                 bin: yearResponse.data.bin,
-                dayOptions: yearResponse.data.options.day_options.reverse(),
+                barHeights: yearResponse.data.options.day_options[0],
+                dayOptions: yearResponse.data.options.day_options[1],
                 fileOptions: yearResponse.data.options.file_options,
                 setOptions: yearResponse.data.options.set_options,
                 set: 1,
@@ -454,10 +466,10 @@ class Annotations extends React.Component {
   }
 
   handleNewSort(option) {
-    const sort = (this.state.group == 'Class') 
+    const sort = (this.state.group === 'Class') 
         ? (this.state.sort === 'A to Z') ? 'Z to A' : 'A to Z' 
         : (this.state.sort === 'L to S') ? 'S to L' : 'L to S';
-    const code = (this.state.group == 'Class') 
+    const code = (this.state.group === 'Class') 
         ? (this.state.sort === 'A to Z') ? 'ZA' : 'AZ' 
         : (this.state.sort === 'L to S') ? 'SL' : 'LS';
     this.setState({
@@ -583,7 +595,7 @@ class Annotations extends React.Component {
   renderDayControl() {
     return <DayControl
         day={this.state.bin.day} 
-        options={this.state.dayOptions}
+        options={this.state.barHeights}
         onClick={(option) => this.handleNewDay(option)}
     />;
   }
@@ -652,6 +664,7 @@ class Annotations extends React.Component {
         onClick={(i) => this.handleBar(i)}
         number={i}
         height={gb}
+        day={this.state.dayOptions[i]}
     />;
   }
 
@@ -668,7 +681,7 @@ class Annotations extends React.Component {
             <div class="page">
 
             <div class="content">
-            <div>
+            <div className="inner-content">
                 <h1>Manual Classifications</h1>
                 <div className="time-controls">
                     {this.renderTimeSeriesControl()}
@@ -680,7 +693,25 @@ class Annotations extends React.Component {
                     {this.renderSort()}
                 </div>
                 <div className="day-dropdown" id='day_dropdown'>
-                    {this.state.dayOptions.map((gb, i) => this.renderBar(gb, i))}
+                    <div className="timeline">
+                        <div className="bars">
+                            {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
+                        </div>
+                        <div className="axis">
+                            <p className="month">Jan</p>
+                            <p className="month">Feb</p>
+                            <p className="month">Mar</p>
+                            <p className="month">Apr</p>
+                            <p className="month">May</p>
+                            <p className="month">Jun</p>
+                            <p className="month">Jul</p>
+                            <p className="month">Aug</p>
+                            <p className="month">Sep</p>
+                            <p className="month">Oct</p>
+                            <p className="month">Nov</p>
+                            <p className="month">Dec</p>
+                        </div>
+                    </div>
                 </div>
                 <div className="annotations">
                     {this.renderClassMenu()}
