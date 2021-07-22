@@ -2,6 +2,7 @@ from django.db.models.query_utils import Q
 from .models import Bin, ClassOption, TimeSeriesOption, Target
 import pandas as pd
 import requests
+import math
 
 def create_targets(timeseries, year, day, file):
     
@@ -61,8 +62,9 @@ def create_targets(timeseries, year, day, file):
                 class_name = c.display_name
                 class_abbr = c.abbr
         num = '{:0>5}'.format(int(target['targetNumber']))
-        width = int(target['width'])
-        nearest_bin.target_set.create(number=num, width=width, class_name=class_name, class_abbr=class_abbr)
+        height = int(target['width'])
+        width = int(target['height'])
+        nearest_bin.target_set.create(number=num, width=width, height=height, class_name=class_name, class_abbr=class_abbr)
     
     return ifcb
 
@@ -92,17 +94,34 @@ def get_days(volume, year):
     return day_options
 
 
-def get_rows(b):
-    # add height to targets (models, admin, serializer, creation)
-    targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+def get_rows(b, set, sort):
+
+    if sort == 'AZ':
+        targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
+    elif sort == 'ZA':
+        targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')
+    elif sort == 'LS':
+        targets = Target.objects.filter(bin=b).order_by('-height')
+    elif sort == 'SL':
+        targets = Target.objects.filter(bin=b).order_by('height')
+
+    if set == math.ceil((len(targets))/500):
+        start = 500*(set-1)
+        end = len(targets)
+    else:
+        start = 500*(set-1)
+        end = start+500
+
     rows = [[]]
-    space = 76
+    space = 70
     row = 0
-    for target in targets:
-        if space - (target.height*0.056) - 1 < 0:
-            rows += []
+    for target in targets[start:end]:
+        if (space - (target.width*0.056) - 1) < 0:
+            rows.append([])
             row += 1
-            space = 76 - target.height
+            space = 70 - (target.width*0.056)
         else:
-            space -= (target.height + 1)
-    rows[row] += target.number
+            space -= ((target.width*0.056) + 1)
+        rows[row].append(target.number)
+
+    return rows

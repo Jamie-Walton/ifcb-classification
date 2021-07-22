@@ -195,7 +195,7 @@ class PlanktonImage extends React.Component {
           <img src={url} className="image" 
           alt={this.props.classification} 
           id={this.props.targetNum + '-image'}
-          style={{height: String(Number(this.props.width)*this.props.scale)+'vw'}}></img>
+          style={{height: String(Number(this.props.height)*this.props.scale)+'vw'}}></img>
       );
   }
 }
@@ -211,7 +211,7 @@ class Plankton extends React.Component {
             ifcb={this.props.ifcb}
             targetNum={this.props.targetNum}
             classification={this.props.class_name}
-            width={this.props.width}
+            height={this.props.height}
             scale={this.props.scale}
         />
       );
@@ -286,6 +286,7 @@ class Annotations extends React.Component {
           fileOptions: [],
           setOptions: [],
           targets: [],
+          rows: [],
           scale: 0.056,
           set: 1,
           group: 'Class',
@@ -328,8 +329,10 @@ class Annotations extends React.Component {
                 dayOptions: binResponse.data.options.day_options[1],
                 fileOptions: binResponse.data.options.file_options,
                 setOptions: binResponse.data.options.set_options,
+                rows: binResponse.data.options.rows,
                 set: 1
             });
+            console.log(binResponse.data.options.rows);
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/AZ/')
                 .then((targetResponse) => {
@@ -638,7 +641,7 @@ class Annotations extends React.Component {
               targetNum={this.state.targets[i].number}
               class_name={this.state.targets[i].class_name}
               class_abbr={this.state.targets[i].class_abbr}
-              width={this.state.targets[i].width}
+              height={this.state.targets[i].height}
               onClick={(i) => this.handlePlanktonClick(i)}
               scale={this.state.scale}
               ifcb={this.state.bin.ifcb}

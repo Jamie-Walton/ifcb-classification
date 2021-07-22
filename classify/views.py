@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
-from .services import create_targets, get_files, get_days
+from .services import create_targets, get_files, get_days, get_rows
 import requests
 import math
 import pandas as pd
@@ -33,13 +33,13 @@ def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
         if sort == 'AZ':
-            model_targets = Target.objects.filter(bin=b).order_by('class_name', '-width')
+            model_targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
         elif sort == 'ZA':
-            model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-width')
+            model_targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')
         elif sort == 'LS':
-            model_targets = Target.objects.filter(bin=b).order_by('-width')
+            model_targets = Target.objects.filter(bin=b).order_by('-height')
         elif sort == 'SL':
-            model_targets = Target.objects.filter(bin=b).order_by('width')
+            model_targets = Target.objects.filter(bin=b).order_by('height')
 
         if set == math.ceil((len(model_targets))/500):
             start = 500*(set-1)
@@ -93,13 +93,15 @@ def new_timeseries(request, timeseries_name):
 
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
+    rows = get_rows(b, 1, 'AZ')
     edited = b.edited
 
     options = {
         'year_options': year_options,
         'day_options': day_options,
         'file_options': file_options,
-        'set_options': set_options
+        'set_options': set_options,
+        'rows': rows
     }
 
     bin = {
