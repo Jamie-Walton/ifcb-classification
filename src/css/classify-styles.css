@@ -405,7 +405,36 @@ li {
   }
 
 
-/* Image Grid */
+/* Rows */
+
+.row {
+	display: flex;
+}
+
+.row-select {
+	background-image: url("../icons/select-gray.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 1.5vw;
+	height: 1.5vw;
+	margin: 1vw 1vw 0 0;
+	align-self: flex-start;
+	cursor: pointer;
+}
+
+.row-select:hover {
+	background-image: url("../icons/select-blue.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.image-row {
+	display: flex;
+	align-items: flex-start;
+}
+
+
+/* Images */
 
 .image {
 	text-transform: none;

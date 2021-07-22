@@ -66,6 +66,51 @@ def edit_target(request, timeseries, file, number):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(('PUT',))
+def edit_targetrow(request, timeseries, file, sort, startInd, endInd):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    if sort == 'AZ':
+        targets = Target.objects.filter(bin=b).order_by('class_name', '-height')[startInd:endInd+1]
+    elif sort == 'ZA':
+        targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')[startInd:endInd+1]
+    elif sort == 'LS':
+        targets = Target.objects.filter(bin=b).order_by('-height')[startInd:endInd+1]
+    elif sort == 'SL':
+        targets = Target.objects.filter(bin=b).order_by('height')[startInd:endInd+1]
+    for i in range(len(targets)):
+        target = targets[i]
+        t = Target.objects.get(bin=b, number=target.number)
+        serializer = TargetSerializer(t, data=request.data[i],context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(('PUT',))
+def edit_all(request, timeseries, file, className, classAbbr):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    targets = Target.objects.filter(bin=b)
+    for i in range(len(targets)):
+        target = targets[i]
+        t = Target.objects.get(bin=b, number=target.number)
+        serializer = TargetSerializer(t, data=\
+            {'id': t.id, 'bin': b.id, 'number': t.number, 'height': t.height, 'width': t.width, \
+                'class_name': className, 'class_abbr': classAbbr},context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):

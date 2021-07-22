@@ -115,13 +115,14 @@ def get_rows(b, set, sort):
     rows = [[]]
     space = 70
     row = 0
-    for target in targets[start:end]:
+    for i in range(start,end):
+        target = targets[i]
         if (space - (target.width*0.056) - 1) < 0:
             rows.append([])
             row += 1
             space = 70 - (target.width*0.056)
         else:
             space -= ((target.width*0.056) + 1)
-        rows[row].append(target.number)
+        rows[row].append(i)
 
     return rows

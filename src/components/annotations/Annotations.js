@@ -5,16 +5,17 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import Header from '../layout/Header';
 
-import { classifyTarget } from "../../actions/targets";
+import { classifyTarget, classifyRow, classifyAll } from "../../actions/targets";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
-import toTop from "./icons/to-top.png";
-import dropdown from "./icons/dropdown.png";
+import toTop from "../../icons/to-top.png";
+import dropdown from "../../icons/dropdown.png";
+import selectGray from "../../icons/select-gray.png";
+import selectBlue from "../../icons/select-blue.png";
 /*
 import calendar from "./icons/calendar.png";
 import dropup from "./icons/dropup.png";
-import selectGray from "./icons/select-gray.png";
 import selectWhite from "./icons/select-white.png";
 */
 
@@ -296,6 +297,8 @@ class Annotations extends React.Component {
 
   static propTypes = {
     classifyTarget: PropTypes.func.isRequired,
+    classifyRow: PropTypes.func.isRequired,
+    classifyAll: PropTypes.func.isRequired,
   };
 
   getNewTimeSeries(option) {
@@ -332,7 +335,6 @@ class Annotations extends React.Component {
                 rows: binResponse.data.options.rows,
                 set: 1
             });
-            console.log(binResponse.data.options.rows);
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/AZ/')
                 .then((targetResponse) => {
@@ -532,19 +534,6 @@ class Annotations extends React.Component {
       }
   }
 
-  /* Fix this entire function later (will need updates to targets and row calls)
-  handleRowClick(row) {
-      for (const sample of this.state.rows[row]) {
-          this.state.targets[sample] = this.state.classPicker;
-          const container = document.getElementById(sample);
-          const text = document.getElementById(sample+'_text');
-          container.style.backgroundColor = '#16609F';
-          text.style.color = '#FFFFFF';
-      }
-      this.setState({targets: this.state.targets});
-  }
-  */
-
   backToTop() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
@@ -552,15 +541,46 @@ class Annotations extends React.Component {
 
   handleSelectAllClick() {
       var targets = this.state.targets;
+      const className = this.state.classPicker;
+      const classAbbrFunc = (element) => element === this.state.classPicker;
+      const classAbbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbrFunc)];
       for (let i = 0; i < targets.length; i++) {
-          targets[i].class_name = this.state.classPicker;
-          targets[i].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(this.state.classPicker)];
+          targets[i].class_name = className;
+          targets[i].class_abbr = classAbbr;
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
           text.style.color = '#FFFFFF';
       }
       this.setState({ targets: targets });
+
+      this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, className, classAbbr);
+  }
+
+  handleRowClick(j) {
+    var targets = this.state.targets;
+    const row = this.state.rows[j];
+    for (var i in row) {
+        var k = row[i]
+        const classAbbr = (element) => element === this.state.classPicker;
+        targets[k].class_name = this.state.classPicker;
+        targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        const container = document.getElementById(targets[k].number);
+        const text = document.getElementById(targets[k].number+'-text');
+        container.style.backgroundColor = '#16609F';
+        text.style.color = '#FFFFFF';
+    }
+    this.setState({ targets: targets });
+    const start = row[0]
+    const end = row[i];
+    const targetRow = targets.slice(start, end+1);
+    console.log(targetRow);
+
+    const sort = (this.state.group === 'Class') 
+        ? (this.state.sort === 'A to Z') ? 'AZ' : 'ZA' 
+        : (this.state.sort === 'L to S') ? 'LS' : 'SL';
+
+    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, sort, start, end);
   }
 
   handlePlanktonClick(i) {
@@ -568,7 +588,7 @@ class Annotations extends React.Component {
     const k = targets.findIndex(target => target.number === i);
     const classAbbr = (element) => element === this.state.classPicker;
     targets[k].class_name = this.state.classPicker;
-    targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)]; // use class abbr
+    targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
     this.setState({ targets: targets });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
@@ -648,6 +668,19 @@ class Annotations extends React.Component {
           />;
   }
 
+  renderRow(row, j) {
+    return(
+        <div className="row">
+            <div className="row-select" 
+                alt={'Select row'} onClick={() => this.handleRowClick(j)}>
+            </div>
+            <div className="image-row">
+                {row.map((i) => this.renderPlankton(i))}
+            </div>
+        </div>
+      );
+  }
+
   renderClassMenu() {
     return <ClassMenu 
           classes={this.state.classes}
@@ -676,7 +709,6 @@ class Annotations extends React.Component {
   }
 
   render() {  
-    const targets = this.state.targets;
     return(
         <div className='body'>
         <Header />
@@ -721,7 +753,7 @@ class Annotations extends React.Component {
                     <div className="image-grid">
                         {
                         this.state.loading ? this.renderLoader() :
-                        targets.map((target, i) => this.renderPlankton(i))
+                        this.state.rows.map((row, j) => this.renderRow(row, j))
                         }
                         <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
                     </div>
@@ -736,4 +768,4 @@ class Annotations extends React.Component {
   }
 }
 
-export default connect(null, { classifyTarget })(Annotations);
+export default connect(null, { classifyTarget, classifyRow, classifyAll })(Annotations);
