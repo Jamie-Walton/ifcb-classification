@@ -251,7 +251,7 @@ class ClassMenu extends React.Component {
             <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
                 <p className="control-text">Select All</p>
             </div>
-            <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
+            <div className="annotation-control" onClick={() =>  this.props.handleUndoClick()}>
                 <p className="control-text">Undo</p>
             </div>
             <div className="annotation-control" onClick={() =>  this.props.handleSaveClick()}>
@@ -283,6 +283,7 @@ class Annotations extends React.Component {
           fileOptions: [],
           setOptions: [],
           targets: [],
+          history: [],
           rows: [],
           scale: 0.056,
           set: 1,
@@ -303,6 +304,7 @@ class Annotations extends React.Component {
   getNewTimeSeries(option) {
     this.setState({
         loading: true,
+        history: [],
         bin: {
             timeseries: option,
             ifcb: this.state.bin.ifcb,
@@ -353,10 +355,15 @@ class Annotations extends React.Component {
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
+    this.setState({ history: this.state.history.concat([this.state.targets]) });
   }
   
   getNewYear(option) {
-    this.setState({ loading: true, rows: [], targets: [] });  
+    this.setState({ 
+        loading: true, 
+        history: [],
+        rows: [], 
+        targets: [] });  
     axios
         .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/' + this.state.sortCode + '/')
         .then((yearResponse) => {
@@ -386,6 +393,7 @@ class Annotations extends React.Component {
 
     this.setState({
         loading: true,
+        history: [],
         rows: [],
         targets: [],
     });
@@ -420,6 +428,7 @@ class Annotations extends React.Component {
     option.slice(0,3) + option.slice(4,6) + option.slice(7,9);
     this.setState({
         loading: true,
+        history: [],
         bin: {
             timeseries: this.state.bin.timeseries,
             ifcb: this.state.bin.ifcb,
@@ -452,19 +461,19 @@ class Annotations extends React.Component {
     this.setState({
         loading: true,
         set: option,
+        history: [],
         rows: [],
-        targets: [],
     });
     axios
       .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
       .then((rowResponse) => {
           axios
             .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
-            .then((res) => {this.setState({ 
-                targets: res.data,
-                rows: rowResponse.data.options.rows,
-                })})
+            .then((res) => this.setState({ targets: res.data }))
             .catch((err) => console.log(err));
+          this.setState({ rows: rowResponse.data.options.rows });
+          console.log(this.state.rows);
+          console.log(this.state.targets);
       })
       .catch((err) => console.log(err));
     this.setState({loading: false});
@@ -553,7 +562,7 @@ class Annotations extends React.Component {
       const nameAbbr = (element) => element === name;
       this.setState({ 
           classPicker: name,
-          classMark: this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)]
+          classMark: this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)],
         });
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
@@ -587,9 +596,23 @@ class Annotations extends React.Component {
           container.style.backgroundColor = '#16609F';
           text.style.color = '#FFFFFF';
       }
-      this.setState({ targets: targets });
+      this.setState({ 
+          targets: targets,
+          history: this.state.history.concat([targets])
+     });
 
       this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode, className, classAbbr);
+  }
+
+  handleUndoClick() {
+      const newHistory = this.state.history.slice(0, this.state.history.length-1);
+      const rows = this.state.rows;
+      this.setState({
+          rows: [],
+          targets: newHistory[newHistory.length-1],
+          history: newHistory,
+      });
+      this.setState({ rows: rows });
   }
 
   handleSaveClick() {
@@ -609,7 +632,10 @@ class Annotations extends React.Component {
         container.style.backgroundColor = '#16609F';
         text.style.color = '#FFFFFF';
     }
-    this.setState({ targets: targets });
+    this.setState({ 
+        targets: targets,
+        history: this.state.history.concat([targets])
+    });
     const start = row[0]
     const end = row[i];
     const targetRow = targets.slice(start, end+1);
@@ -623,7 +649,10 @@ class Annotations extends React.Component {
     const classAbbr = (element) => element === this.state.classPicker;
     targets[k].class_name = this.state.classPicker;
     targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
-    this.setState({ targets: targets });
+    this.setState({ 
+        targets: targets,
+        history: this.state.history.concat([targets])
+    });
     const container = document.getElementById(targets[k].number);
     const text = document.getElementById(targets[k].number+'-text');
     container.style.backgroundColor = '#16609F';
