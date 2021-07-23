@@ -1,23 +1,16 @@
 import React from "react";
 import axios from "axios";
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import Header from '../layout/Header';
 
-import { classifyTarget, classifyRow, classifyAll } from "../../actions/targets";
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { classifyTarget, classifyRow, classifyAll, save } from "../../actions/classify";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
 import toTop from "../../icons/to-top.png";
 import dropdown from "../../icons/dropdown.png";
-import selectGray from "../../icons/select-gray.png";
-import selectBlue from "../../icons/select-blue.png";
-/*
-import calendar from "./icons/calendar.png";
-import dropup from "./icons/dropup.png";
-import selectWhite from "./icons/select-white.png";
-*/
 
 class TimeSeriesControl extends React.Component {
     handleDropdown() {
@@ -261,6 +254,9 @@ class ClassMenu extends React.Component {
             <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
                 <p className="control-text">Undo</p>
             </div>
+            <div className="annotation-control" onClick={() =>  this.props.handleSaveClick()}>
+                <p className="control-text">Save</p>
+            </div>
           </div>
           <ul>{options}</ul>
       </div>
@@ -291,7 +287,8 @@ class Annotations extends React.Component {
           scale: 0.056,
           set: 1,
           group: 'Class',
-          sort: 'A to Z'
+          sort: 'A to Z',
+          sortCode: 'AZ'
       }
   }
 
@@ -299,6 +296,8 @@ class Annotations extends React.Component {
     classifyTarget: PropTypes.func.isRequired,
     classifyRow: PropTypes.func.isRequired,
     classifyAll: PropTypes.func.isRequired,
+    save: PropTypes.func.isRequired,
+    isSaving: PropTypes.bool
   };
 
   getNewTimeSeries(option) {
@@ -323,7 +322,7 @@ class Annotations extends React.Component {
       })
       .catch((err) => console.log(err));
     axios
-        .get('/process/timeseries/' + option + '/')
+        .get('/process/timeseries/' + option + '/' + this.state.sortCode + '/')
         .then((binResponse) => {
             this.setState({ 
                 bin: binResponse.data.bin,
@@ -336,13 +335,14 @@ class Annotations extends React.Component {
                 set: 1
             });
             axios
-                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/AZ/')
+                .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/' + this.state.sortCode + '/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
                         loading: false,
                      });
                 });
+
     });
   };
 
@@ -356,9 +356,9 @@ class Annotations extends React.Component {
   }
   
   getNewYear(option) {
-    this.setState({ loading: true });  
+    this.setState({ loading: true, rows: [], targets: [] });  
     axios
-        .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/')
+        .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/' + this.state.sortCode + '/')
         .then((yearResponse) => {
             this.setState({ 
                 bin: yearResponse.data.bin,
@@ -367,8 +367,16 @@ class Annotations extends React.Component {
                 fileOptions: yearResponse.data.options.file_options,
                 setOptions: yearResponse.data.options.set_options,
                 set: 1,
-                loading: false,
-             })
+             });
+             axios
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + yearResponse.data.bin.file + '/1/' + this.state.sortCode + '/')
+                .then((targetResponse) => {
+                    this.setState({ 
+                        targets: targetResponse.data,
+                        rows: yearResponse.data.options.rows,
+                        loading: false,
+                     });
+                });
         })
         .catch((err) => console.log(err));
   }
@@ -378,9 +386,11 @@ class Annotations extends React.Component {
 
     this.setState({
         loading: true,
+        rows: [],
+        targets: [],
     });
     axios
-        .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/')
+        .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/' + this.state.sortCode + '/')
         .then((dayResponse) => {
             this.setState({ 
                 bin: dayResponse.data.bin,
@@ -389,10 +399,11 @@ class Annotations extends React.Component {
                 set: 1
             });
             axios
-                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/AZ/')
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/' + this.state.sortCode + '/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
+                        rows: dayResponse.data.options.rows,
                         loading: false,
                     });
                 });
@@ -420,14 +431,15 @@ class Annotations extends React.Component {
         set: 1,
     });
     axios
-        .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/')
+        .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/' + this.state.sortCode + '/')
         .then((res) => this.setState({ 
             bin: res.data.bin, 
-            setOptions: res.data.options.set_options 
+            setOptions: res.data.options.set_options,
+            rows: res.data.options.rows
         }))
         .catch((err) => console.log(err));
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/AZ/')
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/' + this.state.sortCode + '/')
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -440,13 +452,20 @@ class Annotations extends React.Component {
     this.setState({
         loading: true,
         set: option,
+        rows: [],
         targets: [],
     });
     axios
-      .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/AZ/')
-      .then((res) => {this.setState({ 
-          targets: res.data,
-        })})
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
+      .then((rowResponse) => {
+          axios
+            .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
+            .then((res) => {this.setState({ 
+                targets: res.data,
+                rows: rowResponse.data.options.rows,
+                })})
+            .catch((err) => console.log(err));
+      })
       .catch((err) => console.log(err));
     this.setState({loading: false});
   }
@@ -459,12 +478,20 @@ class Annotations extends React.Component {
         loading: true,
         group: group,
         sort: sort,
+        sortCode: code,
+        rows: [],
         targets: [],
     });
     axios
       .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
       .then((res) => {this.setState({ 
           targets: res.data,
+        })})
+      .catch((err) => console.log(err));
+    axios
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
+      .then((res) => {this.setState({ 
+          rows: res.data.options.rows,
         })})
       .catch((err) => console.log(err));
     this.setState({loading: false});
@@ -480,12 +507,20 @@ class Annotations extends React.Component {
     this.setState({
         loading: true,
         sort: sort,
+        sortCode: code,
+        rows: [],
         targets: [],
     });
     axios
       .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
       .then((res) => {this.setState({ 
           targets: res.data,
+        })})
+      .catch((err) => console.log(err));
+    axios
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
+      .then((res) => {this.setState({ 
+          rows: res.data.options.rows,
         })})
       .catch((err) => console.log(err));
     this.setState({loading: false});
@@ -554,7 +589,11 @@ class Annotations extends React.Component {
       }
       this.setState({ targets: targets });
 
-      this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, className, classAbbr);
+      this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode, className, classAbbr);
+  }
+
+  handleSaveClick() {
+    this.props.save(this.state.targets, this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode);
   }
 
   handleRowClick(j) {
@@ -574,13 +613,8 @@ class Annotations extends React.Component {
     const start = row[0]
     const end = row[i];
     const targetRow = targets.slice(start, end+1);
-    console.log(targetRow);
 
-    const sort = (this.state.group === 'Class') 
-        ? (this.state.sort === 'A to Z') ? 'AZ' : 'ZA' 
-        : (this.state.sort === 'L to S') ? 'LS' : 'SL';
-
-    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, sort, start, end);
+    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, this.state.sortCode, start, end);
   }
 
   handlePlanktonClick(i) {
@@ -687,6 +721,7 @@ class Annotations extends React.Component {
           onClick={(name) => this.handleMenuClick(name)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
+          handleSaveClick={() => this.handleSaveClick()}
       />;
   }
 
@@ -752,7 +787,7 @@ class Annotations extends React.Component {
                     {this.renderClassMenu()}
                     <div className="image-grid">
                         {
-                        this.state.loading ? this.renderLoader() :
+                        (this.state.loading || this.props.isSaving) ? this.renderLoader() :
                         this.state.rows.map((row, j) => this.renderRow(row, j))
                         }
                         <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
@@ -768,4 +803,8 @@ class Annotations extends React.Component {
   }
 }
 
-export default connect(null, { classifyTarget, classifyRow, classifyAll })(Annotations);
+const mapStateToProps = state => ({
+    isSaving: state.classify.isSaving 
+ });
+
+export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save })(Annotations);
