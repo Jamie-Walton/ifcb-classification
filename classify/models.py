@@ -27,6 +27,7 @@ class Set(models.Model):
 class Target(models.Model):
     bin = models.ForeignKey(Bin, on_delete=models.CASCADE)
     number = models.CharField(max_length=5)
+    height = models.IntegerField(default=0)
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")

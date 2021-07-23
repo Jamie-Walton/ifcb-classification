@@ -105,11 +105,12 @@ li {
 	background-color: #FFFFFF;
 	box-shadow: 0px 6px 30px #00000029;
 	margin: 0 2vw 2vw;
-	padding: 0.5vw 3vw 5vw 7vw;
+	padding: 0.5vw 0vw 5vw 7vw;
 }
 
 .content {
 	display: flex;
+	width: 85vw;
 }
 
 .annotations {
@@ -204,23 +205,54 @@ li {
 	border: 1px solid #DEDDDD;
 	border-radius: 1.4vw;
 	margin: 1vw 0vw 0 0;
-	padding: 0.5vw 0vw;
+	padding: 0.5vw 2vw;
 	width: 60vw;
 	z-index: 1;
-	height: 20vw;
 	overflow-x: scroll;
 }
-  
-  .bar {
-	background-color:#7dad0b;
-	display: block;
-	width: 2vw;
+
+  .bars {
+	display: flex;
+  }
+
+  .bar-container {
 	margin: 0 0.05vw;
 	align-self: flex-end;
   }
 
+  .day {
+	  display: none;
+	  width: 175%;
+	  background-color: #FFFFFF;
+	  font-family: proxima-nova, sans-serif;
+	  font-size: 0.85vw;
+	  font-weight: 400;
+	  border-radius: 1vw;
+	  margin: 1vw 0 0 -0.5vw;
+	  padding: 0 0.2vw;
+	  color: #7dad0b;
+  }
+  
+  .bar {
+	background-color:#7dad0b;
+	display: inline-block;
+	padding: 0 0.5vw;
+  }
+
   .bar:hover {
 	background-color:#5d8108;
+  }
+
+  .axis {
+	  display: flex;
+  }
+
+  .month {
+	text-transform: uppercase;  
+	letter-spacing: 0.1vw;
+	color: #5d8108;
+	font-weight: 500;
+	margin: 0.5vw 31.5vw 0 0;
   }
 
 .time-dropdown button {
@@ -373,7 +405,36 @@ li {
   }
 
 
-/* Image Grid */
+/* Rows */
+
+.row {
+	display: flex;
+}
+
+.row-select {
+	background-image: url("../icons/select-gray.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 1.5vw;
+	height: 1.5vw;
+	margin: 1vw 1vw 0 0;
+	align-self: flex-start;
+	cursor: pointer;
+}
+
+.row-select:hover {
+	background-image: url("../icons/select-blue.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.image-row {
+	display: flex;
+	align-items: flex-start;
+}
+
+
+/* Images */
 
 .image {
 	text-transform: none;
