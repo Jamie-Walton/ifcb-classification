@@ -31,7 +31,9 @@ class Target(models.Model):
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")
-    # add editor and when edited
+    editor = models.CharField(max_length=50, default="Auto Classifier")
+    date = models.DateField(auto_now=True)
+    notes = models.CharField(max_length=140, default="")
 
     def _str_(self):
         return 'target_' + str(self.number)

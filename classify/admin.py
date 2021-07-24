@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Target, ClassOption, TimeSeriesOption, Bin, Set, Target
 
 class TargetAdmin(admin.ModelAdmin):
-    list_display = ('bin', 'number', 'class_name', 'class_abbr')
+    list_display = ('bin', 'number', 'class_name', 'class_abbr', 'editor', 'date', 'notes')
 
 class TimeSeriesInline(admin.TabularInline):
     model = ClassOption.timeseries.through

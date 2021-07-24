@@ -211,11 +211,42 @@ class Plankton extends React.Component {
       );
   }
 
+  getHeight() {
+    if (this.props.height < 0) {
+      return '5'
+    } else {
+        return String((Number(this.props.height) * this.props.scale) + 2.25)
+    }
+  }
+
+  getWidth() {
+    if (this.props.width < 0) {
+      return '5'
+    } else {
+        return String(Number(this.props.width)*this.props.scale)+'vw'
+    }
+  }
+
+  handleInfoClick() {
+    document.getElementById(this.props.targetNum + '-info').classList.toggle('show-info');
+    document.getElementById(this.props.targetNum + '-image').classList.toggle('hide');
+    document.getElementById(this.props.targetNum).classList.toggle('hide');
+  }
+
   render() {
-      return(
+    const infoStyle = {
+        height: this.getHeight() + 'vw',
+        width: this.getWidth() + 'vw'
+    };
+    return(
           <button className="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
               <div className="plankton">
                   {this.renderImage()}
+                  <div className="info" onClick={() => this.handleInfoClick()}></div>
+                  <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>
+                    <p>{this.props.class_name}</p>
+                    <p>{'Classified by ' + this.props.editor + ' on ' + this.props.date}</p>
+                  </div>
                   <div className='id' id={this.props.targetNum}>
                       <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
                   </div>
@@ -298,7 +329,8 @@ class Annotations extends React.Component {
     classifyRow: PropTypes.func.isRequired,
     classifyAll: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
-    isSaving: PropTypes.bool
+    isSaving: PropTypes.bool,
+    user: PropTypes.object,
   };
 
   getNewTimeSeries(option) {
@@ -591,6 +623,7 @@ class Annotations extends React.Component {
       for (let i = 0; i < targets.length; i++) {
           targets[i].class_name = className;
           targets[i].class_abbr = classAbbr;
+          targets[i].editor = this.props.user.username;
           const container = document.getElementById(targets[i].number);
           const text = document.getElementById(targets[i].number+'-text');
           container.style.backgroundColor = '#16609F';
@@ -627,6 +660,7 @@ class Annotations extends React.Component {
         const classAbbr = (element) => element === this.state.classPicker;
         targets[k].class_name = this.state.classPicker;
         targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        targets[k].editor = this.props.user.username;
         const container = document.getElementById(targets[k].number);
         const text = document.getElementById(targets[k].number+'-text');
         container.style.backgroundColor = '#16609F';
@@ -649,6 +683,7 @@ class Annotations extends React.Component {
     const classAbbr = (element) => element === this.state.classPicker;
     targets[k].class_name = this.state.classPicker;
     targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+    targets[k].editor = this.props.user.username;
     this.setState({ 
         targets: targets,
         history: this.state.history.concat([targets])
@@ -725,9 +760,12 @@ class Annotations extends React.Component {
               class_name={this.state.targets[i].class_name}
               class_abbr={this.state.targets[i].class_abbr}
               height={this.state.targets[i].height}
-              onClick={(i) => this.handlePlanktonClick(i)}
+              width={this.state.targets[i].width}
               scale={this.state.scale}
               ifcb={this.state.bin.ifcb}
+              editor={this.state.targets[i].editor}
+              date={this.state.targets[i].date}
+              onClick={(i) => this.handlePlanktonClick(i)}
           />;
   }
 
@@ -833,7 +871,8 @@ class Annotations extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    isSaving: state.classify.isSaving 
+    isSaving: state.classify.isSaving,
+    user: state.auth.user
  });
 
 export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save })(Annotations);

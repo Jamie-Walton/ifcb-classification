@@ -3,6 +3,7 @@ from .models import Bin, ClassOption, TimeSeriesOption, Target
 import pandas as pd
 import requests
 import math
+import datetime
 
 def create_targets(timeseries, year, day, file):
     
@@ -64,7 +65,10 @@ def create_targets(timeseries, year, day, file):
         num = '{:0>5}'.format(int(target['targetNumber']))
         height = int(target['width'])
         width = int(target['height'])
-        nearest_bin.target_set.create(number=num, width=width, height=height, class_name=class_name, class_abbr=class_abbr)
+        editor = "Auto Classifier"
+        date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
+        nearest_bin.target_set.create(number=num, width=width, height=height, \
+            class_name=class_name, class_abbr=class_abbr, editor=editor, date=date, notes="")
     
     return ifcb
 

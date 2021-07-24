@@ -409,6 +409,7 @@ li {
 
 .row {
 	display: flex;
+	overflow: scroll;
 }
 
 .row-select {
@@ -431,6 +432,7 @@ li {
 .image-row {
 	display: flex;
 	align-items: flex-start;
+	overflow: scroll;
 }
 
 
@@ -438,6 +440,35 @@ li {
 
 .image {
 	text-transform: none;
+}
+
+.info {
+	background-image: url("../icons/info-white.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 5vw;
+	height: 5vw;
+	position: absolute;
+	align-self: flex-start;
+	top: -0.85vw;
+	right: -1.15vw;
+}
+
+.info:hover {
+	background-image: url("../icons/info-green.png");
+}
+
+.info-div {
+	display: none;
+  	background: #FFFFFF 0% 0% no-repeat padding-box;
+  	box-shadow: 0 0.5vw 1.2vw #00000012;
+  	border: 0.0001vw solid #D5D3D3;
+  	border-radius: 0 0 1vw 1vw;
+	resize: both;
+}
+
+.show-info {
+	display: inline-block;
 }
 
 .id {
@@ -467,6 +498,7 @@ li {
 	display: flex;
 	flex-direction: column;
 	align-self: flex-start;
+	position: relative;
 	cursor: pointer;
 }
 
