@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from .models import Bin, FrontEndPackage, Set, Target, ClassOption, TimeSeriesOption
+from .models import Bin, FrontEndPackage, Note, Target, ClassOption, TimeSeriesOption
+
+class NoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Note
+        fields = ('id', 'author', 'date', 'entry', 'parent')
 
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,12 +24,7 @@ class TimeSeriesOptionSerializer(serializers.ModelSerializer):
 class BinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bin
-        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file', 'edited')
-
-class SetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Set
-        fields = ('id', 'bin', 'number', 'scale')
+        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file')
 
 class FrontEndPackageSerializer(serializers.ModelSerializer):
     class Meta:

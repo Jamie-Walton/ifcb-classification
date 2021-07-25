@@ -3,8 +3,8 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
-from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
+from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer
+from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target
 from .services import create_targets, get_files, get_days, get_rows
 import requests
 import math

@@ -6,22 +6,22 @@ class TimeSeriesOption(models.Model):
     def _str_(self):
         return self.name
 
+class Note(models.Model):
+    author = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now=True)
+    entry = models.CharField(max_length=220)
+    parent = models.ForeignKey('self', null=True, related_name='replies', on_delete=models.CASCADE)
+
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
     ifcb = models.CharField(max_length=15)
     year = models.CharField(max_length=4)
     day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)
-    edited = models.BooleanField(default=False)
+    notes = models.ForeignKey(Note, on_delete=models.CASCADE, null=True)
 
     def _str_(self):
         return self.file
-
-
-class Set(models.Model):
-    bin = models.ForeignKey(Bin, on_delete=models.CASCADE)
-    number = models.IntegerField(default=1)
-    scale = models.DecimalField(max_digits=4, decimal_places=2)
 
 
 class Target(models.Model):
@@ -33,7 +33,7 @@ class Target(models.Model):
     class_abbr = models.CharField(max_length=10, default="UNC")
     editor = models.CharField(max_length=50, default="Auto Classifier")
     date = models.DateField(auto_now=True)
-    notes = models.CharField(max_length=140, default="")
+    notes = models.ForeignKey(Note, on_delete=models.CASCADE, null=True)
 
     def _str_(self):
         return 'target_' + str(self.number)

@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Target, ClassOption, TimeSeriesOption, Bin, Set, Target
+from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note
+
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ('author', 'date', 'entry', 'parent')
 
 class TargetAdmin(admin.ModelAdmin):
     list_display = ('bin', 'number', 'class_name', 'class_abbr', 'editor', 'date', 'notes')
@@ -15,13 +18,10 @@ class TimeSeriesOptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'ifcb')
 
 class BinAdmin(admin.ModelAdmin):
-    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file', 'edited')
+    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file',)
 
-class SetAdmin(admin.ModelAdmin):
-    list_display = ('bin', 'number', 'scale')
-
+admin.site.register(Note, NoteAdmin)
 admin.site.register(Target, TargetAdmin)
 admin.site.register(ClassOption, ClassOptionAdmin)
 admin.site.register(TimeSeriesOption, TimeSeriesOptionAdmin)
 admin.site.register(Bin, BinAdmin)
-admin.site.register(Set, SetAdmin)
