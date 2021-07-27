@@ -4,7 +4,12 @@ from .models import Bin, FrontEndPackage, Note, Target, ClassOption, TimeSeriesO
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ('id', 'author', 'date', 'entry', 'parent')
+        fields = ('id', 'author', 'date', 'entry', 'parent', 'replies', 'timeseries', 'file')
+    
+    def get_fields(self):
+        fields = super(NoteSerializer, self).get_fields()
+        fields['replies'] = NoteSerializer(many=True, read_only=True)
+        return fields
 
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:

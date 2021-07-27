@@ -68,7 +68,7 @@ def create_targets(timeseries, year, day, file):
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         nearest_bin.target_set.create(number=num, width=width, height=height, \
-            class_name=class_name, class_abbr=class_abbr, editor=editor, date=date, notes="")
+            class_name=class_name, class_abbr=class_abbr, editor=editor, date=date)
     
     return ifcb
 

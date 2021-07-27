@@ -3,8 +3,8 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer
-from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target
+from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
+from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
 from .services import create_targets, get_files, get_days, get_rows
 import requests
 import math
@@ -26,6 +26,21 @@ def get_classes(request, timeseries):
     classes = ClassOption.objects.filter(timeseries=timeseries_obj)
     serializer = ClassOptionSerializer(classes, many=True)
     return Response(serializer.data)
+
+@api_view(('GET',))
+def get_notes(request, timeseries, file):
+    notes = Note.objects.filter(timeseries=timeseries, file=file)
+    serializer = NoteSerializer(notes, many=True)
+    return Response(serializer.data)
+
+@api_view(('POST',))
+def add_note(request):
+    serializer = NoteSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(('GET',))

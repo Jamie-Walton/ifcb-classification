@@ -1,10 +1,12 @@
 import {
     SAVE_PROGRESS,
-    SAVE_SUCCESS
+    SAVE_SUCCESS,
+    BIN_NOTES_LOADED,
 } from '../actions/types';
 
 const initialState = {
     isSaving: false,
+    notes: [],
 }
 
 export default function(state = initialState, action) {
@@ -18,6 +20,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isSaving: false
+            }
+        case BIN_NOTES_LOADED:
+            return {
+                ...state,
+                notes: action.payload
             }
         default:
             return state;

@@ -552,3 +552,104 @@ li {
 .drag-box:hover {
 	box-shadow: 0px 6px 30px #00000029;	
 }
+
+
+/* Bin Note */
+
+.note-container {
+	box-shadow: 0px 3px 10px #00000012;
+	border: 1px solid #DEDDDD;
+	border-radius: 1.4vw;
+	padding: 2vw;
+}
+
+.note-input {
+	box-shadow: none;
+	border: none;
+    margin: 0;
+	width: 30vw;
+	font-size: 0.85vw;
+}
+
+.new-note {
+	border: 1px solid #DEDDDD;
+	border-radius: 1.5vw;
+	padding: 0.25vw 1vw;
+	display: flex;
+	margin: 1vw 0 0 0;
+}
+
+.top-level {
+	margin: 0;
+}
+
+.reply {
+	padding: 0 0 0 0.6vw;
+	border-left: 0.2vw solid transparent;
+	border-color: #e0e0e0;
+}
+
+.note-header {
+	display: flex;
+	align-items: center;
+	margin: 0.75vw 0 0 0;
+}
+
+.bin-note-submit {
+	border: 0;
+	background-color: transparent;
+	width: 1.5vw;
+	height: 1.5vw;
+	margin: 0 0 0 0.5vw;
+	background-image: url("../icons/plus-gray.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	align-self: center;
+	cursor: pointer;
+}
+
+.bin-note-submit:hover {
+	background-image: url("../icons/plus-green.png");
+}
+
+.bin-note-label {
+	font-weight: 600;
+	font-style: italic;
+	color:#707070;
+	margin: 0.5vw 0 0 0.5vw;
+}
+
+.note-author {
+	font-weight: 600;
+	color:#16609F;
+}
+
+.note-date {
+	font-size: 0.75vw;
+	color:#adadad;
+	margin: 0 0 0 0.5vw;
+}
+
+.reply-button {
+	font-style: italic;
+	font-weight: 600vw;
+	font-size: 0.75vw;
+	color:#adadad;
+	text-decoration: none;
+	border: none;
+	background-color: transparent;
+	margin: 0 0.5vw 0 0;
+	cursor: pointer;
+}
+
+.reply-button:hover {
+	color:#16609F;
+}
+
+.reply-form {
+	display: none;
+}
+
+.show {
+	display: flex;
+}

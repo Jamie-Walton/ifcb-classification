@@ -10,7 +10,10 @@ class Note(models.Model):
     author = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now=True)
     entry = models.CharField(max_length=220)
-    parent = models.ForeignKey('self', null=True, related_name='replies', on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    timeseries = models.CharField(max_length=15)
+    file = models.CharField(max_length=17)
+
 
 class Bin(models.Model):
     timeseries = models.CharField(max_length=15)
