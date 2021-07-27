@@ -150,25 +150,27 @@ def edit_all(request, timeseries, file, set, sort, className, classAbbr):
     ]
     b = Bin.objects.get(timeseries=timeseries, file=file)
 
-    targets = Target.objects.filter(bin=b)
-    if set == math.ceil((len(targets))/500):
+    #queryset = Target.objects.all().iterator(chunk_size=200)
+    filtered = Target.objects.filter(bin=b)
+    if set == math.ceil((len(filtered))/500):
         start = 500*(set-1)
-        end = len(targets)
+        end = len(filtered)
     else:
         start = 500*(set-1)
         end = start+500
     
     if sort == 'AZ':
-        targets = targets.order_by('class_name', '-height')[start:end]
+        filtered = filtered.order_by('class_name', '-height')[start:end]
     elif sort == 'ZA':
-        targets = targets.order_by('-class_name', '-height')[start:end]
+        filtered = filtered.order_by('-class_name', '-height')[start:end]
     elif sort == 'LS':
-        targets = targets.order_by('-height')[start:end]
+        filtered = filtered.order_by('-height')[start:end]
     elif sort == 'SL':
-        targets = targets.order_by('height')[start:end]
+        filtered = filtered.order_by('height')[start:end]
     
-    for i in range(len(targets)):
-        target = targets[i]
+    targets = filtered.iterator(chunk_size=200)
+    
+    for target in targets:
         t = Target.objects.get(bin=b, number=target.number)
         serializer = TargetSerializer(t, data=\
             {'id': t.id, 'bin': b.id, 'number': t.number, 'height': t.height, 'width': t.width, \
@@ -222,7 +224,6 @@ def new_timeseries(request, timeseries_name, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
 
     options = {
         'year_options': year_options,
@@ -238,7 +239,6 @@ def new_timeseries(request, timeseries_name, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -261,7 +261,6 @@ def new_file(request, timeseries, file, sort):
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
     
     bin = {
         'timeseries': timeseries, 
@@ -269,7 +268,6 @@ def new_file(request, timeseries, file, sort):
         'year': year, 
         'day': day, 
         'file': file,
-        'edited': edited
     }
     
     options = {
@@ -312,7 +310,6 @@ def new_day(request, timeseries, year, day, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
     
     bin = {
         'timeseries': timeseries,
@@ -320,7 +317,6 @@ def new_day(request, timeseries, year, day, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited,
     }
     
     options = {
@@ -363,7 +359,6 @@ def new_year(request, timeseries, year, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
 
     options = {
         'year_options': 'NA',
@@ -379,7 +374,6 @@ def new_year(request, timeseries, year, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited
     }
 
     package = FrontEndPackage(bin=bin, options=options)
