@@ -6,9 +6,9 @@ import {
     BIN_NOTES_LOADED,
 } from "./types";
 
-export const getBinNotes = (timeseries, file) => (dispatch, getState) => {
+export const getBinNotes = (timeseries, file, image) => (dispatch, getState) => {
     axios
-        .get('/process/note/' + timeseries + '/' + file + '/')
+        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
         .then(res => {
             dispatch({
                 type: BIN_NOTES_LOADED,
@@ -18,8 +18,8 @@ export const getBinNotes = (timeseries, file) => (dispatch, getState) => {
         .catch((err) => console.log(err));
 }
 
-export const addBinNote = (author, entry, parent, replies, timeseries, file) => (dispatch, getState) => {
-    const note = JSON.stringify({ author, entry, parent, replies, timeseries, file});
+export const addBinNote = (author, entry, parent, replies, timeseries, file, image) => (dispatch, getState) => {
+    const note = JSON.stringify({ author, entry, parent, replies, timeseries, file, image});
     const config = {
         headers: {
             'Content-Type': 'application/json'

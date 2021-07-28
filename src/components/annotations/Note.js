@@ -28,23 +28,27 @@ class Note extends React.Component {
 
     onSubmit = e => {
         e.preventDefault();
-        this.props.addBinNote(this.props.user, this.state.entry, this.props.note.id, [], this.props.timeseries, this.props.file);
-        this.props.getBinNotes(this.props.timeseries, this.props.file);
+        this.props.addBinNote(this.props.user, this.state.entry, this.props.note.id, [], this.props.timeseries, this.props.file, this.props.image);
+        this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
         const replyForm = document.getElementById("note-form");
         replyForm.reset()
         document.getElementById('reply-form' + this.props.note.id).classList.toggle('show');
     }
     
     render() {
-        const { id, author, date, entry, parent, replies, timeseries, file } = this.props.note;
+        const { id, author, date, entry, parent, replies, timeseries, file, image } = this.props.note;
         return (
-            <div id={id}>
-                <div className="note-header">
+            <div className={this.props.type + "note"} id={id}>
+                <div className={this.props.type + "-note-header"}>
                     <p className="note-author">{author}</p>
-                    <p className="note-date">{date}</p>
+                    {(this.props.type === 'bin') ? 
+                    <p className="note-date">{date}</p> :
+                    <p className="note-date">{date.slice(0,10)}</p>}
                 </div>
-                <p className="note-entry">{entry}</p>
-                <button className="reply-button" onClick={() => this.reply(id)}>Reply</button>
+                <p className={this.props.type + "-note-entry"}>{entry}</p>
+                {(this.props.type === 'bin') ? 
+                    <button className="reply-button" onClick={() => this.reply(id)}>Reply</button> :
+                    <div></div>}
                 {(author === this.props.user) ? 
                     <button className="reply-button" onClick={() => this.delete(id)}>Delete</button> :
                     <div></div>}

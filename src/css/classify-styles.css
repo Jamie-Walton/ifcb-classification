@@ -466,7 +466,8 @@ li {
   	border-radius: 0 0 1vw 1vw;
 	resize: both;
 	min-height: 10vw;
-	min-width: 10vw;
+	min-width: 16vw;
+	overflow: auto;
 }
 
 .show-info {
@@ -615,7 +616,11 @@ li {
 	background-color:#7dad0b;
 }
 
-.note-input {
+.target-notes-content {
+	margin: 0 0 0 1vw;
+}
+
+.bin-note-input {
 	box-shadow: none;
 	border: none;
     margin: 0;
@@ -623,7 +628,15 @@ li {
 	font-size: 0.85vw;
 }
 
-.new-note {
+.target-note-input {
+	box-shadow: none;
+	border: none;
+    margin: 0;
+	width: 10vw;
+	font-size: 0.85vw;
+}
+
+.bin-new-note {
 	border: 1px solid #DEDDDD;
 	border-radius: 1.5vw;
 	padding: 0.25vw 1vw;
@@ -633,16 +646,32 @@ li {
 	overflow: auto;
 }
 
+.target-new-note {
+	border: 1px solid #DEDDDD;
+	border-radius: 1.5vw;
+	padding: 0.25vw 1vw;
+	display: flex;
+	margin: 1vw 0 0 0;
+	max-width: 14vw;
+	overflow: auto;
+}
+
 .reply {
 	padding: 0 0 0 0.6vw;
 	border-left: 0.2vw solid transparent;
 	border-color: #e0e0e0;
 }
 
-.note-header {
+.bin-note-header {
 	display: flex;
 	align-items: center;
 	margin: 0.75vw 0 0 0;
+}
+
+.target-note-header {
+	display: flex;
+	align-items: center;
+	margin: 0.5vw 0 0 0;
 }
 
 .bin-note-submit {
@@ -680,8 +709,12 @@ li {
 	margin: 0 0 0 0.5vw;
 }
 
-.note-entry {
+.bin-note-entry {
 	width: 30vw;
+}
+
+.target-note-entry {
+	width: 10vw;
 }
 
 .reply-button {

@@ -229,6 +229,7 @@ class Plankton extends React.Component {
   }
 
   handleInfoClick() {
+    this.props.infoChange(this.props.targetNum, false, true);
     document.getElementById(this.props.targetNum + '-info').classList.toggle('show-info');
     document.getElementById(this.props.targetNum + '-image').classList.toggle('hide');
     document.getElementById(this.props.targetNum).classList.toggle('hide');
@@ -239,21 +240,32 @@ class Plankton extends React.Component {
         height: this.getHeight() + 'vw',
         width: this.getWidth() + 'vw'
     };
+
     return(
-          <button className="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
-              <div className="plankton">
-                  {this.renderImage()}
-                  <div className="info" onClick={() => this.handleInfoClick()}></div>
-                  <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>
-                    <p className="classification-info">{this.props.class_name}</p>
-                    <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
-                    <p className="editor-info">{'Classified by ' + this.props.editor + ', \n' + this.props.date}</p>
-                  </div>
-                  <div className='id' id={this.props.targetNum}>
-                      <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
-                  </div>
-              </div>
-          </button>
+          <div>
+            <div className="plankton-button" id="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
+                <div className="plankton">
+                    {this.renderImage()}
+                    <div className="info" onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
+                        onMouseLeave={() => this.props.infoChange(this.props.targetNum, true, false)}
+                        onClick={() => this.handleInfoClick()}></div>
+                    <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>
+                        <p className="classification-info">{this.props.class_name}</p>
+                        <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
+                        <p className="editor-info">{'Classified by ' + this.props.editor + ',\n' + this.props.date}</p>
+                        <BinNote
+                            timeseries={this.props.timeseries}
+                            file={this.props.file}
+                            type='target'
+                            image={this.props.targetNum}
+                        />
+                    </div>
+                    <div className='id' id={this.props.targetNum}>
+                        <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
+                    </div>
+                </div>
+            </div>
+          </div>
       );
   }
 }
@@ -308,6 +320,7 @@ class Annotations extends React.Component {
           classAbbrs: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
+          planktonClickEnabled: true,
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
           yearOptions: [],
@@ -679,10 +692,19 @@ class Annotations extends React.Component {
     this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, this.state.sortCode, start, end);
   }
 
+  disablePlanktonClick(targetNum, bool, infoShowing) {
+    const infoClassList = document.getElementById(targetNum + '-info').classList;
+    if ((infoShowing) || (infoClassList.contains('show-info'))) {
+        this.setState({ planktonClickEnabled: false });
+    } else {
+        this.setState({ planktonClickEnabled: bool });
+    }
+  }
+
   handlePlanktonClick(i) {
-    var targets = this.state.targets;
-    const k = targets.findIndex(target => target.number === i);
-    if (!('show-info' in document.getElementById(i + '-info').classList)) {
+    if (this.state.planktonClickEnabled) {
+        var targets = this.state.targets;
+        const k = targets.findIndex(target => target.number === i);
         const classAbbr = (element) => element === this.state.classPicker;
         targets[k].class_name = this.state.classPicker;
         targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
@@ -698,7 +720,6 @@ class Annotations extends React.Component {
 
         this.props.classifyTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
     }
-    
   }
 
   showNotes() {
@@ -766,6 +787,7 @@ class Annotations extends React.Component {
   renderPlankton(i) {
       return <Plankton 
               timeseries={this.state.bin.timeseries}
+              file={this.state.bin.file}
               timestamp={this.state.bin.file}
               id={i}
               targetNum={this.state.targets[i].number}
@@ -778,6 +800,7 @@ class Annotations extends React.Component {
               editor={this.state.targets[i].editor}
               date={this.state.targets[i].date}
               onClick={(i) => this.handlePlanktonClick(i)}
+              infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
           />;
   }
 
@@ -869,6 +892,8 @@ class Annotations extends React.Component {
                     <BinNote 
                         timeseries={this.state.bin.timeseries}
                         file={this.state.bin.file}
+                        type='bin'
+                        image='None'
                     /> }
                 </div>
                 <div className="annotations">

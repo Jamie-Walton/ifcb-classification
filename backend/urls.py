@@ -20,7 +20,7 @@ urlpatterns = [
     path('process/year/<str:timeseries>/<str:year>/<str:sort>/', views.new_year),
     path('process/rows/<str:timeseries>/<str:file>/<int:set>/<str:sort>/', views.new_rows),
     path('process/targets/<str:timeseries>/<str:file>/<int:set>/<str:sort>/', views.new_targets),
-    path('process/note/<str:timeseries>/<str:file>/', views.get_notes),
+    path('process/note/<str:timeseries>/<str:file>/<str:image>/', views.get_notes),
     path('save/<str:timeseries>/<str:file>/<int:set>/<str:sort>/', views.save),
     path('edit/target/<str:timeseries>/<str:file>/<str:number>/', views.edit_target),
     path('edit/targetrow/<str:timeseries>/<str:file>/<str:sort>/<int:startInd>/<int:endInd>/', views.edit_targetrow),

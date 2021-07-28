@@ -28,8 +28,8 @@ def get_classes(request, timeseries):
     return Response(serializer.data)
 
 @api_view(('GET',))
-def get_notes(request, timeseries, file):
-    notes = Note.objects.filter(timeseries=timeseries, file=file)
+def get_notes(request, timeseries, file, image):
+    notes = Note.objects.filter(timeseries=timeseries, file=file, image=image)
     serializer = NoteSerializer(notes, many=True)
     return Response(serializer.data)
 
