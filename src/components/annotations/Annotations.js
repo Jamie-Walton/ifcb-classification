@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import Draggable from 'react-draggable';
 import Header from '../layout/Header';
+import BinNote from './BinNote';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -697,6 +698,14 @@ class Annotations extends React.Component {
     
   }
 
+  showNotes() {
+      const noteDropdown = document.getElementById("note-dropdown");
+      noteDropdown.classList.toggle('show');
+      const showButton = document.getElementById("show-notes-button");
+      (showButton.innerHTML === "Show Notes") ? showButton.innerHTML = "Hide Notes" : showButton.innerHTML = "Show Notes";
+
+  }
+
   renderTimeSeriesControl() {
     return <TimeSeriesControl
         timeseries={this.state.bin.timeseries}
@@ -828,6 +837,7 @@ class Annotations extends React.Component {
                     {this.renderSetControl()}
                     {this.renderGroup()}
                     {this.renderSort()}
+                    <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
                 </div>
                 <div className="day-dropdown" id='day_dropdown'>
                     <div className="timeline">
@@ -849,6 +859,14 @@ class Annotations extends React.Component {
                             <p className="month">Dec</p>
                         </div>
                     </div>
+                </div>
+                <div className="note-container" id="note-dropdown">
+                    {((this.state.bin.timeseries) === '' || this.state.bin.file === '') ? 
+                    <div></div> :
+                    <BinNote 
+                        timeseries={this.state.bin.timeseries}
+                        file={this.state.bin.file}
+                    /> }
                 </div>
                 <div className="annotations">
                     {this.renderClassMenu()}

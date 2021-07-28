@@ -26,6 +26,7 @@ urlpatterns = [
     path('edit/targetrow/<str:timeseries>/<str:file>/<str:sort>/<int:startInd>/<int:endInd>/', views.edit_targetrow),
     path('edit/all/<str:timeseries>/<str:file>/<int:set>/<str:sort>/<str:className>/<str:classAbbr>/', views.edit_all),
     path('add/note/', views.add_note),
+    path('delete/note/<int:id>/', views.delete_note),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
 ]

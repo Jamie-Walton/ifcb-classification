@@ -42,6 +42,14 @@ def add_note(request):
         
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(('DELETE',))
+def delete_note(request, id):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    note = Note.objects.get(id=id)
+    note.delete()
+    return Response(status=status.HTTP_201_CREATED)
 
 @api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):

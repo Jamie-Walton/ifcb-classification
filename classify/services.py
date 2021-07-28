@@ -26,7 +26,7 @@ def create_targets(timeseries, year, day, file):
     target_bin = target_bin_response.json()
     targets = target_bin['targets']
     
-    nearest_bin = Bin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file, edited=False)
+    nearest_bin = Bin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file)
     nearest_bin.save()
     
     classes = None

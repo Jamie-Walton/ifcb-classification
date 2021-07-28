@@ -20,7 +20,6 @@ export const getBinNotes = (timeseries, file) => (dispatch, getState) => {
 
 export const addBinNote = (author, entry, parent, replies, timeseries, file) => (dispatch, getState) => {
     const note = JSON.stringify({ author, entry, parent, replies, timeseries, file});
-    console.log(note);
     const config = {
         headers: {
             'Content-Type': 'application/json'
@@ -28,6 +27,21 @@ export const addBinNote = (author, entry, parent, replies, timeseries, file) => 
     }
     axios
         .post('/add/note/', note, config, tokenConfig(getState))
+        .catch((err) => console.log(err));
+}
+
+export const deleteBinNote = (id, timeseries, file) => (dispatch, getState) => {
+    axios
+        .delete('/delete/note/' + id + '/', tokenConfig(getState))
+        .catch((err) => console.log(err));
+    axios
+        .get('/process/note/' + timeseries + '/' + file + '/')
+        .then(res => {
+            dispatch({
+                type: BIN_NOTES_LOADED,
+                payload: res.data
+            });
+        })
         .catch((err) => console.log(err));
 }
 
