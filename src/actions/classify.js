@@ -30,12 +30,12 @@ export const addBinNote = (author, entry, parent, replies, timeseries, file, ima
         .catch((err) => console.log(err));
 }
 
-export const deleteBinNote = (id, timeseries, file) => (dispatch, getState) => {
+export const deleteBinNote = (id, timeseries, file, image) => (dispatch, getState) => {
     axios
         .delete('/delete/note/' + id + '/', tokenConfig(getState))
         .catch((err) => console.log(err));
     axios
-        .get('/process/note/' + timeseries + '/' + file + '/')
+        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
         .then(res => {
             dispatch({
                 type: BIN_NOTES_LOADED,

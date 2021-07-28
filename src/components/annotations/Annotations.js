@@ -240,7 +240,7 @@ class Plankton extends React.Component {
         height: this.getHeight() + 'vw',
         width: this.getWidth() + 'vw'
     };
-
+    
     return(
           <div>
             <div className="plankton-button" id="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
@@ -253,12 +253,15 @@ class Plankton extends React.Component {
                         <p className="classification-info">{this.props.class_name}</p>
                         <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
                         <p className="editor-info">{'Classified by ' + this.props.editor + ',\n' + this.props.date}</p>
+                        {(this.props.infoShowing === this.props.targetNum) ? 
                         <BinNote
                             timeseries={this.props.timeseries}
                             file={this.props.file}
                             type='target'
                             image={this.props.targetNum}
-                        />
+                        /> :
+                        <div></div>
+                        }
                     </div>
                     <div className='id' id={this.props.targetNum}>
                         <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
@@ -321,6 +324,7 @@ class Annotations extends React.Component {
           classPicker: 'Unclassified',
           classMark: 'UNC',
           planktonClickEnabled: true,
+          infoShowing: [],
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
           yearOptions: [],
@@ -695,9 +699,12 @@ class Annotations extends React.Component {
   disablePlanktonClick(targetNum, bool, infoShowing) {
     const infoClassList = document.getElementById(targetNum + '-info').classList;
     if ((infoShowing) || (infoClassList.contains('show-info'))) {
-        this.setState({ planktonClickEnabled: false });
+        this.setState({ planktonClickEnabled: false, infoShowing: this.state.infoShowing.concat([targetNum]) });
     } else {
-        this.setState({ planktonClickEnabled: bool });
+        const newInfoShowing = this.state.infoShowing.filter(function(item) {
+            return item !== targetNum
+        })
+        this.setState({ planktonClickEnabled: bool, infoShowing: newInfoShowing });
     }
   }
 
@@ -801,6 +808,7 @@ class Annotations extends React.Component {
               date={this.state.targets[i].date}
               onClick={(i) => this.handlePlanktonClick(i)}
               infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
+              infoShowing={this.state.infoShowing}
           />;
   }
 

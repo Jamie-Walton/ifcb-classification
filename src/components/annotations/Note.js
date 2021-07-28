@@ -21,7 +21,7 @@ class Note extends React.Component {
     }
 
     delete(id) {
-        this.props.deleteBinNote(id, this.props.timeseries, this.props.file);
+        this.props.deleteBinNote(id, this.props.timeseries, this.props.file, this.props.image);
     }
 
     onChange = e => this.setState({ entry: e.target.value })
