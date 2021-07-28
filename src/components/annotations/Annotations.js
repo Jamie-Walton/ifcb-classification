@@ -245,8 +245,9 @@ class Plankton extends React.Component {
                   {this.renderImage()}
                   <div className="info" onClick={() => this.handleInfoClick()}></div>
                   <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>
-                    <p>{this.props.class_name}</p>
-                    <p>{'Classified by ' + this.props.editor + ' on ' + this.props.date}</p>
+                    <p className="classification-info">{this.props.class_name}</p>
+                    <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
+                    <p className="editor-info">{'Classified by ' + this.props.editor + ', \n' + this.props.date}</p>
                   </div>
                   <div className='id' id={this.props.targetNum}>
                       <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
@@ -681,20 +682,22 @@ class Annotations extends React.Component {
   handlePlanktonClick(i) {
     var targets = this.state.targets;
     const k = targets.findIndex(target => target.number === i);
-    const classAbbr = (element) => element === this.state.classPicker;
-    targets[k].class_name = this.state.classPicker;
-    targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
-    targets[k].editor = this.props.user.username;
-    this.setState({ 
-        targets: targets,
-        history: this.state.history.concat([targets])
-    });
-    const container = document.getElementById(targets[k].number);
-    const text = document.getElementById(targets[k].number+'-text');
-    container.style.backgroundColor = '#16609F';
-    text.style.color = '#FFFFFF';
+    if (!('show-info' in document.getElementById(i + '-info').classList)) {
+        const classAbbr = (element) => element === this.state.classPicker;
+        targets[k].class_name = this.state.classPicker;
+        targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        targets[k].editor = this.props.user.username;
+        this.setState({ 
+            targets: targets,
+            history: this.state.history.concat([targets])
+        });
+        const container = document.getElementById(targets[k].number);
+        const text = document.getElementById(targets[k].number+'-text');
+        container.style.backgroundColor = '#16609F';
+        text.style.color = '#FFFFFF';
 
-    this.props.classifyTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
+        this.props.classifyTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
+    }
     
   }
 

@@ -465,10 +465,36 @@ li {
   	border: 0.0001vw solid #D5D3D3;
   	border-radius: 0 0 1vw 1vw;
 	resize: both;
+	min-height: 10vw;
+	min-width: 10vw;
 }
 
 .show-info {
 	display: inline-block;
+}
+
+.classification-info {
+	font-size: 1vw;
+	font-style: italic;
+	font-weight: 600;
+	text-align: left;
+	color: #646464;
+	margin: 1.2vw 1vw 0.1vw;
+}
+
+.target-num-info {
+	font-size: 0.85vw;
+	font-style: italic;
+	text-align: left;
+	color: #a1a1a1;
+	margin: 0 1vw 0.2vw;
+}
+
+.editor-info {
+	font-size: 0.85vw;
+	text-align: left;
+	color: #646464;
+	margin: 0 1vw 0.2vw;
 }
 
 .id {
