@@ -3,9 +3,10 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, SetSerializer
-from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Set, Target
-from .services import create_targets, get_files, get_days, get_rows
+from django.http import HttpResponseNotFound
+from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
+from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
+from .services import create_targets, get_files, get_days, get_rows, sync_autoclass
 import requests
 import math
 import pandas as pd
@@ -27,6 +28,29 @@ def get_classes(request, timeseries):
     serializer = ClassOptionSerializer(classes, many=True)
     return Response(serializer.data)
 
+@api_view(('GET',))
+def get_notes(request, timeseries, file, image):
+    notes = Note.objects.filter(timeseries=timeseries, file=file, image=image)
+    serializer = NoteSerializer(notes, many=True)
+    return Response(serializer.data)
+
+@api_view(('POST',))
+def add_note(request):
+    serializer = NoteSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(('DELETE',))
+def delete_note(request, id):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    note = Note.objects.get(id=id)
+    note.delete()
+    return Response(status=status.HTTP_201_CREATED)
 
 @api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):
@@ -84,9 +108,14 @@ def save(request, timeseries, file, set, sort):
             serializer.save()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_204_NO_CONTENT)    
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
-    
+@api_view(('GET',))
+def sync(request, timeseries, year, day, file):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    b.delete()
+    create_targets(timeseries, year, day, file)
+
 
 
 @api_view(('PUT',))
@@ -135,25 +164,27 @@ def edit_all(request, timeseries, file, set, sort, className, classAbbr):
     ]
     b = Bin.objects.get(timeseries=timeseries, file=file)
 
-    targets = Target.objects.filter(bin=b)
-    if set == math.ceil((len(targets))/500):
+    #queryset = Target.objects.all().iterator(chunk_size=200)
+    filtered = Target.objects.filter(bin=b)
+    if set == math.ceil((len(filtered))/500):
         start = 500*(set-1)
-        end = len(targets)
+        end = len(filtered)
     else:
         start = 500*(set-1)
         end = start+500
     
     if sort == 'AZ':
-        targets = targets.order_by('class_name', '-height')[start:end]
+        filtered = filtered.order_by('class_name', '-height')[start:end]
     elif sort == 'ZA':
-        targets = targets.order_by('-class_name', '-height')[start:end]
+        filtered = filtered.order_by('-class_name', '-height')[start:end]
     elif sort == 'LS':
-        targets = targets.order_by('-height')[start:end]
+        filtered = filtered.order_by('-height')[start:end]
     elif sort == 'SL':
-        targets = targets.order_by('height')[start:end]
+        filtered = filtered.order_by('height')[start:end]
     
-    for i in range(len(targets)):
-        target = targets[i]
+    targets = filtered.iterator(chunk_size=200)
+    
+    for target in targets:
         t = Target.objects.get(bin=b, number=target.number)
         serializer = TargetSerializer(t, data=\
             {'id': t.id, 'bin': b.id, 'number': t.number, 'height': t.height, 'width': t.width, \
@@ -207,7 +238,6 @@ def new_timeseries(request, timeseries_name, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
 
     options = {
         'year_options': year_options,
@@ -223,7 +253,6 @@ def new_timeseries(request, timeseries_name, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -246,7 +275,6 @@ def new_file(request, timeseries, file, sort):
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
     
     bin = {
         'timeseries': timeseries, 
@@ -254,7 +282,6 @@ def new_file(request, timeseries, file, sort):
         'year': year, 
         'day': day, 
         'file': file,
-        'edited': edited
     }
     
     options = {
@@ -297,7 +324,6 @@ def new_day(request, timeseries, year, day, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
     
     bin = {
         'timeseries': timeseries,
@@ -305,7 +331,6 @@ def new_day(request, timeseries, year, day, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited,
     }
     
     options = {
@@ -348,7 +373,6 @@ def new_year(request, timeseries, year, sort):
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort)
-    edited = b.edited
 
     options = {
         'year_options': 'NA',
@@ -364,7 +388,6 @@ def new_year(request, timeseries, year, sort):
         'year': year, 
         'day': day, 
         'file': first_file,
-        'edited': edited
     }
 
     package = FrontEndPackage(bin=bin, options=options)

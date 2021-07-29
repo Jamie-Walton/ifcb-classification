@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { HashRouter as Router, Route, Switch, Redirect } from "react-router-dom"
+import { HashRouter as Router, Route, Switch } from "react-router-dom"
 
 import Annotations from './components/annotations/Annotations';
+import Notebook from './components/annotations/Notebook';
 import Login from './components/accounts/Login';
 import Register from './components/accounts/Register';
 import PrivateRoute from './components/common/PrivateRoute';
@@ -22,6 +22,7 @@ class App extends Component {
                 <Router>
                     <Switch>
                         <PrivateRoute exact path="/" component={Annotations} />
+                        <PrivateRoute exact path="/notebook" component={Notebook} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
                     </Switch>

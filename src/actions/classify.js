@@ -1,22 +1,73 @@
 import axios from "axios";
 import { tokenConfig } from './auth';
-import { SAVE_SUCCESS, SAVE_PROGRESS } from "./types";
+import { 
+    SAVE_PROGRESS,
+    SAVE_SUCCESS,
+    SYNC_PROGRESS,
+    SYNC_SUCCESS,
+    BIN_NOTES_LOADED,
+} from "./types";
+
+export const getBinNotes = (timeseries, file, image) => (dispatch, getState) => {
+    axios
+        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
+        .then(res => {
+            dispatch({
+                type: BIN_NOTES_LOADED,
+                payload: res.data
+            });
+        })
+        .catch((err) => console.log(err));
+}
+
+export const addBinNote = (author, entry, parent, replies, timeseries, file, image) => (dispatch, getState) => {
+    const note = JSON.stringify({ author, entry, parent, replies, timeseries, file, image});
+    console.log(note);
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+    axios
+        .post('/add/note/', note, config, tokenConfig(getState))
+        .catch((err) => console.log(err));
+}
+
+export const deleteBinNote = (id, timeseries, file, image) => (dispatch, getState) => {
+    axios
+        .delete('/delete/note/' + id + '/', tokenConfig(getState))
+        .catch((err) => console.log(err));
+    axios
+        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
+        .then(res => {
+            dispatch({
+                type: BIN_NOTES_LOADED,
+                payload: res.data
+            });
+        })
+        .catch((err) => console.log(err));
+}
 
 export const classifyTarget = (target, timeseries, file, number) => (dispatch, getState) => {
     axios
-        .put('/edit/target/' + timeseries + '/' + file + '/' + number + '/', target, tokenConfig(getState))
+        .put('/edit/target/' + timeseries + '/' + file + 
+            '/' + number + '/', target, tokenConfig(getState))
         .catch((err) => console.log(err));
 }
 
 export const classifyRow = (targets, timeseries, file, sort, startInd, endInd) => (dispatch, getState) => {
     axios
-        .put('/edit/targetrow/' + timeseries + '/' + file + '/' + sort + '/' + startInd + '/' + endInd + '/', targets, tokenConfig(getState))
+        .put('/edit/targetrow/' + timeseries + '/' + file + 
+            '/' + sort + '/' + startInd + '/' + endInd + '/', 
+            targets, tokenConfig(getState))
         .catch((err) => console.log(err));
 }
 
 export const classifyAll = (timeseries, file, set, sort, className, classAbbr) => (dispatch, getState) => {
     axios
-        .put('/edit/all/' + timeseries + '/' + file + '/' + set + '/' + sort + '/' + className + '/' + classAbbr + '/', tokenConfig(getState))
+        .put('/edit/all/' + timeseries + '/' + file + 
+            '/' + set + '/' + sort + '/' + className + 
+            '/' + classAbbr + '/', tokenConfig(getState))
         .catch((err) => console.log(err));
 }
 
@@ -25,10 +76,27 @@ export const save = (targets, timeseries, file, set, sort) => (dispatch, getStat
         type: SAVE_PROGRESS,
     });
     axios
-        .put('/save/' + timeseries + '/' + file + '/' + set + '/' + sort + '/', targets, tokenConfig(getState))
+        .put('/save/' + timeseries + '/' + file + 
+            '/' + set + '/' + sort + '/', targets, 
+            tokenConfig(getState))
         .then(res => {
             dispatch({
                 type: SAVE_SUCCESS,
+            });
+        })
+        .catch((err) => console.log(err));
+    return 
+}
+
+export const sync = (timeseries, year, day, file) => (dispatch, getState) => {
+    dispatch({
+        type: SYNC_PROGRESS,
+    });
+    axios
+        .get('sync/' + timeseries + '/' + year + '/' + day + '/' + file + '/')
+        .then(res => {
+            dispatch({
+                type: SYNC_SUCCESS,
             });
         })
         .catch((err) => console.log(err));
