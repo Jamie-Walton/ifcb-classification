@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note
 
 class NoteAdmin(admin.ModelAdmin):
-    list_display = ('author', 'date', 'entry', 'parent', 'timeseries', 'file')
+    list_display = ('author', 'date', 'entry', 'parent', 'timeseries', 'file', 'image')
     
 
 class TargetAdmin(admin.ModelAdmin):

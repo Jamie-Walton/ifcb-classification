@@ -3,6 +3,8 @@ import { tokenConfig } from './auth';
 import { 
     SAVE_PROGRESS,
     SAVE_SUCCESS,
+    SYNC_PROGRESS,
+    SYNC_SUCCESS,
     BIN_NOTES_LOADED,
 } from "./types";
 
@@ -20,6 +22,7 @@ export const getBinNotes = (timeseries, file, image) => (dispatch, getState) => 
 
 export const addBinNote = (author, entry, parent, replies, timeseries, file, image) => (dispatch, getState) => {
     const note = JSON.stringify({ author, entry, parent, replies, timeseries, file, image});
+    console.log(note);
     const config = {
         headers: {
             'Content-Type': 'application/json'
@@ -79,6 +82,21 @@ export const save = (targets, timeseries, file, set, sort) => (dispatch, getStat
         .then(res => {
             dispatch({
                 type: SAVE_SUCCESS,
+            });
+        })
+        .catch((err) => console.log(err));
+    return 
+}
+
+export const sync = (timeseries, year, day, file) => (dispatch, getState) => {
+    dispatch({
+        type: SYNC_PROGRESS,
+    });
+    axios
+        .get('sync/' + timeseries + '/' + year + '/' + day + '/' + file + '/')
+        .then(res => {
+            dispatch({
+                type: SYNC_SUCCESS,
             });
         })
         .catch((err) => console.log(err));

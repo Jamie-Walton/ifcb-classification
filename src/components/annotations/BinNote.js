@@ -73,7 +73,7 @@ export class BinNote extends React.Component {
                 <div id="note-container">
                     {this.props.notes.map((note) => this.renderNote(note, 0))}
                 </div>
-                    <div className="note-form">
+                    <div className={this.props.type + "-note-form"}>
                         <form onSubmit={this.onSubmit} id="note-form">
                             <div className={this.props.type + "-new-note"}>
                             <input
@@ -85,7 +85,7 @@ export class BinNote extends React.Component {
                                 onChange={this.onChange}
                                 value={this.entry}
                             />
-                            <button type="submit" className="bin-note-submit"></button>
+                            <button type="submit" className={this.props.type + "-note-submit"}></button>
                             </div>
                             {(this.props.notes === []) ? <p className="bin-note-label">Add a Note</p> : <div></div>}
                         </form>

@@ -41,8 +41,9 @@ header {
 	color: #FFFFFF;
 	text-transform: uppercase;
 	letter-spacing: 0.1vw;
+	font-size: 1vw;
 	font-weight: 400;
-	padding: 0.5vw 1.4vw;
+	padding: 0.5vw 1.4vw 0.5vw 1.6vw;
 	width: 8vw;
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -135,6 +136,10 @@ li {
 	right: 5vw;
 	width: 3vw;
 	cursor: pointer;
+}
+
+.flip {
+	transform: rotate(180deg);
 }
 
 
@@ -317,6 +322,75 @@ li {
 	flex-direction: row;
 }
 
+.hide-info-button {
+	background-color:#b8b8b8;
+	border: none;
+	display: flex;
+	border-radius: 5vw;
+	font-family: proxima-nova, sans-serif;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 0.85vw;
+	justify-content: space-between;
+	margin: 0 1vw 0 0;
+	padding: 0.6vw 1vw;
+	height: 2.5vw;
+	cursor: pointer;
+}
+
+.hide-info-button:hover {
+	background-color:#7dad0b;
+}
+
+.sync-button {
+	background-color:#b8b8b8;
+	border: none;
+	display: flex;
+	border-radius: 5vw;
+	margin: 0 1vw 0 0;
+	padding: 0.6vw 1vw;
+	height: 2.5vw;
+	cursor: pointer;
+}
+
+.sync-button:hover {
+	background-color:#7dad0b;
+}
+
+.sync {
+	background-image: url(../icons/sync.png);
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 1vw;
+	height: 1vw;
+	margin: 0.13vw 0.5vw 0 0;
+	justify-self: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.syncing {
+	  animation: sync-spin infinite 3s linear;
+	}
+  }
+
+  @keyframes sync-spin {
+	from {
+	  transform: rotate(360deg);
+	}
+	to {
+	  transform: rotate(0deg);
+	}
+  }
+
+.sync-text {
+	font-family: proxima-nova, sans-serif;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 0.85vw;
+}
+
 .hide {display: none;}
 
 .accommodate-dropdown {border-radius: 1.4vw 1.4vw 0 0;}
@@ -338,7 +412,7 @@ li {
 	border: none;
 	display: flex;
 	font-family: proxima-nova, sans-serif;
-	padding: 0.5vw 0 0.5vw 1vw;
+	padding: 0.35vw 0 0.35vw 1vw;
 	margin: 0 0 0.5vw 1vw;
 	width: 8vw;
 	flex-grow: 0;
@@ -374,7 +448,7 @@ li {
 .class-menu {
 	background: #079CCC 0% 0% no-repeat padding-box;
 	border-radius: 0px 4vw 4vw 0px;
-  	padding: 3vw 0;
+  	padding: 2.5vw 0;
 	flex-grow: 0;
 	flex-shrink: 0;
 	width: 16vw;
@@ -392,7 +466,7 @@ li {
 	text-align: left;
 	display: block;
 	width: 100%;
-	padding: 0.1vw 3vw;
+	padding: 0.05vw 3vw;
 	cursor: pointer;
 }
 
@@ -433,6 +507,7 @@ li {
 	display: flex;
 	align-items: flex-start;
 	overflow: scroll;
+	max-width: 70vw;
 }
 
 
@@ -616,10 +691,6 @@ li {
 	background-color:#7dad0b;
 }
 
-.target-notes-content {
-	margin: 0 0 0 1vw;
-}
-
 .bin-note-input {
 	box-shadow: none;
 	border: none;
@@ -632,8 +703,16 @@ li {
 	box-shadow: none;
 	border: none;
     margin: 0;
-	width: 10vw;
 	font-size: 0.85vw;
+	width: 100%;
+}
+
+.target-note {
+	padding: 0 1vw;
+}
+
+.target-note-form {
+	padding: 0 1vw;
 }
 
 .bin-new-note {
@@ -652,7 +731,6 @@ li {
 	padding: 0.25vw 1vw;
 	display: flex;
 	margin: 1vw 0 0 0;
-	max-width: 14vw;
 	overflow: auto;
 }
 
@@ -688,6 +766,23 @@ li {
 }
 
 .bin-note-submit:hover {
+	background-image: url("../icons/plus-green.png");
+}
+
+.target-note-submit {
+	border: 0;
+	background-color: transparent;
+	height: 1.5vw;
+	width: 1.5vw;
+	margin: 0 0 0 0.5vw;
+	background-image: url("../icons/plus-gray.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	align-self: center;
+	cursor: pointer;
+}
+
+.target-note-submit:hover {
 	background-image: url("../icons/plus-green.png");
 }
 

@@ -3,9 +3,10 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
+from django.http import HttpResponseNotFound
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
-from .services import create_targets, get_files, get_days, get_rows
+from .services import create_targets, get_files, get_days, get_rows, sync_autoclass
 import requests
 import math
 import pandas as pd
@@ -107,9 +108,14 @@ def save(request, timeseries, file, set, sort):
             serializer.save()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_204_NO_CONTENT)    
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
-    
+@api_view(('GET',))
+def sync(request, timeseries, year, day, file):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    b.delete()
+    create_targets(timeseries, year, day, file)
+
 
 
 @api_view(('PUT',))

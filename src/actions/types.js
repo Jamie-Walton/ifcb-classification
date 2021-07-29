@@ -11,5 +11,7 @@ export const REGISTER_FAIL = "REGISTER_FAIL";
 // Classification
 export const SAVE_SUCCESS = "SAVE_SUCCESS";
 export const SAVE_PROGRESS = "SAVE_PROGRESS";
+export const SYNC_SUCCESS = "SYNC_SUCCESS";
+export const SYNC_PROGRESS = "SYNC_PROGRESS";
 export const BIN_NOTES_LOADED = "BIN_NOTES_LOADED"
 export const BIN_NOTE_SUCCESS = "BIN_NOTE_SUCCESS"

@@ -6,7 +6,7 @@ import BinNote from './BinNote';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { classifyTarget, classifyRow, classifyAll, save } from "../../actions/classify";
+import { classifyTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
@@ -224,7 +224,7 @@ class Plankton extends React.Component {
     if (this.props.width < 0) {
       return '5'
     } else {
-        return String(Number(this.props.width)*this.props.scale)+'vw'
+        return String(Number(this.props.width)*this.props.scale)
     }
   }
 
@@ -253,7 +253,7 @@ class Plankton extends React.Component {
                         <p className="classification-info">{this.props.class_name}</p>
                         <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
                         <p className="editor-info">{'Classified by ' + this.props.editor + ',\n' + this.props.date}</p>
-                        {(this.props.infoShowing === this.props.targetNum) ? 
+                        {(this.props.infoShowing.includes(this.props.targetNum)) ? 
                         <BinNote
                             timeseries={this.props.timeseries}
                             file={this.props.file}
@@ -333,13 +333,14 @@ class Annotations extends React.Component {
           fileOptions: [],
           setOptions: [],
           targets: [],
-          history: [],
+          history: [{ targets: [] }],
           rows: [],
           scale: 0.056,
           set: 1,
           group: 'Class',
           sort: 'A to Z',
-          sortCode: 'AZ'
+          sortCode: 'AZ',
+          lastScroll: 0,
       }
   }
 
@@ -349,13 +350,14 @@ class Annotations extends React.Component {
     classifyAll: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
     isSaving: PropTypes.bool,
+    sync: PropTypes.func.isRequired,
+    isSyncing: PropTypes.bool,
     user: PropTypes.object,
   };
 
   getNewTimeSeries(option) {
     this.setState({
         loading: true,
-        history: [],
         bin: {
             timeseries: option,
             ifcb: this.state.bin.ifcb,
@@ -392,6 +394,7 @@ class Annotations extends React.Component {
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
+                        history: [{ targets: targetResponse.data }],
                         loading: false,
                      });
                 });
@@ -406,13 +409,11 @@ class Annotations extends React.Component {
       .catch((err) => console.log(err));
 
     this.getNewTimeSeries('IFCB104');
-    this.setState({ history: this.state.history.concat([this.state.targets]) });
   }
   
   getNewYear(option) {
     this.setState({ 
         loading: true, 
-        history: [],
         rows: [], 
         targets: [] });  
     axios
@@ -432,6 +433,11 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: yearResponse.data.options.rows,
+                        history: this.state.history.concat([
+                            {
+                                targets: targetResponse.data
+                            }
+                        ]),
                         loading: false,
                      });
                 });
@@ -444,7 +450,6 @@ class Annotations extends React.Component {
 
     this.setState({
         loading: true,
-        history: [],
         rows: [],
         targets: [],
     });
@@ -463,6 +468,11 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: dayResponse.data.options.rows,
+                        history: this.state.history.concat([
+                            {
+                                targets: targetResponse.data
+                            }
+                        ]),
                         loading: false,
                     });
                 });
@@ -479,7 +489,6 @@ class Annotations extends React.Component {
     option.slice(0,3) + option.slice(4,6) + option.slice(7,9);
     this.setState({
         loading: true,
-        history: [],
         bin: {
             timeseries: this.state.bin.timeseries,
             ifcb: this.state.bin.ifcb,
@@ -503,6 +512,11 @@ class Annotations extends React.Component {
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
+                history: this.state.history.concat([
+                    {
+                        targets: targetResponse.data
+                    }
+                ]),
                 loading: false,
              });
         });
@@ -512,7 +526,6 @@ class Annotations extends React.Component {
     this.setState({
         loading: true,
         set: option,
-        history: [],
         rows: [],
     });
     axios
@@ -523,8 +536,6 @@ class Annotations extends React.Component {
             .then((res) => this.setState({ targets: res.data }))
             .catch((err) => console.log(err));
           this.setState({ rows: rowResponse.data.options.rows });
-          console.log(this.state.rows);
-          console.log(this.state.targets);
       })
       .catch((err) => console.log(err));
     this.setState({loading: false});
@@ -630,8 +641,28 @@ class Annotations extends React.Component {
   }
 
   backToTop() {
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0;
+    if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
+        if(document.body.scrollTop !== 0) {
+            this.setState({ lastScroll: document.body.scrollTop });
+        } else {
+            this.setState({ lastScroll: document.documentElement.scrollTop });
+        }
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0;
+    } else {
+        document.body.scrollTop = this.state.lastScroll;
+        document.documentElement.scrollTop = this.state.lastScroll;
+    }
+  }
+
+  flipBackToTop() {
+    if (document.getElementById('to-top') !== null) {
+        if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
+            document.getElementById('to-top').classList.remove('flip');
+        } else if (!document.getElementById('to-top').classList.contains('flip')) {
+            document.getElementById('to-top').classList.add('flip');
+        }
+    }
   }
 
   handleSelectAllClick() {
@@ -650,7 +681,11 @@ class Annotations extends React.Component {
       }
       this.setState({ 
           targets: targets,
-          history: this.state.history.concat([targets])
+          history: this.state.history.concat([
+            {
+                targets: targets
+            }
+          ])
      });
 
       this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode, className, classAbbr);
@@ -658,10 +693,12 @@ class Annotations extends React.Component {
 
   handleUndoClick() {
       const newHistory = this.state.history.slice(0, this.state.history.length-1);
+      const targets = this.state.history[this.state.history.length-2];
+      console.log(this.state.history);
       const rows = this.state.rows;
       this.setState({
           rows: [],
-          targets: newHistory[newHistory.length-1],
+          targets: targets,
           history: newHistory,
       });
       this.setState({ rows: rows });
@@ -669,6 +706,32 @@ class Annotations extends React.Component {
 
   handleSaveClick() {
     this.props.save(this.state.targets, this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode);
+  }
+
+  handleSyncClick() {
+    document.getElementById('sync').classList.toggle('syncing');
+    this.setState({ rows: [] });
+    this.props.sync(this.state.bin.timeseries, this.state.bin.year, this.state.bin.day, this.state.bin.file);
+    axios
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + this.state.sortCode + '/')
+        .then((targetResponse) => {
+            this.setState({ 
+                targets: targetResponse.data,
+                history: this.state.history.concat([
+                    {
+                        targets: targetResponse.data
+                    }
+                ]),
+             });
+        });
+    axios
+        .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + this.state.sortCode + '/')
+        .then((res) => {this.setState({ 
+            rows: res.data.options.rows,
+            loading: false,
+          })})
+        .catch((err) => console.log(err));
+    document.getElementById('sync').classList.toggle('syncing');
   }
 
   handleRowClick(j) {
@@ -687,7 +750,11 @@ class Annotations extends React.Component {
     }
     this.setState({ 
         targets: targets,
-        history: this.state.history.concat([targets])
+        history: this.state.history.concat([
+            {
+                targets: targets
+            }
+        ])
     });
     const start = row[0]
     const end = row[i];
@@ -699,7 +766,10 @@ class Annotations extends React.Component {
   disablePlanktonClick(targetNum, bool, infoShowing) {
     const infoClassList = document.getElementById(targetNum + '-info').classList;
     if ((infoShowing) || (infoClassList.contains('show-info'))) {
-        this.setState({ planktonClickEnabled: false, infoShowing: this.state.infoShowing.concat([targetNum]) });
+        if (!this.state.infoShowing.includes(targetNum)) {
+            this.setState({ infoShowing: this.state.infoShowing.concat([targetNum]) });
+        }
+        this.setState({ planktonClickEnabled: false });
     } else {
         const newInfoShowing = this.state.infoShowing.filter(function(item) {
             return item !== targetNum
@@ -716,9 +786,10 @@ class Annotations extends React.Component {
         targets[k].class_name = this.state.classPicker;
         targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
         targets[k].editor = this.props.user.username;
+        const history = this.state.history;
         this.setState({ 
             targets: targets,
-            history: this.state.history.concat([targets])
+            history: history.concat([{ targets: targets }])
         });
         const container = document.getElementById(targets[k].number);
         const text = document.getElementById(targets[k].number+'-text');
@@ -735,6 +806,15 @@ class Annotations extends React.Component {
       const showButton = document.getElementById("show-notes-button");
       (showButton.innerHTML === "Show Notes") ? showButton.innerHTML = "Hide Notes" : showButton.innerHTML = "Show Notes";
 
+  }
+
+  hideInfo() {
+    const showButton = document.getElementById("hide-info-button");
+    (showButton.innerHTML === "Hide Info") ? showButton.innerHTML = "Show Info" : showButton.innerHTML = "Hide Info";
+    const infoButtons = document.getElementsByClassName('info');
+      for (let i = 0; i < infoButtons.length; i++) {
+          infoButtons[i].classList.toggle('hide');
+      }
   }
 
   renderTimeSeriesControl() {
@@ -789,6 +869,15 @@ class Annotations extends React.Component {
         group={this.state.group}
         onClick={(option) => this.handleNewGroup(option)}
     />;
+  }
+
+  renderSync() {
+    return(
+        <div className="sync-button" id="sync-button" onClick={() => this.handleSyncClick()}>
+            <div class={(this.props.isSyncing) ? "sync syncing" : "sync"} id="sync"></div>
+            <p className="sync-text">Sync</p>
+        </div>
+    );
   }
   
   renderPlankton(i) {
@@ -853,7 +942,7 @@ class Annotations extends React.Component {
     return <img src={loader} alt="Loading targets..." width="80" loop="infinite"></img>
   }
 
-  render() {  
+  render() { 
     return(
         <div className='body'>
         <Header />
@@ -872,6 +961,8 @@ class Annotations extends React.Component {
                     {this.renderGroup()}
                     {this.renderSort()}
                     <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
+                    <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
+                    {this.renderSync()}
                 </div>
                 <div className="day-dropdown" id='day_dropdown'>
                     <div className="timeline">
@@ -911,7 +1002,7 @@ class Annotations extends React.Component {
                         (this.state.loading || this.props.isSaving) ? this.renderLoader() :
                         this.state.rows.map((row, j) => this.renderRow(row, j))
                         }
-                        <img src={toTop} alt="Back to Top" className="to-top" onClick={() => this.backToTop()}></img>
+                        <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
                     </div>
                 </div>
             </div>
@@ -919,6 +1010,7 @@ class Annotations extends React.Component {
 
             </div>
         </div>
+        <script>{document.addEventListener("scroll", this.flipBackToTop)}</script>
     </div>
       );
   }
@@ -929,4 +1021,4 @@ const mapStateToProps = state => ({
     user: state.auth.user
  });
 
-export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save })(Annotations);
+export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync })(Annotations);

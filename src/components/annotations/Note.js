@@ -38,7 +38,7 @@ class Note extends React.Component {
     render() {
         const { id, author, date, entry, parent, replies, timeseries, file, image } = this.props.note;
         return (
-            <div className={this.props.type + "note"} id={id}>
+            <div className={this.props.type + "-note"} id={id}>
                 <div className={this.props.type + "-note-header"}>
                     <p className="note-author">{author}</p>
                     {(this.props.type === 'bin') ? 
@@ -64,7 +64,7 @@ class Note extends React.Component {
                                 onChange={this.onChange}
                                 value={this.entry}
                             />
-                            <button type="submit" className="bin-note-submit"></button>
+                            <button type="submit" className={this.props.type + "-note-submit"}></button>
                             </div>
                         </form>
                     </div>
