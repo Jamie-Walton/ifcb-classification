@@ -28,11 +28,21 @@ def get_classes(request, timeseries):
     serializer = ClassOptionSerializer(classes, many=True)
     return Response(serializer.data)
 
+
+@api_view(('GET',))
+def get_notebook(request):
+    data = Note.objects.all()
+    serializer = NoteSerializer(data, context={'request': request}, many=True)
+    
+    return Response(serializer.data)
+
+
 @api_view(('GET',))
 def get_notes(request, timeseries, file, image):
     notes = Note.objects.filter(timeseries=timeseries, file=file, image=image)
     serializer = NoteSerializer(notes, many=True)
     return Response(serializer.data)
+
 
 @api_view(('POST',))
 def add_note(request):
@@ -43,6 +53,7 @@ def add_note(request):
         
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(('DELETE',))
 def delete_note(request, id):
     permission_classes = [
@@ -51,6 +62,7 @@ def delete_note(request, id):
     note = Note.objects.get(id=id)
     note.delete()
     return Response(status=status.HTTP_201_CREATED)
+
 
 @api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):
@@ -74,6 +86,7 @@ def new_targets(request, timeseries, file, set, sort):
 
         target_serializer = TargetSerializer(model_targets[start:end], many=True)
         return Response(target_serializer.data)
+
 
 @api_view(('PUT',))
 def save(request, timeseries, file, set, sort):
@@ -110,12 +123,12 @@ def save(request, timeseries, file, set, sort):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view(('GET',))
 def sync(request, timeseries, year, day, file):
     b = Bin.objects.get(timeseries=timeseries, file=file)
     b.delete()
     create_targets(timeseries, year, day, file)
-
 
 
 @api_view(('PUT',))

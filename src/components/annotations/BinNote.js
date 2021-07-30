@@ -37,6 +37,7 @@ export class BinNote extends React.Component {
                     note={note}
                     user={this.props.user.username}
                     timeseries={this.props.timeseries}
+                    ifcb={this.props.ifcb}
                     file={this.props.file}
                     type={this.props.type}
                     image={this.props.image}
@@ -60,14 +61,13 @@ export class BinNote extends React.Component {
 
     onSubmit = e => {
         e.preventDefault();
-        this.props.addBinNote(this.props.user.username, this.state.entry, null, [], this.props.timeseries, this.props.file, this.props.image);
+        this.props.addBinNote(this.props.user.username, this.state.entry, null, [], this.props.timeseries, this.props.ifcb, this.props.file, this.props.image);
         this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
         const noteForm = document.getElementById("note-form");
         noteForm.reset()
     }
     
     render() {
-        console.log(this.props.notes);
         return(
             <div className={this.props.type + "-notes-content"}>
                 <div id="note-container">

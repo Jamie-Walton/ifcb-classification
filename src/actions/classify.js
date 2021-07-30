@@ -20,9 +20,8 @@ export const getBinNotes = (timeseries, file, image) => (dispatch, getState) => 
         .catch((err) => console.log(err));
 }
 
-export const addBinNote = (author, entry, parent, replies, timeseries, file, image) => (dispatch, getState) => {
-    const note = JSON.stringify({ author, entry, parent, replies, timeseries, file, image});
-    console.log(note);
+export const addBinNote = (author, entry, parent, replies, timeseries, ifcb, file, image) => (dispatch, getState) => {
+    const note = JSON.stringify({ author, entry, parent, replies, timeseries, ifcb, file, image});
     const config = {
         headers: {
             'Content-Type': 'application/json'

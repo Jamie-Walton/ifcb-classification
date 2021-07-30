@@ -12,6 +12,7 @@ class Note(models.Model):
     entry = models.CharField(max_length=220)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     timeseries = models.CharField(max_length=15)
+    ifcb = models.CharField(max_length=15)
     file = models.CharField(max_length=17)
     image = models.CharField(max_length=5)
 

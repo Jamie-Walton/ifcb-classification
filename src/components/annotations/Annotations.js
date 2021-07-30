@@ -256,6 +256,7 @@ class Plankton extends React.Component {
                         {(this.props.infoShowing.includes(this.props.targetNum)) ? 
                         <BinNote
                             timeseries={this.props.timeseries}
+                            ifcb={this.props.ifcb}
                             file={this.props.file}
                             type='target'
                             image={this.props.targetNum}
@@ -990,6 +991,7 @@ class Annotations extends React.Component {
                     <div></div> :
                     <BinNote 
                         timeseries={this.state.bin.timeseries}
+                        ifcb={this.state.bin.ifcb}
                         file={this.state.bin.file}
                         type='bin'
                         image='None'

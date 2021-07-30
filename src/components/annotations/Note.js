@@ -28,7 +28,7 @@ class Note extends React.Component {
 
     onSubmit = e => {
         e.preventDefault();
-        this.props.addBinNote(this.props.user, this.state.entry, this.props.note.id, [], this.props.timeseries, this.props.file, this.props.image);
+        this.props.addBinNote(this.props.user, this.state.entry, this.props.note.id, [], this.props.timeseries, this.props.ifcb, this.props.file, this.props.image);
         this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
         const replyForm = document.getElementById("note-form");
         replyForm.reset()
@@ -41,9 +41,7 @@ class Note extends React.Component {
             <div className={this.props.type + "-note"} id={id}>
                 <div className={this.props.type + "-note-header"}>
                     <p className="note-author">{author}</p>
-                    {(this.props.type === 'bin') ? 
-                    <p className="note-date">{date}</p> :
-                    <p className="note-date">{date.slice(0,10)}</p>}
+                    <p className="note-date">{date.slice(0,10)}</p>
                 </div>
                 <p className={this.props.type + "-note-entry"}>{entry}</p>
                 {(this.props.type === 'bin') ? 
