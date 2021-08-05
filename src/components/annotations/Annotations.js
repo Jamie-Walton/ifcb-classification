@@ -6,6 +6,7 @@ import BinNote from './BinNote';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Redirect } from "react-router-dom";
 import { classifyTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
 
 import '../../css/classify-styles.css';
@@ -354,6 +355,7 @@ class Annotations extends React.Component {
     sync: PropTypes.func.isRequired,
     isSyncing: PropTypes.bool,
     user: PropTypes.object,
+    onNotebook: PropTypes.bool,
   };
 
   getNewTimeSeries(option) {
@@ -404,6 +406,7 @@ class Annotations extends React.Component {
   };
 
   componentDidMount() {
+    console.log('Mounting...');
     axios
       .get('/api/timeseries/')
       .then((res) => {this.setState({ timeSeriesOptions: res.data.map((c) => (c.name)) })})
@@ -434,11 +437,7 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: yearResponse.data.options.rows,
-                        history: this.state.history.concat([
-                            {
-                                targets: targetResponse.data
-                            }
-                        ]),
+                        history: [{ targets: targetResponse.data }],
                         loading: false,
                      });
                 });
@@ -469,11 +468,7 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: dayResponse.data.options.rows,
-                        history: this.state.history.concat([
-                            {
-                                targets: targetResponse.data
-                            }
-                        ]),
+                        history: [{ targets: targetResponse.data }],
                         loading: false,
                     });
                 });
@@ -513,11 +508,7 @@ class Annotations extends React.Component {
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
-                history: this.state.history.concat([
-                    {
-                        targets: targetResponse.data
-                    }
-                ]),
+                history: [{ targets: targetResponse.data }],
                 loading: false,
              });
         });
@@ -693,14 +684,13 @@ class Annotations extends React.Component {
   }
 
   handleUndoClick() {
-      const newHistory = this.state.history.slice(0, this.state.history.length-1);
+      const newhistory = this.state.history.slice(0, this.state.history.length-1);
       const targets = this.state.history[this.state.history.length-2];
-      console.log(this.state.history);
       const rows = this.state.rows;
+      this.setState({ rows: [] });
       this.setState({
-          rows: [],
-          targets: targets,
-          history: newHistory,
+          targets: targets.targets,
+          history: newhistory,
       });
       this.setState({ rows: rows });
   }
@@ -788,7 +778,7 @@ class Annotations extends React.Component {
         targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
         targets[k].editor = this.props.user.username;
         const history = this.state.history;
-        this.setState({ 
+        this.setState({
             targets: targets,
             history: history.concat([{ targets: targets }])
         });
@@ -875,7 +865,7 @@ class Annotations extends React.Component {
   renderSync() {
     return(
         <div className="sync-button" id="sync-button" onClick={() => this.handleSyncClick()}>
-            <div class={(this.props.isSyncing) ? "sync syncing" : "sync"} id="sync"></div>
+            <div className={(this.props.isSyncing) ? "sync syncing" : "sync"} id="sync"></div>
             <p className="sync-text">Sync</p>
         </div>
     );
@@ -944,11 +934,15 @@ class Annotations extends React.Component {
   }
 
   render() { 
+    if(this.props.onNotebook) {
+        return <Redirect to="/notebook/" />
+    }
+
     return(
         <div className='body'>
         <Header />
         <div className='main'>
-            <div class="page">
+            <div className="page">
 
             <div class="content">
             <div className="inner-content">
@@ -1020,7 +1014,8 @@ class Annotations extends React.Component {
 
 const mapStateToProps = state => ({
     isSaving: state.classify.isSaving,
-    user: state.auth.user
+    user: state.auth.user,
+    onNotebook: state.menu.onNotebook
  });
 
 export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync })(Annotations);

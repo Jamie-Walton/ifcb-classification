@@ -1,18 +1,26 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import { Connect } from "react-redux";
+import { Link,  Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
+import { goto_classify, goto_notebook } from "../../actions/menu";
 
 export class Header extends Component {
     static propTypes = {
         auth: PropTypes.object.isRequired,
-        logout: PropTypes.func.isRequired
+        logout: PropTypes.func.isRequired,
+        goto_classify: PropTypes.func.isRequired,
+        goto_notebook: PropTypes.func.isRequired,
     };
 
     render() {
         const { isAuthenticated, user } = this.props.auth;
+
+        if(this.props.onClassify) {
+            return <Redirect to="/" />
+        } else if(this.props.onNotebook) {
+            return <Redirect to="/Notebook" />
+        }
 
         const authLinks = (
             <ul className="logoutbar">
@@ -21,6 +29,18 @@ export class Header extends Component {
                         { user ? `Welcome, ${user.username}` : "" }
                     </strong>
                 </span>
+                <div className="login-navbar">
+                    <li>
+                        <button 
+                            onClick={this.props.goto_classify}
+                            className="login-nav-link">Classify</button>
+                    </li>
+                    <li>
+                        <button  
+                            onClick={this.props.goto_notebook}
+                            className="login-nav-link">Notebook</button>
+                    </li>
+                </div>
                 <li className="nav-item">
                     <button 
                         onClick={this.props.logout} 
@@ -51,7 +71,7 @@ export class Header extends Component {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
 });
 
-export default connect(mapStateToProps, { logout })(Header);
+export default connect(mapStateToProps, { logout, goto_classify, goto_notebook })(Header);

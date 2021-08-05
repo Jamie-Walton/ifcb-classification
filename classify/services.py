@@ -1,5 +1,5 @@
 from django.db.models.query_utils import Q
-from .models import Bin, ClassOption, TimeSeriesOption, Target
+from .models import Bin, ClassOption, TimeSeriesOption, Target, Note
 from .serializers import TargetSerializer
 import pandas as pd
 import requests
@@ -181,3 +181,36 @@ def get_rows(b, set, sort):
         rows[row].append(i)
 
     return rows
+
+def filter_notes(filters):
+
+    search = [f["choice"] for f in filters if f["category"] == "search"]
+    if len(search) > 0:
+        q = Note.objects.filter(Q(entry__icontains=search[0]) | Q(image__icontains=search[0]) | Q(file__icontains=search[0]))
+    else:
+        q = Note.objects.all().order_by('-date')
+
+    authors = [f["choice"] for f in filters if f["category"] == "author"]
+    if len(authors) > 0:
+        q = q.filter(author__in=authors)
+
+    files = [f["choice"] for f in filters if f["category"] == "file"]
+    if len(files) > 0:
+        q = q.filter(file__in=files)
+
+    timeseries = [f["choice"] for f in filters if f["category"] == "timeseries"]
+    if len(timeseries) > 0:
+        q = q.filter(timeseries__in=timeseries)
+
+    ifcbs = [f["choice"] for f in filters if f["category"] == "ifcb"]
+    if len(ifcbs) > 0:
+        q = q.filter(ifcb__in=ifcbs)
+
+    types = [f for f in filters if f["category"] == "type"]
+    if types == ["Bin Note"]:
+        q = q.filter(image="None")
+    elif types == ["Target Note"]:
+        q = q.exclude(image="None")
+
+    return q
+            

@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import HttpResponseNotFound
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
-from .services import create_targets, get_files, get_days, get_rows, sync_autoclass
+from .services import create_targets, get_files, get_days, get_rows, sync_autoclass, filter_notes
 import requests
 import math
 import pandas as pd
@@ -31,8 +31,33 @@ def get_classes(request, timeseries):
 
 @api_view(('GET',))
 def get_notebook(request):
-    data = Note.objects.all()
+    data = Note.objects.all().order_by('-date')
     serializer = NoteSerializer(data, context={'request': request}, many=True)
+    
+    return Response(serializer.data)
+
+
+@api_view(('GET',))
+def get_notebook_filters(request):
+    queryset = Note.objects.all()
+
+    options = {
+        'authors': queryset.values('author').distinct(),
+        'bins': queryset.values('file').distinct(),
+        'timeseries': queryset.values('timeseries').distinct(),
+        'ifcbs': queryset.values('ifcb').distinct(),
+    }
+
+    package = FrontEndPackage(bin={}, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+
+    return Response(front_end_package.data)
+
+
+@api_view(('POST',))
+def filter_notebook(request):
+    queryset = filter_notes(request.data)
+    serializer = NoteSerializer(queryset, many=True)
     
     return Response(serializer.data)
 

@@ -1,3 +1,5 @@
+/* Page */
+
 .notebook-heading {
     display: flex;
     margin: 9vw 0 0 0;
@@ -28,9 +30,122 @@
 	background-color:#7dad0b;
 }
 
+
+/* Filter */
+
+.withmargin {
+	margin: 0 0 5vw 0;
+	padding-bottom: 2vw;
+	width: 57vw;
+}
+
+.search-bar {
+	border: 1px solid #DEDDDD;
+	border-radius: 2vw;
+	display: flex;
+	justify-content: space-between;
+	margin: 1vw 1vw 1vw 0;
+	padding: 0.5vw 1vw;
+	width: 30vw;
+}
+
+.search-icon {
+	background-image: url("../icons/search.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 1vw;
+	height: 1vw;
+	margin: 0.2vw 0 0 0;
+}
+
+.search-input {
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	padding: 0;
+}
+
+.filter-buttons {
+	display: flex;
+}
+
+.filter-choice {
+	background-color: #F8F7F7;
+	border: 1px solid #DEDDDD;
+	display: flex;
+	border-radius: 5vw;
+	justify-content: space-between;
+	margin: 1vw 0.5vw;
+	padding: 0.25vw 1vw;
+	height: 2vw;
+	cursor: pointer;
+}
+
+.filter-choice-text {
+	color: #707070;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 0.85vw;
+	justify-content: space-between;
+}
+
+.filter-choice-plus {
+	color: #A8A7A7;
+	text-transform: uppercase;
+	text-align: left;
+	font-size: 1.25vw;
+	justify-content: space-between;
+	margin: -0.248vw 0 0 0.5vw;
+}
+
+.rotate-plus {
+	transform: rotate(-45deg);
+}
+
+.filter-dropdown {
+	display: none;
+	font-family: proxima-nova, sans-serif;
+	font-size: 0.85vw;
+	color: #7e7d7d;
+	margin: 0 0 0 1vw;
+	max-height: 5vw;
+	overflow-y: scroll;
+}
+
+.filter-option:hover {
+	color:#7dad0b;
+	font-weight: bolder;
+	cursor: pointer;
+}
+
+.show {
+	display: flex;
+}
+
+.applied-filters {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -1vw 0 0 0;
+
+}
+
+.applied {
+	background-color: #7dad0b;
+	border: none;
+	width: fit-content;
+	padding: 0.3vw 1vw;
+}
+
+.applied-text {
+	text-transform: none;
+	color: #FFFFFF;
+}
+
+
+/* Notebook */
+
 .notebook-content {
-    display: flex;
-    flex-flow: row wrap;
+	height: 100vh;
 }
 
 .notebook-note {
@@ -38,14 +153,36 @@
 	border: 1px solid #DEDDDD;
 	border-radius: 2vw;
 	display: flex;
-    width: 30vw;
-    margin: 1vw 0;
-    padding: 1vw;
+    width: 28vw;
+    margin: 0;
+    padding: 2vw;
+}
+
+.notebook-entry {
+	display: inline-block;
+}
+
+.notebook-entry-heading {
+	color: #7e7d7d;
+	margin: 0;
+	font-weight: 600;
+	font-size: 1vw;
+	font-style: italic;
+	text-transform: none;
+	letter-spacing: 0vw;
+	text-transform: capitalize;
+}
+
+.notebook-entry-subtitle {
+	color: #adadad;
+	letter-spacing: 0.02vw;
+	font-size: 0.75vw;
 }
 
 .notebook-image {
     width: 8vw;
-    margin: 0vw 1vw 0 0;
+	height:fit-content;
+    margin: 0vw 1.5vw 0 0;
 }
 
 .notebook-loader {

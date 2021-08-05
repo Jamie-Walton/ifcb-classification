@@ -1,22 +1,33 @@
 import React from "react";
+import axios from "axios";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
-import { getBinNotes, addBinNote } from "../../actions/classify";
+import { addBinNote, receiveNotesChange } from "../../actions/classify";
 import Note from "./Note";
 
 export class BinNote extends React.Component {
     state = {
         entry: '',
         parents: [],
+        notes: [],
     }
     
     static propTypes = {
-        getBinNotes: PropTypes.func.isRequired,
         addBinNote: PropTypes.func,
-        notes: PropTypes.array,
+        receiveNotesChange: PropTypes.func,
+        noteChangeFlag: PropTypes.bool,
         user: PropTypes.object,
     };
+
+    getNotes() {
+        axios
+            .get('/process/note/' + this.props.timeseries + '/' + this.props.file + '/' + this.props.image + '/')
+            .then((res) => {
+                this.setState({ notes: res.data });
+            })
+            .catch((err) => console.log(err));
+    }
 
     renderNote(note, count) {
         if (note.parent !== null) {
@@ -24,7 +35,7 @@ export class BinNote extends React.Component {
             var iters = 0;
             while (reply.parent !== null) {
                 var parentFunc = (element) => element.id === reply.parent;
-                var reply = this.props.notes[this.props.notes.findIndex(parentFunc)];
+                var reply = this.state.notes[this.state.notes.findIndex(parentFunc)];
                 iters = iters + 1;
             }
             if (count!==iters) {
@@ -54,24 +65,33 @@ export class BinNote extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
+        this.getNotes();
     }
+
+    // componentDidUpdate(prevProps) {
+        // if(this.state.notes !== prevProps.notes)
+            // this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
+    // }
 
     onChange = e => this.setState({ entry: e.target.value })
 
     onSubmit = e => {
         e.preventDefault();
         this.props.addBinNote(this.props.user.username, this.state.entry, null, [], this.props.timeseries, this.props.ifcb, this.props.file, this.props.image);
-        this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
+        this.getNotes();
         const noteForm = document.getElementById("note-form");
         noteForm.reset()
     }
     
     render() {
+        if(!this.props.noteChangeFlag) {
+            this.props.receiveNotesChange();
+        }
+        this.getNotes();
         return(
             <div className={this.props.type + "-notes-content"}>
                 <div id="note-container">
-                    {this.props.notes.map((note) => this.renderNote(note, 0))}
+                    {this.state.notes.map((note) => this.renderNote(note, 0))}
                 </div>
                     <div className={this.props.type + "-note-form"}>
                         <form onSubmit={this.onSubmit} id="note-form">
@@ -87,7 +107,7 @@ export class BinNote extends React.Component {
                             />
                             <button type="submit" className={this.props.type + "-note-submit"}></button>
                             </div>
-                            {(this.props.notes === []) ? <p className="bin-note-label">Add a Note</p> : <div></div>}
+                            {(this.state.notes === []) ? <p className="bin-note-label">Add a Note</p> : <div></div>}
                         </form>
                     </div>
             </div>
@@ -96,8 +116,8 @@ export class BinNote extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    notes: state.classify.notes,
+    noteChangeFlag: state.classify.noteChangeFlag,
     user: state.auth.user
  });
 
-export default connect(mapStateToProps, {getBinNotes, addBinNote})(BinNote);
+export default connect(mapStateToProps, {addBinNote, receiveNotesChange})(BinNote);

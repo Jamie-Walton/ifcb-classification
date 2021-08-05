@@ -5,19 +5,21 @@ import {
     SAVE_SUCCESS,
     SYNC_PROGRESS,
     SYNC_SUCCESS,
-    BIN_NOTES_LOADED,
+    NOTES_CHANGED,
+    NOTES_RECORDED,
+    NOTEBOOK_FILTERED
 } from "./types";
 
-export const getBinNotes = (timeseries, file, image) => (dispatch, getState) => {
-    axios
-        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
-        .then(res => {
-            dispatch({
-                type: BIN_NOTES_LOADED,
-                payload: res.data
-            });
-        })
-        .catch((err) => console.log(err));
+export const sendNotesChange = (timeseries, file, image) => (dispatch, getState) => {
+    dispatch({
+        type: NOTES_CHANGED
+    });
+}
+
+export const receiveNotesChange = (timeseries, file, image) => (dispatch, getState) => {
+    dispatch({
+        type: NOTES_RECORDED
+    });
 }
 
 export const addBinNote = (author, entry, parent, replies, timeseries, ifcb, file, image) => (dispatch, getState) => {
@@ -36,11 +38,21 @@ export const deleteBinNote = (id, timeseries, file, image) => (dispatch, getStat
     axios
         .delete('/delete/note/' + id + '/', tokenConfig(getState))
         .catch((err) => console.log(err));
+}
+
+export const filterNotebook = (appliedFilters, search) => (dispatch, getState) => {
+    const filters = JSON.stringify(appliedFilters, search)
+    console.log(filters);
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
     axios
-        .get('/process/note/' + timeseries + '/' + file + '/' + image + '/')
+        .post('/notebook/applyfilters/', filters, config, tokenConfig(getState))
         .then(res => {
             dispatch({
-                type: BIN_NOTES_LOADED,
+                type: NOTEBOOK_FILTERED,
                 payload: res.data
             });
         })

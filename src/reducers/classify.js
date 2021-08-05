@@ -3,13 +3,16 @@ import {
     SAVE_SUCCESS,
     SYNC_PROGRESS,
     SYNC_SUCCESS,
-    BIN_NOTES_LOADED,
+    NOTES_CHANGED,
+    NOTES_RECORDED,
+    NOTEBOOK_FILTERED
 } from '../actions/types';
 
 const initialState = {
     isSaving: false,
     isSyncing: false,
-    notes: [],
+    noteChangeFlag: true,
+    notes: []
 }
 
 export default function(state = initialState, action) {
@@ -34,7 +37,18 @@ export default function(state = initialState, action) {
                 ...state,
                 isSyncing: false
             }
-        case BIN_NOTES_LOADED:
+        case NOTES_CHANGED:
+            return {
+                ...state,
+                noteChangeFlag: true
+            }
+        case NOTES_RECORDED:
+            return {
+                ...state,
+                noteChangeFlag: false
+            }
+        case NOTEBOOK_FILTERED:
+            console.log('Filtering...');
             return {
                 ...state,
                 notes: action.payload

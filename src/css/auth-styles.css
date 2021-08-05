@@ -20,6 +20,14 @@
     border-radius: 2vw;
 }
 
+.login-navbar {
+	display: flex;
+	margin: 0;
+	background-color: #FFFFFF;
+	border-radius: 2vw;
+	padding: 0 1vw;
+}
+
 .nav-item {
 	margin: 0 1vw;
 }
@@ -32,6 +40,26 @@
 	color: #FFFFFF;
 	font-size: 1vw;
 	font-weight: 400;
+}
+
+.login-nav-link {
+	font-family: proxima-nova, sans-serif;
+	color: #16609F;
+	background: none;
+	border: none;
+	display: flex;
+	text-transform: uppercase;
+	letter-spacing: 0.1vw;
+	font-size: 0.85vw;
+	font-weight: 600;
+	margin: 0.5vw 0.35vw 0;
+	flex-grow: 0;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.login-nav-link:hover {
+	color: #0d79a3;
 }
 
 h3 {

@@ -1,8 +1,9 @@
 import React from "react";
+import axios from "axios";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
-import { getBinNotes, addBinNote, deleteBinNote } from "../../actions/classify";
+import { addBinNote, deleteBinNote, sendNotesChange } from "../../actions/classify";
 
 class Note extends React.Component {
     state = {
@@ -10,9 +11,9 @@ class Note extends React.Component {
     }
 
     static propTypes = {
-        getBinNotes: PropTypes.func,
         addBinNote: PropTypes.func,
         deleteBinNote: PropTypes.func,
+        sendNotesChange: PropTypes.func,
         notes: PropTypes.array,
     };
     
@@ -22,6 +23,7 @@ class Note extends React.Component {
 
     delete(id) {
         this.props.deleteBinNote(id, this.props.timeseries, this.props.file, this.props.image);
+        this.props.sendNotesChange();
     }
 
     onChange = e => this.setState({ entry: e.target.value })
@@ -29,7 +31,7 @@ class Note extends React.Component {
     onSubmit = e => {
         e.preventDefault();
         this.props.addBinNote(this.props.user, this.state.entry, this.props.note.id, [], this.props.timeseries, this.props.ifcb, this.props.file, this.props.image);
-        this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
+        this.props.sendNotesChange();
         const replyForm = document.getElementById("note-form");
         replyForm.reset()
         document.getElementById('reply-form' + this.props.note.id).classList.toggle('show');
@@ -75,4 +77,4 @@ const mapStateToProps = state => ({
     notes: state.classify.notes,
  });
 
-export default connect(mapStateToProps, {getBinNotes, addBinNote, deleteBinNote})(Note);
+export default connect(mapStateToProps, {addBinNote, deleteBinNote, sendNotesChange})(Note);
