@@ -406,7 +406,6 @@ class Annotations extends React.Component {
   };
 
   componentDidMount() {
-    console.log('Mounting...');
     axios
       .get('/api/timeseries/')
       .then((res) => {this.setState({ timeSeriesOptions: res.data.map((c) => (c.name)) })})

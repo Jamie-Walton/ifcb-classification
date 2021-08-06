@@ -34,7 +34,7 @@ export const addBinNote = (author, entry, parent, replies, timeseries, ifcb, fil
         .catch((err) => console.log(err));
 }
 
-export const deleteBinNote = (id, timeseries, file, image) => (dispatch, getState) => {
+export const deleteBinNote = (id) => (dispatch, getState) => {
     axios
         .delete('/delete/note/' + id + '/', tokenConfig(getState))
         .catch((err) => console.log(err));
@@ -42,7 +42,6 @@ export const deleteBinNote = (id, timeseries, file, image) => (dispatch, getStat
 
 export const filterNotebook = (appliedFilters, search) => (dispatch, getState) => {
     const filters = JSON.stringify(appliedFilters, search)
-    console.log(filters);
     const config = {
         headers: {
             'Content-Type': 'application/json'

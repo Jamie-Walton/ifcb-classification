@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
-import { filterNotebook } from "../../actions/classify";
+import { filterNotebook, receiveNotesChange } from "../../actions/classify";
 import Header from '../layout/Header';
 import Note from "./Note";
 import '../../css/notebook-styles.css';
@@ -67,7 +67,8 @@ class Notebook extends Component {
         user: PropTypes.object,
         onClassify: PropTypes.bool,
         notes: PropTypes.array,
-        filterNotebook: PropTypes.func
+        filterNotebook: PropTypes.func,
+        noteChangeFlag: PropTypes.bool
     }
 
     getNotebook(filters) {
@@ -193,7 +194,7 @@ class Notebook extends Component {
                 />
                 <div className="reply" style={{margin: "0 0 0 " + String((count+1)) + "vw"}}>
                 {(note.replies.length !== 0) ?
-                    note.replies.map((reply) => this.renderReply(reply, count+1)) :
+                    note.replies.map((reply) => renderReply(reply, count+1)) :
                     <div></div>
                 }
                 </div>
@@ -315,7 +316,7 @@ class Notebook extends Component {
                                         rowCount={Math.ceil(this.state.notes.length/3)}
                                         height={height}
                                         width={width}
-                                    />  
+                                    />
                                 )}
                                 </AutoSizer>
                             </div>
@@ -330,7 +331,8 @@ class Notebook extends Component {
 const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
-    notes: state.classify.notes
+    notes: state.classify.notes,
+    noteChangeFlag: state.classify.noteChangeFlag
  });
 
-export default connect(mapStateToProps, {filterNotebook})(Notebook);
+export default connect(mapStateToProps, {filterNotebook, receiveNotesChange})(Notebook);

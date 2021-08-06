@@ -3,7 +3,7 @@ import axios from "axios";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
-import { addBinNote, receiveNotesChange } from "../../actions/classify";
+import { addBinNote, sendNotesChange, receiveNotesChange } from "../../actions/classify";
 import Note from "./Note";
 
 export class BinNote extends React.Component {
@@ -68,26 +68,25 @@ export class BinNote extends React.Component {
         this.getNotes();
     }
 
-    // componentDidUpdate(prevProps) {
-        // if(this.state.notes !== prevProps.notes)
-            // this.props.getBinNotes(this.props.timeseries, this.props.file, this.props.image);
-    // }
+    componentDidUpdate() {
+        if(this.props.noteChangeFlag) {
+            this.props.receiveNotesChange();
+            this.getNotes();
+        }
+    }
 
     onChange = e => this.setState({ entry: e.target.value })
 
     onSubmit = e => {
         e.preventDefault();
         this.props.addBinNote(this.props.user.username, this.state.entry, null, [], this.props.timeseries, this.props.ifcb, this.props.file, this.props.image);
+        this.props.sendNotesChange();
         this.getNotes();
         const noteForm = document.getElementById("note-form");
         noteForm.reset()
     }
     
     render() {
-        if(!this.props.noteChangeFlag) {
-            this.props.receiveNotesChange();
-        }
-        this.getNotes();
         return(
             <div className={this.props.type + "-notes-content"}>
                 <div id="note-container">
@@ -120,4 +119,4 @@ const mapStateToProps = state => ({
     user: state.auth.user
  });
 
-export default connect(mapStateToProps, {addBinNote, receiveNotesChange})(BinNote);
+export default connect(mapStateToProps, {addBinNote, sendNotesChange, receiveNotesChange})(BinNote);

@@ -49,6 +49,7 @@
 	border: none;
 	display: flex;
 	text-transform: uppercase;
+	text-decoration: none;
 	letter-spacing: 0.1vw;
 	font-size: 0.85vw;
 	font-weight: 600;

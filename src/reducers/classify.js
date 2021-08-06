@@ -48,7 +48,6 @@ export default function(state = initialState, action) {
                 noteChangeFlag: false
             }
         case NOTEBOOK_FILTERED:
-            console.log('Filtering...');
             return {
                 ...state,
                 notes: action.payload

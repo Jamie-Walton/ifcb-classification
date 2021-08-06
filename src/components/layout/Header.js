@@ -11,6 +11,7 @@ export class Header extends Component {
         logout: PropTypes.func.isRequired,
         goto_classify: PropTypes.func.isRequired,
         goto_notebook: PropTypes.func.isRequired,
+        goto_notebook: PropTypes.func.isRequired,
     };
 
     render() {
@@ -32,13 +33,24 @@ export class Header extends Component {
                 <div className="login-navbar">
                     <li>
                         <button 
-                            onClick={this.props.goto_classify}
-                            className="login-nav-link">Classify</button>
+                            aref={this.props.goto_classify}
+                            className="login-nav-link">
+                                Classify
+                        </button>
                     </li>
                     <li>
                         <button  
                             onClick={this.props.goto_notebook}
-                            className="login-nav-link">Notebook</button>
+                            className="login-nav-link">
+                                Notebook
+                        </button>
+                    </li>
+                    <li>
+                        <a  
+                            href="http://localhost:8000/admin/" // TODO: Change url later
+                            className="login-nav-link">
+                                Admin
+                        </a>
                     </li>
                 </div>
                 <li className="nav-item">

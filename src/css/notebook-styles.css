@@ -154,8 +154,9 @@
 	border-radius: 2vw;
 	display: flex;
     width: 28vw;
-    margin: 0;
+    margin: 0 0 1vw 0;
     padding: 2vw;
+	overflow-x: scroll;
 }
 
 .notebook-entry {

@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
@@ -22,7 +21,7 @@ class Note extends React.Component {
     }
 
     delete(id) {
-        this.props.deleteBinNote(id, this.props.timeseries, this.props.file, this.props.image);
+        this.props.deleteBinNote(id);
         this.props.sendNotesChange();
     }
 
