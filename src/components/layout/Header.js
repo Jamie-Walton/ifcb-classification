@@ -33,7 +33,7 @@ export class Header extends Component {
                 <div className="login-navbar">
                     <li>
                         <button 
-                            aref={this.props.goto_classify}
+                            onClick={this.props.goto_classify}
                             className="login-nav-link">
                                 Classify
                         </button>
@@ -47,7 +47,7 @@ export class Header extends Component {
                     </li>
                     <li>
                         <a  
-                            href="http://localhost:8000/admin/" // TODO: Change url later
+                            href="http://ifcb-classification.herokuapp.com/admin/" // TODO: Fix URL later
                             className="login-nav-link">
                                 Admin
                         </a>
