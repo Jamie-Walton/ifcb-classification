@@ -374,12 +374,15 @@ class Annotations extends React.Component {
       .get('/classes/' + option + '/')
       .then((res) => {
         this.setState({ 
-          classes: res.data.sort().map((c) => (c.display_name)),
-          classAbbrs: res.data.sort().map((c) => (c.abbr))
+          classes: res.data.map((c) => (c.display_name)),
+          classAbbrs: res.data.map((c) => (c.abbr))
         });
-        console.log(res.data.sort());
       })
       .catch((err) => console.log(err));
+    this.setState({
+        classes: this.state.classes.sort(),
+        classAbbrs: this.state.classAbbrs.sort()
+    })
     axios
         .get('/process/timeseries/' + option + '/' + this.state.sortCode + '/')
         .then((binResponse) => {
