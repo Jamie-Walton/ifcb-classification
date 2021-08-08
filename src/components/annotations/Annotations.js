@@ -377,6 +377,7 @@ class Annotations extends React.Component {
           classes: res.data.sort().map((c) => (c.display_name)),
           classAbbrs: res.data.sort().map((c) => (c.abbr))
         });
+        console.log(res.data.sort());
       })
       .catch((err) => console.log(err));
     axios
