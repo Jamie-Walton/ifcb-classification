@@ -809,7 +809,7 @@ li {
 }
 
 .target-note-entry {
-	width: 10vw;
+	min-width: 10vw;
 }
 
 .reply-button {
