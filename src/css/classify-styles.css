@@ -213,7 +213,7 @@ li {
 	padding: 0.5vw 2vw;
 	width: 60vw;
 	z-index: 1;
-	overflow-x: scroll;
+	overflow: scroll;
 }
 
   .bars {

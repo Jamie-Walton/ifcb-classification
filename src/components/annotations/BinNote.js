@@ -69,10 +69,10 @@ export class BinNote extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.props.noteChangeFlag) {
+        // if(this.props.noteChangeFlag) {
             this.props.receiveNotesChange();
             this.getNotes();
-        }
+        // }
     }
 
     onChange = e => this.setState({ entry: e.target.value })
