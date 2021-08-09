@@ -660,6 +660,7 @@ li {
 
 .note-container {
 	display: none;
+	position: relative;
 	box-shadow: 0px 3px 10px #00000012;
 	border: 1px solid #DEDDDD;
 	border-radius: 1.4vw;
@@ -689,6 +690,18 @@ li {
 
 .show-notes-button:hover {
 	background-color:#7dad0b;
+}
+
+.refresh {
+	background-image: url('../icons/refresh-green.png');
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 2vw;
+	height: 2vw;
+	position: absolute;
+	top: 1.25vw;
+	right: 1.25vw;
+	cursor: pointer;
 }
 
 .bin-note-input {

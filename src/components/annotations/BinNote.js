@@ -89,6 +89,7 @@ export class BinNote extends React.Component {
     render() {
         return(
             <div className={this.props.type + "-notes-content"}>
+                {(this.props.type === 'bin') ? <div className="refresh" onClick={() => this.getNotes()}></div> : <div></div>}
                 <div id="note-container">
                     {this.state.notes.map((note) => this.renderNote(note, 0))}
                 </div>
