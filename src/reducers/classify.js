@@ -5,13 +5,16 @@ import {
     SYNC_SUCCESS,
     NOTES_CHANGED,
     NOTES_RECORDED,
-    NOTEBOOK_FILTERED
+    NOTEBOOK_FILTERED,
+    REPLY_RESOLVED,
+    REPLY_OPEN
 } from '../actions/types';
 
 const initialState = {
     isSaving: false,
     isSyncing: false,
     noteChangeFlag: true,
+    replyChangeFlag: false,
     notes: []
 }
 
@@ -43,6 +46,16 @@ export default function(state = initialState, action) {
                 noteChangeFlag: true
             }
         case NOTES_RECORDED:
+            return {
+                ...state,
+                noteChangeFlag: false
+            }
+        case REPLY_OPEN:
+            return {
+                ...state,
+                noteChangeFlag: true
+            }
+        case REPLY_RESOLVED:
             return {
                 ...state,
                 noteChangeFlag: false

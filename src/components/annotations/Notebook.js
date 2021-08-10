@@ -49,6 +49,7 @@ class Notebook extends Component {
                 "file": "",
                 "image": ""
             }],
+            flags: [],
             classes: [],
             searchTerms: "",
             authors: [{author: ''}],
@@ -68,6 +69,7 @@ class Notebook extends Component {
         onClassify: PropTypes.bool,
         notes: PropTypes.array,
         filterNotebook: PropTypes.func,
+        receiveNotesChange: PropTypes.func,
         noteChangeFlag: PropTypes.bool
     }
 
@@ -78,6 +80,7 @@ class Notebook extends Component {
                 .then((res) => {
                     this.setState({ 
                         notes: res.data,
+                        flags: Array(res.data.length).fill(''),
                     });
                 })
                 .catch((err) => console.log(err));
@@ -101,9 +104,10 @@ class Notebook extends Component {
             .catch((err) => console.log(err));
     }
 
-    componentDidUpdate(prevProps) {
-        if ((prevProps.notes !== this.props.notes)) {
-            this.setState({ notes: this.props.notes });
+    componentDidUpdate() {
+        if (this.props.noteChangeFlag) {
+            this.getNotebook(this.state.appliedFilters);
+            this.props.receiveNotesChange();
         }
     }
 
@@ -177,6 +181,7 @@ class Notebook extends Component {
     // Grid data as an array of arrays
     const notes = this.state.notes;
     const username = this.props.user.username;
+    const flags = this.state.flags
     var skips = 0;
     var rendered = [];
 
@@ -225,6 +230,8 @@ class Notebook extends Component {
             if (note.image !== 'None') {
                 url = 'http://128.114.25.154:8888/' + note.timeseries + '/' + note.file + '_' + note.ifcb + '_' + note.image + '.jpg';
             }
+            const flatNote = JSON.stringify(note);
+            const includesFlag = flatNote.includes('true');
             return (
                 <CellMeasurer
                     cache={cache}
@@ -238,6 +245,7 @@ class Notebook extends Component {
                         <div className="notebook-note" onLoad={measure}>
                             {(url === '') ? <div></div> : 
                             <img src={url} className="notebook-image" alt={'Target ' + note.image}></img>}
+                            {(includesFlag) ? <div className="flag"></div> : <div></div>}
                             <div className="notebook-entry"> 
                                 <div>
                                     {(note.image === 'None') ? 
@@ -316,6 +324,7 @@ class Notebook extends Component {
                                         rowCount={Math.ceil(this.state.notes.length/3)}
                                         height={height}
                                         width={width}
+                                        notes={this.props.notes}
                                     />
                                 )}
                                 </AutoSizer>
@@ -331,7 +340,6 @@ class Notebook extends Component {
 const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
-    notes: state.classify.notes,
     noteChangeFlag: state.classify.noteChangeFlag
  });
 

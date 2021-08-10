@@ -28,6 +28,7 @@ urlpatterns = [
     path('edit/all/<str:timeseries>/<str:file>/<int:set>/<str:sort>/<str:className>/<str:classAbbr>/', views.edit_all),
     path('add/note/', views.add_note),
     path('delete/note/<int:id>/', views.delete_note),
+    path('flag/note/<int:id>/', views.flag_note),
     path('notebook/', views.get_notebook),
     path('notebook/filters/', views.get_notebook_filters),
     path('notebook/applyfilters/', views.filter_notebook),

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
-import { addBinNote, deleteBinNote, sendNotesChange } from "../../actions/classify";
+import { addBinNote, deleteBinNote, flagBinNote, sendNotesChange, sendReplyOpen } from "../../actions/classify";
 
 class Note extends React.Component {
     state = {
@@ -13,16 +13,31 @@ class Note extends React.Component {
         addBinNote: PropTypes.func,
         deleteBinNote: PropTypes.func,
         sendNotesChange: PropTypes.func,
+        sendReplyOpenChange: PropTypes.func,
         notes: PropTypes.array,
     };
     
     reply(id) {
         document.getElementById('reply-form' + id).classList.toggle('show');
+        this.props.sendReplyOpen();
     }
 
     delete(id) {
         this.props.deleteBinNote(id);
         this.props.sendNotesChange();
+    }
+
+    flag(id) {
+        this.props.flagBinNote(id);
+        this.props.sendNotesChange();
+    }
+
+    getFlagButton(isFlagged) {
+        if (isFlagged) {
+            return 'Unflag'
+        } else {
+            return 'Flag'
+        }
     }
 
     onChange = e => this.setState({ entry: e.target.value })
@@ -37,12 +52,13 @@ class Note extends React.Component {
     }
     
     render() {
-        const { id, author, date, entry, parent, replies, timeseries, file, image } = this.props.note;
+        const { id, author, date, entry, parent, replies, timeseries, file, image, flag } = this.props.note;
         return (
             <div className={this.props.type + "-note"} id={id}>
                 <div className={this.props.type + "-note-header"}>
                     <p className="note-author">{author}</p>
                     <p className="note-date">{date.slice(0,10)}</p>
+                    {(flag) ? <div className="flag-small"></div> : <div></div>}
                 </div>
                 <p className={this.props.type + "-note-entry"}>{entry}</p>
                 {(this.props.type === 'bin') ? 
@@ -50,6 +66,9 @@ class Note extends React.Component {
                     <div></div>}
                 {(author === this.props.user) ? 
                     <button className="reply-button" onClick={() => this.delete(id)}>Delete</button> :
+                    <div></div>}
+                {(author === this.props.user) ? 
+                    <button className="reply-button" onClick={() => this.flag(id)}>{this.getFlagButton(flag)}</button> :
                     <div></div>}
                 <div className="reply-form" id={"reply-form" + id}>
                         <form onSubmit={this.onSubmit} id="note-form">
@@ -76,4 +95,4 @@ const mapStateToProps = state => ({
     notes: state.classify.notes,
  });
 
-export default connect(mapStateToProps, {addBinNote, deleteBinNote, sendNotesChange})(Note);
+export default connect(mapStateToProps, {addBinNote, deleteBinNote, flagBinNote, sendNotesChange, sendReplyOpen})(Note);
