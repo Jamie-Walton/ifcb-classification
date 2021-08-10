@@ -5,7 +5,7 @@ import datetime
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ('id', 'author', 'date', 'entry', 'parent', 'replies', 'timeseries', 'ifcb', 'file', 'image')
+        fields = ('id', 'author', 'date', 'entry', 'parent', 'replies', 'timeseries', 'ifcb', 'file', 'image', 'flag')
     
     def get_fields(self):
         fields = super(NoteSerializer, self).get_fields()

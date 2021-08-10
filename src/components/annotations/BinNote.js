@@ -3,7 +3,7 @@ import axios from "axios";
 import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
-import { addBinNote, sendNotesChange, receiveNotesChange } from "../../actions/classify";
+import { addBinNote, sendNotesChange, receiveNotesChange, receiveReplyOpen } from "../../actions/classify";
 import Note from "./Note";
 
 export class BinNote extends React.Component {
@@ -17,6 +17,8 @@ export class BinNote extends React.Component {
         addBinNote: PropTypes.func,
         receiveNotesChange: PropTypes.func,
         noteChangeFlag: PropTypes.bool,
+        receiveReplyOpen: PropTypes.func,
+        replyChangeFlag: PropTypes.bool,
         user: PropTypes.object,
     };
 
@@ -73,6 +75,10 @@ export class BinNote extends React.Component {
             this.props.receiveNotesChange();
             this.getNotes();
         }
+        if(this.props.replyChangeFlag) {
+            this.props.receiveReplyOpen();
+            this.getNotes();
+        }
     }
 
     onChange = e => this.setState({ entry: e.target.value })
@@ -117,7 +123,8 @@ export class BinNote extends React.Component {
 
 const mapStateToProps = state => ({
     noteChangeFlag: state.classify.noteChangeFlag,
+    replyChangeFlag: state.classify.replyChangeFlag,
     user: state.auth.user
  });
 
-export default connect(mapStateToProps, {addBinNote, sendNotesChange, receiveNotesChange})(BinNote);
+export default connect(mapStateToProps, {addBinNote, sendNotesChange, receiveNotesChange, receiveReplyOpen})(BinNote);

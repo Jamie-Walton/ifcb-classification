@@ -720,6 +720,11 @@ li {
 	width: 100%;
 }
 
+.note-input {
+	box-shadow: none;
+	border: none;
+}
+
 .target-note {
 	padding: 0 1vw;
 }
@@ -735,6 +740,17 @@ li {
 	display: flex;
 	margin: 1vw 0 0 0;
 	width: 30vw;
+	overflow: auto;
+}
+
+.new-note {
+	border: 1px solid #DEDDDD;
+	border-radius: 1.5vw;
+	padding: 0.34vw 1vw 0;
+	display: flex;
+	margin: 1vw 0 0 0;
+	width: 22vw;
+	height: 2.25vw;
 	overflow: auto;
 }
 
@@ -763,6 +779,15 @@ li {
 	display: flex;
 	align-items: center;
 	margin: 0.5vw 0 0 0;
+}
+
+.flag-small {
+	width: 0.75vw;
+	height: 0.75vw;
+	background-image: url('../icons/flag-gray.png');
+	background-size: contain;
+    background-repeat: no-repeat;
+	margin: 0 0 0 0.5vw;
 }
 
 .bin-note-submit {

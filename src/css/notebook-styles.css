@@ -149,7 +149,8 @@
 }
 
 .notebook-note {
-    box-shadow: 0px 3px 10px #00000012;
+    position: relative;
+	box-shadow: 0px 3px 10px #00000012;
 	border: 1px solid #DEDDDD;
 	border-radius: 2vw;
 	display: flex;
@@ -157,6 +158,17 @@
     margin: 0 0 1vw 0;
     padding: 2vw;
 	overflow-x: scroll;
+}
+
+.flag {
+	position: absolute;
+	top: 1.25vw;
+	right: 1.25vw;
+	width: 1.25vw;
+	height: 1.25vw;
+	background-image: url("../icons/flag-blue.png");
+	background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .notebook-entry {

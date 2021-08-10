@@ -15,6 +15,7 @@ class Note(models.Model):
     ifcb = models.CharField(max_length=15)
     file = models.CharField(max_length=17)
     image = models.CharField(max_length=5)
+    flag = models.BooleanField(default=False)
 
 
 class Bin(models.Model):

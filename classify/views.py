@@ -89,6 +89,17 @@ def delete_note(request, id):
     return Response(status=status.HTTP_201_CREATED)
 
 
+@api_view(('PUT',))
+def flag_note(request, id):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    note = Note.objects.get(id=id)
+    note.flag = not note.flag
+    note.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+
 @api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':

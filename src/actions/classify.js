@@ -7,18 +7,32 @@ import {
     SYNC_SUCCESS,
     NOTES_CHANGED,
     NOTES_RECORDED,
+    REPLY_OPEN,
+    REPLY_RESOLVED,
     NOTEBOOK_FILTERED
 } from "./types";
 
-export const sendNotesChange = (timeseries, file, image) => (dispatch, getState) => {
+export const sendNotesChange = () => (dispatch, getState) => {
     dispatch({
         type: NOTES_CHANGED
     });
 }
 
-export const receiveNotesChange = (timeseries, file, image) => (dispatch, getState) => {
+export const receiveNotesChange = () => (dispatch, getState) => {
     dispatch({
         type: NOTES_RECORDED
+    });
+}
+
+export const sendReplyOpen = () => (dispatch, getState) => {
+    dispatch({
+        type: REPLY_OPEN
+    });
+}
+
+export const receiveReplyOpen = () => (dispatch, getState) => {
+    dispatch({
+        type: REPLY_RESOLVED
     });
 }
 
@@ -37,6 +51,12 @@ export const addBinNote = (author, entry, parent, replies, timeseries, ifcb, fil
 export const deleteBinNote = (id) => (dispatch, getState) => {
     axios
         .delete('/delete/note/' + id + '/', tokenConfig(getState))
+        .catch((err) => console.log(err));
+}
+
+export const flagBinNote = (id) => (dispatch, getState) => {
+    axios
+        .put('/flag/note/' + id + '/', tokenConfig(getState))
         .catch((err) => console.log(err));
 }
 
