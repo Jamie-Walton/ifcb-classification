@@ -1,10 +1,15 @@
 from django.db.models.query_utils import Q
+from django.conf import settings
 from .models import Bin, ClassOption, TimeSeriesOption, Target, Note
 from .serializers import TargetSerializer
 import pandas as pd
+import numpy as np
+import os
 import requests
 import math
 import datetime
+from scipy.io import savemat
+
 
 def create_targets(timeseries, year, day, file):
     
@@ -149,7 +154,7 @@ def get_days(volume, year):
     return day_options
 
 
-def get_rows(b, set, sort):
+def get_rows(b, set, sort, scale):
 
     if sort == 'AZ':
         targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
@@ -172,15 +177,16 @@ def get_rows(b, set, sort):
     row = 0
     for i in range(0,end-start):
         target = targets[start+i]
-        if (space - (target.width*0.056) - 1) < 0:
+        if (space - (target.width*(scale/10000)) - 1) < 0:
             rows.append([])
             row += 1
-            space = 70 - (target.width*0.056)
+            space = 70 - (target.width*(scale/10000))
         else:
-            space -= ((target.width*0.056) + 1)
+            space -= ((target.width*(scale/10000)) + 1)
         rows[row].append(i)
 
     return rows
+
 
 def filter_notes(filters):
 
@@ -214,3 +220,10 @@ def filter_notes(filters):
 
     return q
             
+
+def saveClassifications(b):
+    targets = Target.objects.filter(bin=b)
+    serializer = TargetSerializer(targets, many=True)
+    drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'editor', 'date', 'notes']
+    df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
+    savemat(settings.ASSETS_ROOT + '/classifications.mat', {'classifications': np.array(df)})

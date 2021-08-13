@@ -26,12 +26,12 @@ class TimeSeriesControl extends React.Component {
         <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return (
             <div>
-                <div className="time" id='timeseries_bar'>
+                <div className="time time-series" id='timeseries_bar'>
                     <p className="time-selection">{this.props.timeseries}</p>
                     <img src={dropdown} className="time-icon" 
                     alt={'Select time series'} onClick={() => this.handleDropdown()}></img>
                 </div>
-                <div className="time-dropdown" id='timeseries_dropdown'>
+                <div className="time-dropdown time-series" id='timeseries_dropdown'>
                     <ul className="timeseries-option">{options}</ul>
                 </div>
                 <p className="time-label" id='timeseries_label'>Time Series</p>
@@ -279,13 +279,11 @@ class Micrometer extends React.Component {
     // Double check that scale is correct?
     render() {
         return(
-            <Draggable>
-                <div className="drag-box">
-                    <div className="micrometer-block"
-                    style={{width: '1.904vw'}}></div>
-                    <p className="micrometer-text">10µm</p>
-                </div>
-            </Draggable>
+            <div className="drag-box">
+                <div className="micrometer-block"
+                style={{width: (String(34*this.props.scale) + 'vw')}}></div>
+                <p className="micrometer-text">10µm</p>
+            </div>
         );
     }
 }
@@ -310,7 +308,7 @@ class ClassMenu extends React.Component {
           </div>
           <ul>{options}</ul>
       </div>
-      <Micrometer/>
+      <Micrometer scale={this.props.scale}/>
       </div>
       );
   }
@@ -380,7 +378,7 @@ class Annotations extends React.Component {
       })
       .catch((err) => console.log(err));
     axios
-        .get('/process/timeseries/' + option + '/' + this.state.sortCode + '/')
+        .get('/process/timeseries/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((binResponse) => {
             this.setState({ 
                 bin: binResponse.data.bin,
@@ -420,7 +418,7 @@ class Annotations extends React.Component {
         rows: [], 
         targets: [] });  
     axios
-        .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/' + this.state.sortCode + '/')
+        .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((yearResponse) => {
             this.setState({ 
                 bin: yearResponse.data.bin,
@@ -453,7 +451,7 @@ class Annotations extends React.Component {
         targets: [],
     });
     axios
-        .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/' + this.state.sortCode + '/')
+        .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((dayResponse) => {
             this.setState({ 
                 bin: dayResponse.data.bin,
@@ -495,7 +493,7 @@ class Annotations extends React.Component {
         set: 1,
     });
     axios
-        .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/' + this.state.sortCode + '/')
+        .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((res) => this.setState({ 
             bin: res.data.bin, 
             setOptions: res.data.options.set_options,
@@ -520,7 +518,7 @@ class Annotations extends React.Component {
         rows: [],
     });
     axios
-      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
       .then((rowResponse) => {
           axios
             .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/')
@@ -551,7 +549,7 @@ class Annotations extends React.Component {
         })})
       .catch((err) => console.log(err));
     axios
-      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/' + Math.round(this.state.scale * 10000) + '/')
       .then((res) => {this.setState({ 
           rows: res.data.options.rows,
         })})
@@ -580,7 +578,7 @@ class Annotations extends React.Component {
         })})
       .catch((err) => console.log(err));
     axios
-      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/' + Math.round(this.state.scale * 10000) + '/')
       .then((res) => {this.setState({ 
           rows: res.data.options.rows,
         })})
@@ -715,7 +713,7 @@ class Annotations extends React.Component {
              });
         });
     axios
-        .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + this.state.sortCode + '/')
+        .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((res) => {this.setState({ 
             rows: res.data.options.rows,
             loading: false,
@@ -807,6 +805,29 @@ class Annotations extends React.Component {
       }
   }
 
+  handleDownload() {
+    axios
+        .get('/mat/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
+        .catch((err) => (console.log(err)));
+    document.getElementById('download').click();
+  }
+
+  handleScale(dir) {
+    const initialScale = this.state.scale
+    var  newScale = 0;
+    if (dir === 'up') {
+        newScale = initialScale + 0.01;
+    } else if  (dir === 'down') {
+        newScale = initialScale - 0.01;
+    }
+    axios
+      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + this.state.sortCode + '/' + Math.round((newScale) * 10000) + '/')
+      .then((rowResponse) => { this.setState({ 
+          scale: newScale,
+          rows: rowResponse.data.options.rows 
+        }); });
+  }
+
   renderTimeSeriesControl() {
     return <TimeSeriesControl
         timeseries={this.state.bin.timeseries}
@@ -863,11 +884,14 @@ class Annotations extends React.Component {
 
   renderSync() {
     return(
-        <div className="sync-button" id="sync-button" onClick={() => this.handleSyncClick()}>
-            <div className={(this.props.isSyncing) ? "sync syncing" : "sync"} id="sync"></div>
-            <p className="sync-text">Sync</p>
-        </div>
+        <div className="round-button sync" id="sync-button" onClick={() => this.handleSyncClick()}></div>
     );
+  }
+
+  renderDownload() {
+      return(
+        <div className="round-button download" onClick={() => this.handleDownload()}></div>
+      );
   }
   
   renderPlankton(i) {
@@ -911,12 +935,8 @@ class Annotations extends React.Component {
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
           handleSaveClick={() => this.handleSaveClick()}
+          scale={this.state.scale}
       />;
-  }
-
-  renderMicrometer() {
-      return <Micrometer
-      scale={this.state.scale}/>
   }
 
   renderBar(gb, i) {
@@ -944,6 +964,7 @@ class Annotations extends React.Component {
             <div className="page">
 
             <div class="content">
+            <a id="download" href="../../assets/login-plankton.png" download></a>
             <div className="inner-content">
                 <h1>Manual Classifications</h1>
                 <div className="time-controls">
@@ -957,6 +978,9 @@ class Annotations extends React.Component {
                     <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
                     <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
                     {this.renderSync()}
+                    {this.renderDownload()}
+                    <div className="scale-down" onClick={() => this.handleScale('down')}></div>
+                    <div className="scale-up" onClick={() => this.handleScale('up')}></div>
                 </div>
                 <div className="day-dropdown" id='day_dropdown'>
                     <div className="timeline">

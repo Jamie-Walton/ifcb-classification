@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import HttpResponseNotFound
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
-from .services import create_targets, get_files, get_days, get_rows, sync_autoclass, filter_notes
+from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes
 import requests
 import math
 import pandas as pd
@@ -161,6 +161,13 @@ def save(request, timeseries, file, set, sort):
 
 
 @api_view(('GET',))
+def saveMAT(request, timeseries, file):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    saveClassifications(b)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(('GET',))
 def sync(request, timeseries, year, day, file):
     b = Bin.objects.get(timeseries=timeseries, file=file)
     b.delete()
@@ -246,9 +253,9 @@ def edit_all(request, timeseries, file, set, sort, className, classAbbr):
 
 
 @api_view(('GET',))
-def new_rows(request, timeseries, file, set, sort):
+def new_rows(request, timeseries, file, set, sort, scale):
     b = Bin.objects.get(timeseries=timeseries, file=file)
-    rows = get_rows(b, set, sort)
+    rows = get_rows(b, set, sort, scale)
 
     options = {
         'rows': rows
@@ -261,7 +268,7 @@ def new_rows(request, timeseries, file, set, sort):
 
 
 @api_view(('GET',))
-def new_timeseries(request, timeseries_name, sort):
+def new_timeseries(request, timeseries_name, sort, scale):
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
     volume = volume_response.json()
@@ -286,7 +293,7 @@ def new_timeseries(request, timeseries_name, sort):
 
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
-    rows = get_rows(b, 1, sort)
+    rows = get_rows(b, 1, sort, scale)
 
     options = {
         'year_options': year_options,
@@ -311,7 +318,7 @@ def new_timeseries(request, timeseries_name, sort):
 
 
 @api_view(('GET',))
-def new_file(request, timeseries, file, sort):
+def new_file(request, timeseries, file, sort, scale):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     if not Bin.objects.filter(file=file):
@@ -323,7 +330,7 @@ def new_file(request, timeseries, file, sort):
 
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, 1, sort)
+    rows = get_rows(b, 1, sort, scale)
     
     bin = {
         'timeseries': timeseries, 
@@ -348,7 +355,7 @@ def new_file(request, timeseries, file, sort):
 
 
 @api_view(('GET',))
-def new_day(request, timeseries, year, day, sort):
+def new_day(request, timeseries, year, day, sort, scale):
     
     dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
     day = str(dates[day])[5:10]
@@ -372,7 +379,7 @@ def new_day(request, timeseries, year, day, sort):
 
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
-    rows = get_rows(b, 1, sort)
+    rows = get_rows(b, 1, sort, scale)
     
     bin = {
         'timeseries': timeseries,
@@ -398,7 +405,7 @@ def new_day(request, timeseries, year, day, sort):
     
 
 @api_view(('GET',))
-def new_year(request, timeseries, year, sort):
+def new_year(request, timeseries, year, sort, scale):
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
@@ -421,7 +428,7 @@ def new_year(request, timeseries, year, sort):
     
     b = Bin.objects.get(file=first_file)
     ifcb = b.ifcb
-    rows = get_rows(b, 1, sort)
+    rows = get_rows(b, 1, sort, scale)
 
     options = {
         'year_options': 'NA',
