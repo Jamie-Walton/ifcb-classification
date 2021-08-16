@@ -806,10 +806,8 @@ class Annotations extends React.Component {
   }
 
   handleDownload() {
-    axios
-        .get('/mat/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
-        .catch((err) => (console.log(err)));
-    document.getElementById('download').click();
+    // TODO: Change domain later
+    document.getElementById('download-src').src = 'http://localhost:8000/mat/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/'
   }
 
   handleScale(dir) {
@@ -890,7 +888,11 @@ class Annotations extends React.Component {
 
   renderDownload() {
       return(
-        <div className="round-button download" onClick={() => this.handleDownload()}></div>
+        <div className="round-button download" onClick={() => this.handleDownload()}>
+            <div style={{display: 'none'}}>
+               <iframe id="download-src" />
+           </div>
+        </div>
       );
   }
   

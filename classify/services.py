@@ -226,4 +226,4 @@ def saveClassifications(b):
     serializer = TargetSerializer(targets, many=True)
     drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'editor', 'date', 'notes']
     df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
-    savemat(settings.ASSETS_ROOT + '/classifications.mat', {'classifications': np.array(df)})
+    savemat('classifications.mat', {'classifications': np.array(df)})

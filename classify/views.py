@@ -3,7 +3,7 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from django.http import HttpResponseNotFound
+from django.http import HttpResponse
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
 from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes
@@ -164,7 +164,11 @@ def save(request, timeseries, file, set, sort):
 def saveMAT(request, timeseries, file):
     b = Bin.objects.get(timeseries=timeseries, file=file)
     saveClassifications(b)
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    file = open('classifications.mat', 'r')
+    content_type = 'application/x-matlab-data'
+    response = HttpResponse(file, content_type=content_type)
+    response['Content-Disposition'] = f'attachment; filename=classifications.mat'
+    return response
 
 
 @api_view(('GET',))
