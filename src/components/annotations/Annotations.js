@@ -492,21 +492,23 @@ class Annotations extends React.Component {
     });
     axios
         .get('/process/file/' + this.state.bin.timeseries + '/' + file + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
-        .then((res) => this.setState({ 
-            bin: res.data.bin, 
-            setOptions: res.data.options.set_options,
-            rows: res.data.options.rows
-        }))
-        .catch((err) => console.log(err));
-    axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/' + this.state.sortCode + '/')
-        .then((targetResponse) => {
+        .then((res) => {
             this.setState({ 
-                targets: targetResponse.data,
-                history: [JSON.stringify(targetResponse.data)],
-                loading: false,
-             });
-        });
+                bin: res.data.bin, 
+                setOptions: res.data.options.set_options,
+                rows: res.data.options.rows
+            })
+            axios
+                .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/' + this.state.sortCode + '/')
+                .then((targetResponse) => {
+                    this.setState({ 
+                        targets: targetResponse.data,
+                        history: [JSON.stringify(targetResponse.data)],
+                        loading: false,
+                    });
+            });
+        })
+        .catch((err) => console.log(err));
   }
 
   handleNewSet(option) {
