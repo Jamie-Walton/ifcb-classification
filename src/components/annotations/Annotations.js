@@ -537,8 +537,6 @@ class Annotations extends React.Component {
         group: group,
         sort: sort,
         sortCode: code,
-        rows: [],
-        targets: [],
     });
     axios
       .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
@@ -566,8 +564,6 @@ class Annotations extends React.Component {
         loading: true,
         sort: sort,
         sortCode: code,
-        rows: [],
-        targets: [],
     });
     axios
       .get('process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.set + '/' + code + '/')
