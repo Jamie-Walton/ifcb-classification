@@ -275,7 +275,6 @@ class Plankton extends React.Component {
 }
 
 class Micrometer extends React.Component {
-    // Double check that scale is correct?
     render() {
         return(
             <div className="drag-box">
