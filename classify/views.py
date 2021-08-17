@@ -24,7 +24,7 @@ class BinView(viewsets.ModelViewSet):
 @api_view(('GET',))
 def get_classes(request, timeseries):
     timeseries_obj = TimeSeriesOption.objects.get(name=timeseries)
-    classes = ClassOption.objects.filter(timeseries=timeseries_obj).order_by('display_name')
+    classes = ClassOption.objects.filter(timeseries=timeseries_obj, in_use=True).order_by('display_name')
     serializer = ClassOptionSerializer(classes, many=True)
     return Response(serializer.data)
 
@@ -151,8 +151,9 @@ def save(request, timeseries, file, set, sort):
     
     for i in range(len(targets)):
         target = targets[i]
+        print(target.number)
         t = Target.objects.get(bin=b, number=target.number)
-        serializer = TargetSerializer(t, data=request.data[i],context={'request': request})
+        serializer = TargetSerializer(instance=t, data=request.data[i], context={'request': request})
         if serializer.is_valid():
             serializer.save()
         else:
@@ -249,6 +250,21 @@ def edit_all(request, timeseries, file, set, sort, className, classAbbr):
         serializer = TargetSerializer(t, data=\
             {'id': t.id, 'bin': b.id, 'number': t.number, 'height': t.height, 'width': t.width, \
                 'class_name': className, 'class_abbr': classAbbr},context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(('PUT',))
+def undo(request, timeseries, file, set):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    targets = Target.objects.filter(bin=b, set=set)
+    for i in range(len(targets)):
+        target = targets[i]
+        t = Target.objects.get(bin=b, number=target.number)
+        serializer = TargetSerializer(t, data=request.data[i],context={'request': request})
         if serializer.is_valid():
             serializer.save()
         else:

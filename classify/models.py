@@ -37,6 +37,7 @@ class Target(models.Model):
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
     class_abbr = models.CharField(max_length=10, default="UNC")
+    class_id = models.IntegerField(default="1")
     editor = models.CharField(max_length=50, default="Auto Classifier")
     date = models.DateField(auto_now=True)
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, null=True)
@@ -47,8 +48,10 @@ class Target(models.Model):
 class ClassOption(models.Model):
     display_name = models.CharField(max_length=100)
     autoclass_name = models.CharField(max_length=100)
+    class_id = models.IntegerField(default="1")
     abbr = models.CharField(max_length=10)
     threshold = models.FloatField(default=0.5)
+    in_use = models.BooleanField(default=True)
     timeseries = models.ManyToManyField(TimeSeriesOption)
 
     def _str_(self):

@@ -15,12 +15,12 @@ class NoteSerializer(serializers.ModelSerializer):
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
-        fields = ('id', 'bin', 'number', 'height', 'width', 'class_name', 'class_abbr', 'editor', 'date', 'notes')
+        fields = ('id', 'bin', 'number', 'height', 'width', 'class_name', 'class_abbr', 'class_id', 'editor', 'date', 'notes')
 
 class ClassOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassOption
-        fields = ('id', 'display_name', 'autoclass_name', 'abbr', 'timeseries')
+        fields = ('id', 'display_name', 'autoclass_name', 'class_id', 'abbr', 'in_use', 'timeseries')
 
 class TimeSeriesOptionSerializer(serializers.ModelSerializer):
     class Meta:

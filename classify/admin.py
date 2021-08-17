@@ -6,13 +6,13 @@ class NoteAdmin(admin.ModelAdmin):
     
 
 class TargetAdmin(admin.ModelAdmin):
-    list_display = ('bin', 'number', 'class_name', 'class_abbr', 'editor', 'date', 'notes')
+    list_display = ('bin', 'number', 'class_name', 'class_abbr', 'class_id', 'editor', 'date', 'notes')
 
 class TimeSeriesInline(admin.TabularInline):
     model = ClassOption.timeseries.through
 
 class ClassOptionAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'autoclass_name', 'abbr')
+    list_display = ('display_name', 'autoclass_name', 'class_id', 'abbr', 'in_use')
     inlines = [TimeSeriesInline]
 
 class TimeSeriesOptionAdmin(admin.ModelAdmin):

@@ -300,9 +300,6 @@ class ClassMenu extends React.Component {
             <div className="annotation-control" onClick={() =>  this.props.handleUndoClick()}>
                 <p className="control-text">Undo</p>
             </div>
-            <div className="annotation-control" onClick={() =>  this.props.handleSaveClick()}>
-                <p className="control-text">Save</p>
-            </div>
           </div>
           <ul>{options}</ul>
       </div>
@@ -668,8 +665,7 @@ class Annotations extends React.Component {
           targets: targets,
           history: this.state.history.concat([JSON.stringify(targets)])
      });
-
-      this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode, className, classAbbr);
+     this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode);
   }
 
   handleUndoClick() {
@@ -683,11 +679,8 @@ class Annotations extends React.Component {
           history: newHistory,
       });
       this.setState({ rows: rows });
+      this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode);
     }
-  }
-
-  handleSaveClick() {
-    this.props.save(this.state.targets, this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode);
   }
 
   handleSyncClick() {
@@ -922,7 +915,6 @@ class Annotations extends React.Component {
           onClick={(name) => this.handleMenuClick(name)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
-          handleSaveClick={() => this.handleSaveClick()}
           scale={this.state.scale}
       />;
   }
