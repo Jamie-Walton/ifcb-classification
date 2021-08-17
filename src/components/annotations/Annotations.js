@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import Draggable from 'react-draggable';
 import Header from '../layout/Header';
 import BinNote from './BinNote';
 
@@ -333,7 +332,7 @@ class Annotations extends React.Component {
           fileOptions: [],
           setOptions: [],
           targets: [],
-          history: [{ targets: [] }],
+          history: [],
           rows: [],
           scale: 0.056,
           set: 1,
@@ -395,7 +394,7 @@ class Annotations extends React.Component {
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
-                        history: [{ targets: targetResponse.data }],
+                        history: [JSON.stringify(targetResponse.data)],
                         loading: false,
                      });
                 });
@@ -434,7 +433,7 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: yearResponse.data.options.rows,
-                        history: [{ targets: targetResponse.data }],
+                        history: [JSON.stringify(targetResponse.data)],
                         loading: false,
                      });
                 });
@@ -465,7 +464,7 @@ class Annotations extends React.Component {
                     this.setState({ 
                         targets: targetResponse.data,
                         rows: dayResponse.data.options.rows,
-                        history: [{ targets: targetResponse.data }],
+                        history: [JSON.stringify(targetResponse.data)],
                         loading: false,
                     });
                 });
@@ -505,7 +504,7 @@ class Annotations extends React.Component {
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
-                history: [{ targets: targetResponse.data }],
+                history: [JSON.stringify(targetResponse.data)],
                 loading: false,
              });
         });
@@ -670,26 +669,24 @@ class Annotations extends React.Component {
       }
       this.setState({ 
           targets: targets,
-          history: this.state.history.concat([
-            {
-                targets: targets
-            }
-          ])
+          history: this.state.history.concat([JSON.stringify(targets)])
      });
 
       this.props.classifyAll(this.state.bin.timeseries, this.state.bin.file, this.state.set, this.state.sortCode, className, classAbbr);
   }
 
   handleUndoClick() {
-      const newhistory = this.state.history.slice(0, this.state.history.length-1);
-      const targets = this.state.history[this.state.history.length-2];
+    if (this.state.history.length > 1) {
+      const newHistory = this.state.history.slice(0, this.state.history.length-1);
+      const targets = JSON.parse(newHistory[newHistory.length-1]);
       const rows = this.state.rows;
       this.setState({ rows: [] });
       this.setState({
-          targets: targets.targets,
-          history: newhistory,
+          targets: targets,
+          history: newHistory,
       });
       this.setState({ rows: rows });
+    }
   }
 
   handleSaveClick() {
@@ -705,11 +702,7 @@ class Annotations extends React.Component {
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
-                history: this.state.history.concat([
-                    {
-                        targets: targetResponse.data
-                    }
-                ]),
+                history: this.state.history.concat([JSON.stringify(targetResponse.data)]),
              });
         });
     axios
@@ -738,11 +731,7 @@ class Annotations extends React.Component {
     }
     this.setState({ 
         targets: targets,
-        history: this.state.history.concat([
-            {
-                targets: targets
-            }
-        ])
+        history: this.state.history.concat([JSON.stringify(targets)])
     });
     const start = row[0]
     const end = row[i];
@@ -776,8 +765,8 @@ class Annotations extends React.Component {
         targets[k].editor = this.props.user.username;
         const history = this.state.history;
         this.setState({
+            history: history.concat([JSON.stringify(targets)]),
             targets: targets,
-            history: history.concat([{ targets: targets }])
         });
         const container = document.getElementById(targets[k].number);
         const text = document.getElementById(targets[k].number+'-text');
