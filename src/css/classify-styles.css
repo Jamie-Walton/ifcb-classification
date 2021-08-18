@@ -126,8 +126,6 @@ li {
 	flex-grow: 0;
 	flex-shrink: 0;
 	margin: 5vw 1vw 0 -7vw;
-	overflow: auto;
-	height: 110vh;
 }
 
 .to-top {
@@ -462,6 +460,7 @@ li {
 	flex-shrink: 0;
 	width: 16vw;
 	height: 92vh;
+	overflow-y: scroll;
 }
 
 .class-menu button {

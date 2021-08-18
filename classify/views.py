@@ -152,7 +152,6 @@ def save(request, timeseries, file, set, sort):
     
     for i in range(len(targets)):
         target = targets[i]
-        print(target.number)
         t = Target.objects.get(bin=b, number=target.number)
         serializer = TargetSerializer(instance=t, data=request.data[i], context={'request': request})
         if serializer.is_valid():
