@@ -165,13 +165,14 @@ def save(request, timeseries, file, set, sort):
 def saveMAT(request, ifcb, file):
     b = Bin.objects.get(ifcb=ifcb, file=file)
     saveClassifications(b, ifcb, file)
-    file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
-    file = open(file_name, 'rb')
+    file_name = file + '_' + ifcb + '.mat'
+    path = os.path.join(MEDIA_ROOT, file_name)
+    file = open(path, 'rb')
     response = HttpResponse(file, headers = {
         'Content-Type': 'application/x-matlab-data',
         'Content-Disposition': 'attachment; filename="' + file_name + '"',
         })
-    os.remove(file_name)
+    os.remove(path)
     return response
 
 

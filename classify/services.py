@@ -234,6 +234,7 @@ def saveClassifications(b, ifcb, file):
     classes = pd.unique(pd.Series(classes))
 
     file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
+    path = os.path.join(MEDIA_ROOT, file_name)
     content = {
         'class2use_auto': [],
         'class2use_manual': np.array(classes),
@@ -241,4 +242,4 @@ def saveClassifications(b, ifcb, file):
         'default_class_original': ['unclassified'],
         'list_titles': ['roi number', 'manual', 'auto']
     }
-    savemat(file_name, content)
+    savemat(path, content)
