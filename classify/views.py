@@ -12,6 +12,7 @@ import math
 import pandas as pd
 import re
 import os
+from backend.settings import MEDIA_ROOT
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -164,7 +165,7 @@ def save(request, timeseries, file, set, sort):
 def saveMAT(request, ifcb, file):
     b = Bin.objects.get(ifcb=ifcb, file=file)
     saveClassifications(b, ifcb, file)
-    file_name = file + '_' + ifcb + '.mat'
+    file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
     file = open(file_name, 'rb')
     response = HttpResponse(file, headers = {
         'Content-Type': 'application/x-matlab-data',

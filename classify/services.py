@@ -9,6 +9,7 @@ import requests
 import math
 import datetime
 from scipy.io import savemat
+from backend.settings import MEDIA_ROOT
 
 
 def create_targets(timeseries, year, day, file):
@@ -232,7 +233,7 @@ def saveClassifications(b, ifcb, file):
     classes = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id')
     classes = pd.unique(pd.Series(classes))
 
-    file_name = file + '_' + ifcb + '.mat'
+    file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
     content = {
         'class2use_auto': [],
         'class2use_manual': np.array(classes),
