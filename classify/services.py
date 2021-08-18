@@ -221,10 +221,11 @@ def filter_notes(filters):
     return q
             
 
-def saveClassifications(b):
+def saveClassifications(b, ifcb, file):
     targets = Target.objects.filter(bin=b)
     serializer = TargetSerializer(targets, many=True)
-    drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'editor', 'date', 'notes']
+    drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'class_name', 'editor', 'date', 'notes']
     df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
     df.number = df.number.astype(int, copy=False)
-    savemat('classifications.mat', {'classifications': np.array(df)})
+    file_name = file + '_' + ifcb + '.mat'
+    savemat(file_name, {'classifications': np.array(df)})

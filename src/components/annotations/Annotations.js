@@ -786,7 +786,7 @@ class Annotations extends React.Component {
 
   handleDownload() {
     // TODO: Change domain later
-    document.getElementById('download-src').src = 'http://localhost:8000/mat/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/'
+    document.getElementById('download-src').src = 'http://localhost:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
   handleScale(dir) {

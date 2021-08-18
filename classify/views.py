@@ -11,6 +11,7 @@ import requests
 import math
 import pandas as pd
 import re
+import os
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -162,13 +163,15 @@ def save(request, timeseries, file, set, sort):
 
 
 @api_view(('GET',))
-def saveMAT(request, timeseries, file):
-    b = Bin.objects.get(timeseries=timeseries, file=file)
-    saveClassifications(b)
-    file = open('classifications.mat', 'r')
+def saveMAT(request, ifcb, file):
+    b = Bin.objects.get(ifcb=ifcb, file=file)
+    saveClassifications(b, ifcb, file)
+    file_name = file + '_' + ifcb + '.mat'
+    file = open(file_name, 'r', encoding='utf-8')
     content_type = 'application/x-matlab-data'
     response = HttpResponse(file, content_type=content_type)
-    response['Content-Disposition'] = f'attachment; filename=classifications.mat'
+    response['Content-Disposition'] = f'attachment; filename=' + file_name
+    os.remove(file_name)
     return response
 
 

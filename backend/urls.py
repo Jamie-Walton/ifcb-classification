@@ -32,7 +32,7 @@ urlpatterns = [
     path('notebook/', views.get_notebook),
     path('notebook/filters/', views.get_notebook_filters),
     path('notebook/applyfilters/', views.filter_notebook),
-    path('mat/<str:timeseries>/<str:file>/', views.saveMAT),
+    path('mat/<str:ifcb>/<str:file>/', views.saveMAT),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
 ]
