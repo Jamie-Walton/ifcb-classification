@@ -36,7 +36,7 @@ class Target(models.Model):
     height = models.IntegerField(default=0)
     width = models.IntegerField(default=0)
     class_name = models.CharField(max_length=120)
-    class_abbr = models.CharField(max_length=10, default="UNC")
+    class_abbr = models.CharField(max_length=10, default="UNCL")
     class_id = models.IntegerField(default="1")
     editor = models.CharField(max_length=50, default="Auto Classifier")
     date = models.DateField(auto_now=True)

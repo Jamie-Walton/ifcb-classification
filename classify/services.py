@@ -62,7 +62,7 @@ def create_targets(timeseries, year, day, file):
     for i in range(len(targets)):
         target = targets[i]
         class_name = 'Unclassified'
-        class_abbr = 'UNC'
+        class_abbr = 'UNCL'
         if classes is not None:
             c = ClassOption.objects.get(autoclass_name=classes[i])
             if maxes[i] >= c.threshold:
@@ -112,7 +112,7 @@ def sync_autoclass(timeseries, year, day, file):
         target = targets[i]
         t = Target.objects.get(bin=b, number=target.number)
         class_name = 'Unclassified'
-        class_abbr = 'UNC'
+        class_abbr = 'UNCL'
         if classes is not None:
             c = ClassOption.objects.get(autoclass_name=classes[i])
             if maxes[i] >= c.threshold:
