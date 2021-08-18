@@ -17,6 +17,7 @@ class TargetSerializer(serializers.ModelSerializer):
         model = Target
         fields = ('id', 'bin', 'number', 'height', 'width', 'class_name', 'class_abbr', 'class_id', 'editor', 'date', 'notes')
 
+
 class ClassOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassOption
