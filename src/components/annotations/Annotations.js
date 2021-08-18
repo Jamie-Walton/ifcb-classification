@@ -301,7 +301,7 @@ class ClassMenu extends React.Component {
                 <p className="control-text">Undo</p>
             </div>
           </div>
-          <ul>{options}</ul>
+          <ul className="class-menu-options">{options}</ul>
       </div>
       <Micrometer scale={this.props.scale}/>
       </div>

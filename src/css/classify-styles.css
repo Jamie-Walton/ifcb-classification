@@ -452,7 +452,6 @@ li {
 	flex-shrink: 0;
 	width: 16vw;
 	height: 92vh;
-	overflow-y: scroll;
 
 }
 
@@ -478,6 +477,11 @@ li {
 .select-menu {
 	background-color: #16609F;
   }
+
+.class-menu-options {
+	height: 86%;
+	overflow-y: scroll;
+}
 
 
 /* Rows */
