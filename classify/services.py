@@ -228,10 +228,14 @@ def saveClassifications(b, ifcb, file):
     df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
     df.number = df.number.astype('double', copy=False)
     df.class_id = df.class_id.astype('double', copy=False)
+
+    classes = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id')
+    classes = pd.unique(pd.Series(classes))
+
     file_name = file + '_' + ifcb + '.mat'
     content = {
         'class2use_auto': [],
-        'class2use_manual': [],
+        'class2use_manual': np.array(classes),
         'classlist': np.array(df),
         'default_class_original': ['unclassified'],
         'list_titles': ['roi number', 'manual', 'auto']
