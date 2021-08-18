@@ -172,7 +172,6 @@ def saveMAT(request, ifcb, file):
         'Content-Type': 'application/x-matlab-data',
         'Content-Disposition': 'attachment; filename="' + file_name + '"',
         })
-    os.remove(path)
     return response
 
 
