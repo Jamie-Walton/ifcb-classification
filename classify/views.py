@@ -12,7 +12,8 @@ import math
 import pandas as pd
 import re
 import os
-from backend.settings import MEDIA_ROOT
+from backend.settings import STATIC_ROOT
+from django.core.files.storage import FileSystemStorage
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -166,7 +167,7 @@ def saveMAT(request, ifcb, file):
     b = Bin.objects.get(ifcb=ifcb, file=file)
     saveClassifications(b, ifcb, file)
     file_name = file + '_' + ifcb + '.mat'
-    path = os.path.join(MEDIA_ROOT, file_name)
+    path = os.path.join(STATIC_ROOT, file_name)
     file = open(path, 'rb')
     response = HttpResponse(file, headers = {
         'Content-Type': 'application/x-matlab-data',
