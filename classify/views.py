@@ -167,10 +167,11 @@ def saveMAT(request, ifcb, file):
     b = Bin.objects.get(ifcb=ifcb, file=file)
     saveClassifications(b, ifcb, file)
     file_name = file + '_' + ifcb + '.mat'
-    file = open(file_name, 'r', encoding='utf-8')
-    content_type = 'application/x-matlab-data'
-    response = HttpResponse(file, content_type=content_type)
-    response['Content-Disposition'] = f'attachment; filename=' + file_name
+    file = open(file_name, 'rb')
+    response = HttpResponse(file, headers = {
+        'Content-Type': 'application/x-matlab-data',
+        'Content-Disposition': 'attachment; filename="' + file_name + '"',
+        })
     os.remove(file_name)
     return response
 

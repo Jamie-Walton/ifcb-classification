@@ -226,6 +226,14 @@ def saveClassifications(b, ifcb, file):
     serializer = TargetSerializer(targets, many=True)
     drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'class_name', 'editor', 'date', 'notes']
     df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
-    df.number = df.number.astype(int, copy=False)
+    df.number = df.number.astype('double', copy=False)
+    df.class_id = df.class_id.astype('double', copy=False)
     file_name = file + '_' + ifcb + '.mat'
-    savemat(file_name, {'classifications': np.array(df)})
+    content = {
+        'class2use_auto': [],
+        'class2use_manual': [],
+        'classlist': np.array(df),
+        'default_class_original': ['unclassified'],
+        'list_titles': ['roi number', 'manual', 'auto']
+    }
+    savemat(file_name, content)
