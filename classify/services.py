@@ -115,18 +115,20 @@ def sync_autoclass(timeseries, year, day, file):
         t = Target.objects.get(bin=b, number=target.number)
         class_name = 'Unclassified'
         class_abbr = 'UNCL'
+        class_id = 1
         if classes is not None:
             c = ClassOption.objects.get(autoclass_name=classes[i])
             if maxes[i] >= c.threshold:
                 class_name = c.display_name
                 class_abbr = c.abbr
+                class_id = c.class_id
         num = target.number
         height = target.height
         width = target.width
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         serializer = TargetSerializer(t, data={'number': num, 'width': width, 'height': height, \
-            'class_name': class_name, 'class_abbr': class_abbr, 'editor': editor, 'date': date})
+            'class_name': class_name, 'class_abbr': class_abbr, 'class_id': class_id, 'editor': editor, 'date': date})
     
     return serializer
 
