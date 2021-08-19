@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework import routers
+from django.conf import settings
+from django.conf.urls.static import static
 from classify import views
 from django.views.generic import TemplateView
 import debug_toolbar
@@ -35,4 +37,4 @@ urlpatterns = [
     path('mat/<str:ifcb>/<str:file>/', views.saveMAT),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

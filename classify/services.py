@@ -1,5 +1,4 @@
 from django.db.models.query_utils import Q
-from django.conf import settings
 from .models import Bin, ClassOption, TimeSeriesOption, Target, Note
 from .serializers import TargetSerializer
 import pandas as pd
@@ -9,7 +8,7 @@ import requests
 import math
 import datetime
 from scipy.io import savemat
-from backend.settings import STATIC_ROOT
+from backend.settings import MEDIA_ROOT
 
 
 def create_targets(timeseries, year, day, file):
@@ -233,8 +232,8 @@ def saveClassifications(b, ifcb, file):
     classes = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id')
     classes = pd.unique(pd.Series(classes))
 
-    file_name = STATIC_ROOT + '/' + file + '_' + ifcb + '.mat'
-    path = os.path.join(STATIC_ROOT, file_name)
+    file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
+    path = os.path.join(MEDIA_ROOT, file_name)
     content = {
         'class2use_auto': [],
         'class2use_manual': np.array(classes),
