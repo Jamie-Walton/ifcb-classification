@@ -785,11 +785,6 @@ class Annotations extends React.Component {
       }
   }
 
-  handleDownload() {
-    // TODO: Change domain later
-    // document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
-  }
-
   handleScale(dir) {
     const initialScale = this.state.scale
     var  newScale = 0;

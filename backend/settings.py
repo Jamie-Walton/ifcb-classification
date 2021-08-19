@@ -30,7 +30,7 @@ DEBUG = True
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = [
-    'https://ifcb-classification-test.herokuapp.com/',
+    'https://ifcb-classification.herokuapp.com/',
     'localhost:8000'
 ]
 
