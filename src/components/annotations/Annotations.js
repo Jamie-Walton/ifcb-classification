@@ -368,7 +368,7 @@ class Annotations extends React.Component {
       .get('/classes/' + option + '/')
       .then((res) => {
         this.setState({ 
-          classes: res.data.map((c) => (c.display_name)),
+          classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
           classAbbrs: res.data.map((c) => (c.abbr))
         });
       })
