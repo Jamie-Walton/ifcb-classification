@@ -865,7 +865,7 @@ class Annotations extends React.Component {
       return(
         <div 
             className="round-button download" 
-            // href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}
+            href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}
         ></div>
       );
   }

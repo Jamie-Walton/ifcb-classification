@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link,  Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
-import { goto_classify, goto_notebook } from "../../actions/menu";
+import { goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
 
 export class Header extends Component {
     static propTypes = {
@@ -11,7 +11,7 @@ export class Header extends Component {
         logout: PropTypes.func.isRequired,
         goto_classify: PropTypes.func.isRequired,
         goto_notebook: PropTypes.func.isRequired,
-        goto_notebook: PropTypes.func.isRequired,
+        goto_analysis: PropTypes.func,
     };
 
     render() {
@@ -86,4 +86,4 @@ const mapStateToProps = state => ({
     auth: state.auth,
 });
 
-export default connect(mapStateToProps, { logout, goto_classify, goto_notebook })(Header);
+export default connect(mapStateToProps, { logout, goto_classify, goto_notebook, goto_analysis })(Header);
