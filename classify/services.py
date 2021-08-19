@@ -65,18 +65,21 @@ def create_targets(timeseries, year, day, file):
         target = targets[i]
         class_name = 'Unclassified'
         class_abbr = 'UNCL'
+        class_id = 1
         if classes is not None:
             c = ClassOption.objects.get(autoclass_name=classes[i])
             if maxes[i] >= c.threshold:
                 class_name = c.display_name
                 class_abbr = c.abbr
+                class_id = c.class_id
         num = '{:0>5}'.format(int(target['targetNumber']))
         height = int(target['width'])
         width = int(target['height'])
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         nearest_bin.target_set.create(number=num, width=width, height=height, \
-            class_name=class_name, class_abbr=class_abbr, editor=editor, date=date)
+            class_name=class_name, class_abbr=class_abbr, class_id=class_id, \
+            editor=editor, date=date)
     
     return ifcb
 
@@ -128,7 +131,8 @@ def sync_autoclass(timeseries, year, day, file):
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         serializer = TargetSerializer(t, data={'number': num, 'width': width, 'height': height, \
-            'class_name': class_name, 'class_abbr': class_abbr, 'class_id': class_id, 'editor': editor, 'date': date})
+            'class_name': class_name, 'class_abbr': class_abbr, 'class_id': class_id, \
+            'editor': editor, 'date': date})
     
     return serializer
 
