@@ -52,4 +52,4 @@ const mapStateToProps = state => ({
     onNotebook: state.menu.onClassify,
  });
 
-export default connect(mapStateToProps, {filterNotebook, receiveNotesChange})(Analysis);
+export default connect(mapStateToProps)(Analysis);
