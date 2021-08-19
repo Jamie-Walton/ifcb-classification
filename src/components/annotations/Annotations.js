@@ -801,6 +801,10 @@ class Annotations extends React.Component {
         }); });
   }
 
+  handleDownload() {
+    document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+  }
+
   renderTimeSeriesControl() {
     return <TimeSeriesControl
         timeseries={this.state.bin.timeseries}
@@ -863,10 +867,11 @@ class Annotations extends React.Component {
 
   renderDownload() {
       return(
-        <div 
-            className="round-button download" 
-            href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}
-        ></div>
+        <div className="round-button download">
+            <div style={{display: 'none'}}>
+               <iframe id="download-src" />
+            </div>
+        </div>
       );
   }
   

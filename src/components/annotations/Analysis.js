@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
 import Header from '../layout/Header';
+import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
     render() {

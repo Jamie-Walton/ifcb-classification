@@ -11,7 +11,7 @@ export class Header extends Component {
         logout: PropTypes.func.isRequired,
         goto_classify: PropTypes.func.isRequired,
         goto_notebook: PropTypes.func.isRequired,
-        goto_analysis: PropTypes.func,
+        goto_analysis: PropTypes.func.isRequired,
     };
 
     render() {
@@ -43,6 +43,13 @@ export class Header extends Component {
                             onClick={this.props.goto_notebook}
                             className="login-nav-link">
                                 Notebook
+                        </button>
+                    </li>
+                    <li>
+                        <button  
+                            onClick={this.props.goto_analysis}
+                            className="login-nav-link">
+                                Analysis
                         </button>
                     </li>
                     <li>
