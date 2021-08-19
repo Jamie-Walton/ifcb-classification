@@ -8,6 +8,8 @@ import requests
 import math
 import datetime
 from scipy.io import savemat
+from zipfile import ZipFile
+import urllib.request
 from backend.settings import MEDIA_ROOT
 
 
@@ -242,3 +244,17 @@ def saveClassifications(b, ifcb, file):
         'list_titles': ['roi number', 'manual', 'auto']
     }
     savemat(path, content)
+
+
+def create_class_zip(class_name, onlyManual):
+    targets = Target.objects.filter(class_name=class_name)
+    if onlyManual:
+        targets.exclude(editor='Auto Classifier')
+    for target in targets:
+        b = target.bin
+        image_url = 'http://128.114.25.154:8888/' + b.timeseries + '/' + b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
+        url = urllib.request.urlopen(image_url)
+        filename = image_url.split('/')[-1]
+        zipPath = '/tmp/%s.zip' % filename
+        with ZipFile(zipPath, mode='w') as zf:
+            zf.writestr(filename, url.read())
