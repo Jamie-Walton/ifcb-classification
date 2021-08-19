@@ -867,7 +867,7 @@ class Annotations extends React.Component {
 
   renderDownload() {
       return(
-        <div className="round-button download">
+        <div className="round-button download" onClick={() => this.handleDownload()}>
             <div style={{display: 'none'}}>
                <iframe id="download-src" />
             </div>
