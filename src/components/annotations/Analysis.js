@@ -36,7 +36,6 @@ class Analysis extends Component {
                             <div className="notebook-heading">
                                 <h1 className="notebook-header">Analysis</h1>
                             </div>
-
                         </div>
                     </div>
                 </div>

@@ -868,10 +868,9 @@ class Annotations extends React.Component {
 
   renderDownload() {
       return(
-        <div className="round-button download" onClick={() => this.handleDownload()}>
-            <div style={{display: 'none'}}>
-               <a href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}></a>
-           </div>
+        <div 
+            className="round-button download" 
+            href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}>
         </div>
       );
   }
