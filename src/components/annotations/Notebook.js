@@ -67,6 +67,7 @@ class Notebook extends Component {
     static propTypes = {
         user: PropTypes.object,
         onClassify: PropTypes.bool,
+        onAnalysis: PropTypes.bool,
         notes: PropTypes.array,
         filterNotebook: PropTypes.func,
         receiveNotesChange: PropTypes.func,
@@ -170,6 +171,10 @@ class Notebook extends Component {
   render() {
     if(this.props.onClassify) {
         return <Redirect to="/" />
+    }
+
+    if(this.props.onAnalysis) {
+        return <Redirect to="/analysis/" />
     }
 
     const cache = new CellMeasurerCache({
@@ -340,6 +345,7 @@ class Notebook extends Component {
 const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
+    onAnalysis: state.menu.onAnalysis,
     noteChangeFlag: state.classify.noteChangeFlag
  });
 

@@ -349,6 +349,7 @@ class Annotations extends React.Component {
     isSyncing: PropTypes.bool,
     user: PropTypes.object,
     onNotebook: PropTypes.bool,
+    onAnalysis: PropTypes.bool,
   };
 
   getNewTimeSeries(option) {
@@ -786,7 +787,7 @@ class Annotations extends React.Component {
 
   handleDownload() {
     // TODO: Change domain later
-    document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+    // document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
   handleScale(dir) {
@@ -869,7 +870,7 @@ class Annotations extends React.Component {
       return(
         <div className="round-button download" onClick={() => this.handleDownload()}>
             <div style={{display: 'none'}}>
-               <iframe id="download-src" />
+               <a href={'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'}></a>
            </div>
         </div>
       );
@@ -935,6 +936,10 @@ class Annotations extends React.Component {
   render() { 
     if(this.props.onNotebook) {
         return <Redirect to="/notebook/" />
+    }
+
+    if(this.props.onAnalysis) {
+        return <Redirect to="/analysis/" />
     }
 
     return(
@@ -1018,7 +1023,8 @@ class Annotations extends React.Component {
 const mapStateToProps = state => ({
     isSaving: state.classify.isSaving,
     user: state.auth.user,
-    onNotebook: state.menu.onNotebook
+    onNotebook: state.menu.onNotebook,
+    onAnalysis: state.menu.onAnalysis,
  });
 
 export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync })(Annotations);
