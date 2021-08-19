@@ -238,8 +238,8 @@ def saveClassifications(b, ifcb, file):
     df.class_id = df.class_id.astype('double', copy=False)
     df['auto'] = np.NaN
 
-    displays = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id')
-    names = ClassOption.objects.values_list('autoclass_name', flat=True).order_by('class_id')
+    displays = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id', 'id')
+    names = ClassOption.objects.values_list('autoclass_name', flat=True).order_by('class_id', 'id')
     indices = pd.Series(displays).drop_duplicates().index
     classes = pd.Series([names[i] for i in list(range(0,len(names))) if i in indices])
 
