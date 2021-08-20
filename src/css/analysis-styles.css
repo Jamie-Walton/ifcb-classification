@@ -81,6 +81,9 @@
     width: 40vw;
     margin: 1vw 1.5vw 1vw 0;
     padding: 3vw;
+    height: fit-content;
+    max-height: 70vh;
+    overflow-x: scroll;
 }
 
 .download-step-heading {
