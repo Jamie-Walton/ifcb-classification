@@ -122,7 +122,7 @@ class ClassDownload extends Component {
     onChange = e => (this.handleNumberChange(e))
 
     download() {
-        const include = (this.state.optionalChoices.include.length < 1) ? ('None') : (this.stateoptionalChoices.include.join('-'));
+        const include = (this.state.optionalChoices.include.length < 1) ? ('None') : (this.state.optionalChoices.include.join('-'));
         const exclude = (this.state.optionalChoices.exclude.length < 1) ? ('None') : (this.state.optionalChoices.exclude.join('-'));
         const number = this.state.optionalChoices.number
         document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/classdownload/' + this.state.classChoice + '/' + include + '/' + exclude + '/' + number + '/'
