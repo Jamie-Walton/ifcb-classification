@@ -12,6 +12,7 @@ export const REGISTER_FAIL = "REGISTER_FAIL";
 export const CLASSIFY_PAGE = "CLASSIFY_PAGE";
 export const NOTEBOOK_PAGE = "NOTEBOOK_PAGE";
 export const ANALYSIS_PAGE = "ANALYSIS_PAGE";
+export const CLASSDOWNLOAD_PAGE = "CLASSDOWNLOAD_PAGE";
 
 // Classification
 export const SAVE_SUCCESS = "SAVE_SUCCESS";

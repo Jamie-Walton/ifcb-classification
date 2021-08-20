@@ -3,13 +3,14 @@ from .models import Bin, ClassOption, TimeSeriesOption, Target, Note
 from .serializers import TargetSerializer
 import pandas as pd
 import numpy as np
+from PIL import Image
 import os
 import requests
 import math
 import datetime
 from scipy.io import savemat
 from zipfile import ZipFile
-import urllib.request
+from urllib.request import urlopen
 from backend.settings import MEDIA_ROOT
 
 
@@ -256,14 +257,18 @@ def saveClassifications(b, ifcb, file):
 
 
 def create_class_zip(class_name, onlyManual):
+    print('Creating ZIP...')
     targets = Target.objects.filter(class_name=class_name)
     if onlyManual:
         targets.exclude(editor='Auto Classifier')
-    for target in targets:
-        b = target.bin
-        image_url = 'http://128.114.25.154:8888/' + b.timeseries + '/' + b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
-        url = urllib.request.urlopen(image_url)
-        filename = image_url.split('/')[-1]
-        zipPath = '/tmp/%s.zip' % filename
-        with ZipFile(zipPath, mode='w') as zf:
-            zf.writestr(filename, url.read())
+    
+    path = os.path.join(MEDIA_ROOT, class_name + '.zip')
+    with ZipFile(path, 'w') as zf:
+        for target in targets:
+            b = target.bin
+            url = 'http://128.114.25.154:8888/' + b.timeseries + '/' + b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
+            image_url = urlopen(url)
+            image_name = b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
+            zf.writestr(image_name, image_url.read())
+
+    return path

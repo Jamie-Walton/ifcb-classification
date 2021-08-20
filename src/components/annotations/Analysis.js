@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
 import Header from '../layout/Header';
+import { goto_classdownload } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
@@ -13,7 +14,7 @@ class AnalysisOption extends Component {
             <div className="analysis-option-container">
                 <h2 className="analysis-option-heading">{this.props.heading}</h2>
                 <p className="analysis-option-description">{this.props.description}</p>
-                <div className="analysis-option-button">Go</div>
+                <div className="analysis-option-button" onClick={this.props.handleClick}>Start</div>
             </div>
         );
     }
@@ -25,11 +26,9 @@ class Analysis extends Component {
         this.state = {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help \
-                    of classification filtering, file look-up, and more. The advanced image search spans \
-                    across all bins loaded for manual classification in the web appplication."},
-                {heading: 'Download by Class', description: "Download a ZIP file containing all (or a \
-                    desired subset of) images classified as a particular species. Customize your image set \
-                    by number, editor, and more."}
+                    of classification filtering, file look-up, and more.", redirect: this.goToClassDownload},
+                {heading: 'Download by Class', description: "Download a ZIP file containing all, or a \
+                    desired subset of, images classified as a particular species.", redirect: this.goToClassDownload}
             ]
         }
     }
@@ -38,13 +37,25 @@ class Analysis extends Component {
         user: PropTypes.object,
         onClassify: PropTypes.bool,
         onNotebook: PropTypes.bool,
+        onClassDownload: PropTypes.bool,
+        goto_classdownload: PropTypes.func,
     }
 
     renderAnalysisOption(option) {
+        var handleClick
+        switch (option.heading) {
+            case 'Search':
+            case 'Download by Class':
+                handleClick = this.props.goto_classdownload;
+            default:
+                handleClick = this.props.goto_classdownload;
+        }
         return (
-            <AnalysisOption 
+            <AnalysisOption
+                key={option.heading}
                 heading={option.heading}
                 description={option.description}
+                handleClick={handleClick}
             />
         );
     }
@@ -56,6 +67,10 @@ class Analysis extends Component {
 
         if(this.props.onNotebook) {
             return <Redirect to="/notebook" />
+        }
+
+        if(this.props.onClassDownload) {
+            return <Redirect to="/analysis/classdownload" />
         }
 
         return(
@@ -83,6 +98,7 @@ const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
     onNotebook: state.menu.onClassify,
+    onClassDownload: state.menu.onClassDownload,
  });
 
-export default connect(mapStateToProps)(Analysis);
+export default connect(mapStateToProps, { goto_classdownload })(Analysis);

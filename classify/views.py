@@ -3,17 +3,16 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
-from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes
+from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip
 import requests
 import math
 import pandas as pd
 import re
 import os
 from backend.settings import MEDIA_ROOT
-from django.core.files.storage import FileSystemStorage
 
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
@@ -174,6 +173,12 @@ def saveMAT(request, ifcb, file):
         'Content-Disposition': 'attachment; filename="' + file_name + '"',
         })
     return response
+
+@api_view(('GET',))
+def download_class(request, classname, onlyManual):
+    path = create_class_zip(classname, bool(onlyManual))
+    zip_file = open(path, 'rb')
+    return FileResponse(zip_file)
 
 
 @api_view(('GET',))

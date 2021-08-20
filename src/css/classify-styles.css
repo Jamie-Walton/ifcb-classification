@@ -107,6 +107,7 @@ li {
 	box-shadow: 0px 6px 30px #00000029;
 	margin: 0 2vw 2vw;
 	padding: 0.5vw 0vw 5vw 7vw;
+	min-height: 70vh;
 }
 
 .content {

@@ -1,7 +1,8 @@
 import {
     CLASSIFY_PAGE,
     NOTEBOOK_PAGE,
-    ANALYSIS_PAGE
+    ANALYSIS_PAGE,
+    CLASSDOWNLOAD_PAGE,
 } from '../actions/types';
 
 export const goto_classify = () => (dispatch) => {
@@ -19,5 +20,11 @@ export const goto_notebook = () => (dispatch) => {
 export const goto_analysis = () => (dispatch) => {
     dispatch({
         type: ANALYSIS_PAGE
+    });
+};
+
+export const goto_classdownload = () => (dispatch) => {
+    dispatch({
+        type: CLASSDOWNLOAD_PAGE
     });
 };
