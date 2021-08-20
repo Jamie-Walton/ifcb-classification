@@ -133,3 +133,24 @@
     margin: 0.75vw 0 0 0.5vw;
     text-transform: capitalize;
 }
+
+.download-button {
+    background-color: #079CCC;
+    width: fit-content;
+    border: none;
+	display: flex;
+	border-radius: 5vw;
+	font-family: proxima-nova, sans-serif;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 1vw;
+	justify-content: space-between;
+	margin: 2vw 0 0 0vw;
+	padding: 0.5vw 1.25vw;
+	cursor: pointer;
+}
+
+.download-button:hover {
+    background-color: #16609F;
+}

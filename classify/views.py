@@ -103,6 +103,20 @@ def flag_note(request, id):
 
 
 @api_view(('GET',))
+def get_target_classifiers(request):
+    queryset = Target.objects.all()
+
+    options = {
+        'classifiers': queryset.values('editor').distinct(),
+    }
+
+    package = FrontEndPackage(bin={}, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+
+    return Response(front_end_package.data)
+
+
+@api_view(('GET',))
 def new_targets(request, timeseries, file, set, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
@@ -175,8 +189,8 @@ def saveMAT(request, ifcb, file):
     return response
 
 @api_view(('GET',))
-def download_class(request, classname, onlyManual):
-    path = create_class_zip(classname, bool(onlyManual))
+def download_class(request, classname, include, exclude, number):
+    path = create_class_zip(classname, request.data)
     zip_file = open(path, 'rb')
     return FileResponse(zip_file)
 

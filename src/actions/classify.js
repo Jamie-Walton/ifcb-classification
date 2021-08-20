@@ -78,6 +78,15 @@ export const filterNotebook = (appliedFilters, search) => (dispatch, getState) =
         .catch((err) => console.log(err));
 }
 
+export const downloadClasses = (className, optionalChoices) => (dispatch, getState) => {
+    const include = (optionalChoices.include.length < 1) ? ('None') : (optionalChoices.include.join('-'));
+    const exclude = (optionalChoices.exclude.length < 1) ? ('None') : (optionalChoices.exclude.join('-'));
+    const number = optionalChoices.number
+    axios
+        .get('/classdownload/' + className + '/' + include + '/' + exclude + '/' + number + '/')
+        .catch((err) => console.log(err));
+}
+
 export const classifyTarget = (target, timeseries, file, number) => (dispatch, getState) => {
     axios
         .put('/edit/target/' + timeseries + '/' + file + 

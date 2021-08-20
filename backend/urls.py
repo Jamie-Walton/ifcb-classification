@@ -35,7 +35,8 @@ urlpatterns = [
     path('notebook/filters/', views.get_notebook_filters),
     path('notebook/applyfilters/', views.filter_notebook),
     path('mat/<str:ifcb>/<str:file>/', views.saveMAT),
-    path('classdownload/<str:classname>/<str:onlyManual>/', views.download_class),
+    path('classdownload/<str:classname>/<str:include>/<str:exclude>/<str:number>/', views.download_class),
+    path('classdownload/classifiers/', views.get_target_classifiers),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
 ]

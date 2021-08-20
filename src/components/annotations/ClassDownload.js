@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 import Header from '../layout/Header';
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
+import { downloadClasses } from "../../actions/classify";
 
 class ClassDownload extends Component {
     constructor(props) {
@@ -15,9 +16,10 @@ class ClassDownload extends Component {
             classes: [],
             classifiers: [],
             classChoice: '',
-            classifierChoices: {
+            optionalChoices: {
                 include: [],
                 exclude: [],
+                number: 'all',
             },
         }
     }
@@ -27,6 +29,7 @@ class ClassDownload extends Component {
         onClassify: PropTypes.bool,
         onNotebook: PropTypes.bool,
         onAnalysis: PropTypes.bool,
+        downloadClasses: PropTypes.func,
     }
 
     componentDidMount() {
@@ -39,56 +42,90 @@ class ClassDownload extends Component {
             })
             .catch((err) => console.log(err));
         axios
-            .get('/notebook/filters/')
+            .get('/classdownload/classifiers/')
             .then((res) => {
                 this.setState({ 
-                    classifiers: res.data.options.authors,
+                    classifiers: res.data.options.classifiers,
                 });
             })
             .catch((err) => console.log(err));
     }
 
     handleClassOptionClick(option) {
-        document.getElementById(option + '-text').style.color = '#707070';
-        document.getElementById(option + '-cont').style.backgroundColor = '#F8F7F7';
+        if (this.state.classChoice !== '') {
+            document.getElementById(this.state.classChoice + '-text').style.color = '#707070';
+            document.getElementById(this.state.classChoice + '-cont').style.backgroundColor = '#F8F7F7';
+        }
         this.setState({ classChoice: option });
         document.getElementById(option + '-text').style.color = '#FFFFFF';
         document.getElementById(option + '-cont').style.backgroundColor = '#16609F';
     }
 
     handleClassifierOptionClick(option) {
-        const classifierIncludes = this.state.classifierChoices.include;
-        const classifierExcludes = this.state.classifierChoices.exclude;
+        const classifierIncludes = this.state.optionalChoices.include;
+        const classifierExcludes = this.state.optionalChoices.exclude;
         document.getElementById(option + '-text').style.color = '#707070';
         document.getElementById(option + '-cont').style.backgroundColor = '#F8F7F7';
         if (classifierIncludes.includes(option)) {
             const index = classifierIncludes.indexOf(option);
             classifierIncludes.splice(index, 1);
             const newExcludes = classifierExcludes.concat([option]);
-            this.setState({ classifierChoices: {
+            this.setState({ optionalChoices: {
                 include: classifierIncludes,
-                exclude: newExcludes
+                exclude: newExcludes,
+                number: this.state.optionalChoices.number
             } });
             document.getElementById(option + '-cont').style.backgroundColor = '#7dad0b';
             document.getElementById(option + '-text').style.color = '#FFFFFF';
         } else if (classifierExcludes.includes(option)) {
             const index = classifierExcludes.indexOf(option);
             classifierExcludes.splice(index, 1);
-            this.setState({ classifierChoices: {
+            this.setState({ optionalChoices: {
                 include: classifierIncludes,
-                exclude: classifierExcludes
+                exclude: classifierExcludes,
+                number: this.state.optionalChoices.number
             } });
             document.getElementById(option + '-cont').style.backgroundColor = '#F8F7F7';
             document.getElementById(option + '-text').style.color = '#707070';
         } else {
             const newIncludes = classifierIncludes.concat([option]);
-            this.setState({ classifierChoices: {
+            this.setState({ optionalChoices: {
                 include: newIncludes,
-                exclude: classifierExcludes
+                exclude: classifierExcludes,
+                number: this.state.optionalChoices.number
             } });
             document.getElementById(option + '-cont').style.backgroundColor = '#16609F';
             document.getElementById(option + '-text').style.color = '#FFFFFF';
         }
+    }
+
+    handleAllClick() {
+        document.getElementById('all-cont').style.backgroundColor = '#16609F';
+        document.getElementById('all-text').style.color = '#FFFFFF';
+        this.setState({ optionalChoices: {
+            include: this.state.optionalChoices.include,
+            exclude: this.state.optionalChoices.exclude,
+            number: 'all'
+        } })
+    }
+
+    handleNumberChange(e) {
+        this.setState({ optionalChoices: {
+            include: this.state.optionalChoices.include,
+            exclude: this.state.optionalChoices.exclude,
+            number: e.target.value
+        } });
+        document.getElementById('all-cont').style.backgroundColor = '#F8F7F7';
+        document.getElementById('all-text').style.color = '#707070';
+    }
+
+    onChange = e => (this.handleNumberChange(e))
+
+    download() {
+        const include = (this.state.optionalChoices.include.length < 1) ? ('None') : (this.stateoptionalChoices.include.join('-'));
+        const exclude = (this.state.optionalChoices.exclude.length < 1) ? ('None') : (this.state.optionalChoices.exclude.join('-'));
+        const number = this.state.optionalChoices.number
+        document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/classdownload/' + this.state.classChoice + '/' + include + '/' + exclude + '/' + number + '/'
     }
 
     renderClassOption(option) {
@@ -149,8 +186,7 @@ class ClassDownload extends Component {
                                         </div>
                                         <p className="download-step-subtext">Click an option once to include it or twice to exclude it.</p>
                                         <div className="class-options">
-                                            {this.renderClassifierOption('Auto Classifier')}
-                                            {this.state.classifiers.map((option) => (this.renderClassifierOption(option.author)))}
+                                            {this.state.classifiers.map((option) => (this.renderClassifierOption(option.editor)))}
                                         </div>
                                     </div>
                                     <div className="download-step-container">
@@ -161,12 +197,23 @@ class ClassDownload extends Component {
                                     <p className="download-step-subtext">Enter in the number of images to include.</p>
                                     <div className="class-options">
                                         <form>
-                                        <input type="number" id="number" name="number" min="1"></input>
+                                        <input 
+                                            type="number" 
+                                            id="number" 
+                                            name="number" 
+                                            min="1"
+                                            onChange={this.onChange}
+                                            value={this.state.optionalChoices.number}
+                                        />
                                         </form>
                                         <div className="filter-choice download-option" id={'all-cont'}>
-                                            <p className="filter-choice-text" id={'all-text'}>All</p>
+                                            <p className="filter-choice-text" id={'all-text'} onClick={() => this.handleAllClick()}>All</p>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="download-button" onClick={() => this.download()}>Download</div>
+                                <div style={{display: 'none'}}>
+                                    <iframe id="download-src" />
                                 </div>
                                 </div>
                             </div>
@@ -186,4 +233,4 @@ const mapStateToProps = state => ({
     onAnalysis: state.menu.onAnalysis,
  });
 
-export default connect(mapStateToProps)(ClassDownload);
+export default connect(mapStateToProps, { downloadClasses })(ClassDownload);
