@@ -141,15 +141,33 @@ class ClassDownload extends Component {
                                         {this.state.classes.map((option) => (this.renderClassOption(option)))}
                                     </div>
                                 </div>
-                                <div className="download-step-container">
+                                <div>
+                                    <div className="download-step-container classifiers">
+                                        <div className="download-step-heading">
+                                            <div className="step-icon">2</div>
+                                            <p className="download-step-text">Choose classifiers (optional)</p>
+                                        </div>
+                                        <p className="download-step-subtext">Click an option once to include it or twice to exclude it.</p>
+                                        <div className="class-options">
+                                            {this.renderClassifierOption('Auto Classifier')}
+                                            {this.state.classifiers.map((option) => (this.renderClassifierOption(option.author)))}
+                                        </div>
+                                    </div>
+                                    <div className="download-step-container">
                                     <div className="download-step-heading">
-                                        <div className="step-icon">2</div>
-                                        <p className="download-step-text">Choose classifiers (optional)</p>
+                                        <div className="step-icon">3</div>
+                                        <p className="download-step-text">Choose number (optional)</p>
                                     </div>
-                                    <p className="download-step-subtext">Click an option once to include it or twice to exclude it.</p>
+                                    <p className="download-step-subtext">Enter in the number of images to include.</p>
                                     <div className="class-options">
-                                        {this.state.classifiers.map((option) => (this.renderClassifierOption(option.author)))}
+                                        <form>
+                                        <input type="number" id="number" name="number" min="1"></input>
+                                        </form>
+                                        <div className="filter-choice download-option" id={'all-cont'}>
+                                            <p className="filter-choice-text" id={'all-text'}>All</p>
+                                        </div>
                                     </div>
+                                </div>
                                 </div>
                             </div>
                         </div>

@@ -86,6 +86,10 @@
     overflow-x: scroll;
 }
 
+.classifiers {
+    max-height: 40vh;
+}
+
 .download-step-heading {
     display: flex;
     margin: 0 0 1vw 0;
