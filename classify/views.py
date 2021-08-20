@@ -190,7 +190,7 @@ def saveMAT(request, ifcb, file):
 
 @api_view(('GET',))
 def download_class(request, classname, include, exclude, number):
-    path = create_class_zip(classname, request.data)
+    path = create_class_zip(classname, include, exclude, number)
     zip_file = open(path, 'rb')
     return FileResponse(zip_file)
 

@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 import Header from '../layout/Header';
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
+import loader from "./loader.GIF";
 import { downloadClasses } from "../../actions/classify";
 
 class ClassDownload extends Component {
@@ -21,6 +22,7 @@ class ClassDownload extends Component {
                 exclude: [],
                 number: 'all',
             },
+            loading: false,
         }
     }
 
@@ -122,10 +124,16 @@ class ClassDownload extends Component {
     onChange = e => (this.handleNumberChange(e))
 
     download() {
+        this.setState({ loading: true });
         const include = (this.state.optionalChoices.include.length < 1) ? ('None') : (this.state.optionalChoices.include.join('-'));
         const exclude = (this.state.optionalChoices.exclude.length < 1) ? ('None') : (this.state.optionalChoices.exclude.join('-'));
         const number = this.state.optionalChoices.number
         document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/classdownload/' + this.state.classChoice + '/' + include + '/' + exclude + '/' + number + '/'
+    }
+
+    loadFrame() {
+        this.setState({ loading: false });
+        console.log('Loaded')
     }
 
     renderClassOption(option) {
@@ -143,6 +151,10 @@ class ClassDownload extends Component {
             </div>
         );
     }
+
+    renderLoader() {
+        return <img src={loader} alt="Loading targets..." width="50" loop="infinite" style={{margin:'2vw 0 0 0'}}></img>
+      }
 
     render() {
         if(this.props.onClassify) {
@@ -213,8 +225,9 @@ class ClassDownload extends Component {
                                 </div>
                                 <div className="download-button" onClick={() => this.download()}>Download</div>
                                 <div style={{display: 'none'}}>
-                                    <iframe id="download-src" />
+                                    <iframe id="download-src" onload={() => this.loadFrame()} />
                                 </div>
+                                <div>{ (this.state.loading) ? this.renderLoader() : <div/> }</div>
                                 </div>
                             </div>
                         </div>

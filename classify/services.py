@@ -256,8 +256,19 @@ def saveClassifications(b, ifcb, file):
     savemat(path, content)
 
 
-def create_class_zip(class_name, choices):
+def create_class_zip(class_name, include, exclude, number):
     targets = Target.objects.filter(class_name=class_name)
+
+    if include != 'None':
+        include = include.split('-')
+        targets = targets.filter(editor__in=include)
+    
+    if exclude != 'None':
+        exclude = exclude.split('-')
+        targets = targets.exclude(editor__in=exclude)
+
+    if number != 'all' and len(targets) > int(number):
+        targets = targets[len(targets)-int(number):]
     
     path = os.path.join(MEDIA_ROOT, class_name + '.zip')
     with ZipFile(path, 'w') as zf:
