@@ -19,6 +19,7 @@
     width: 27vw;
     margin: 0 1.5vw 1vw 0;
     padding: 3vw 5vw;
+    overflow-y: scroll;
 }
 
 .analysis-option-heading {

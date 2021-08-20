@@ -16,8 +16,8 @@ class ClassDownload extends Component {
             classifiers: [],
             classChoice: '',
             classifierChoices: {
-                includes: [],
-                excludes: [],
+                include: [],
+                exclude: [],
             },
         }
     }
@@ -57,19 +57,38 @@ class ClassDownload extends Component {
     }
 
     handleClassifierOptionClick(option) {
+        const classifierIncludes = this.state.classifierChoices.include;
+        const classifierExcludes = this.state.classifierChoices.exclude;
         document.getElementById(option + '-text').style.color = '#707070';
         document.getElementById(option + '-cont').style.backgroundColor = '#F8F7F7';
-        if (this.state.classifierChoices.includes.contains(option)) {
-            const index = this.state.classifierChoices.includes.indexOf(option);
-            const newIncludes = this.state.classifierChoices.splice(index, 1);
-            const newExcludes = this.state.classifierChoices.concat([option]);
+        if (classifierIncludes.includes(option)) {
+            const index = classifierIncludes.indexOf(option);
+            classifierIncludes.splice(index, 1);
+            const newExcludes = classifierExcludes.concat([option]);
             this.setState({ classifierChoices: {
-                includes: newIncludes,
-                excludes: newExcludes
+                include: classifierIncludes,
+                exclude: newExcludes
+            } });
+            document.getElementById(option + '-cont').style.backgroundColor = '#7dad0b';
+            document.getElementById(option + '-text').style.color = '#FFFFFF';
+        } else if (classifierExcludes.includes(option)) {
+            const index = classifierExcludes.indexOf(option);
+            classifierExcludes.splice(index, 1);
+            this.setState({ classifierChoices: {
+                include: classifierIncludes,
+                exclude: classifierExcludes
+            } });
+            document.getElementById(option + '-cont').style.backgroundColor = '#F8F7F7';
+            document.getElementById(option + '-text').style.color = '#707070';
+        } else {
+            const newIncludes = classifierIncludes.concat([option]);
+            this.setState({ classifierChoices: {
+                include: newIncludes,
+                exclude: classifierExcludes
             } });
             document.getElementById(option + '-cont').style.backgroundColor = '#16609F';
+            document.getElementById(option + '-text').style.color = '#FFFFFF';
         }
-        document.getElementById(option + '-text').style.color = '#FFFFFF';
     }
 
     renderClassOption(option) {
@@ -125,7 +144,7 @@ class ClassDownload extends Component {
                                 <div className="download-step-container">
                                     <div className="download-step-heading">
                                         <div className="step-icon">2</div>
-                                        <p className="download-step-text">Choose an classifier (optional)</p>
+                                        <p className="download-step-text">Choose classifiers (optional)</p>
                                     </div>
                                     <p className="download-step-subtext">Click an option once to include it or twice to exclude it.</p>
                                     <div className="class-options">
