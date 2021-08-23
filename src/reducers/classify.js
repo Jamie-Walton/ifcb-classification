@@ -7,7 +7,9 @@ import {
     NOTES_RECORDED,
     NOTEBOOK_FILTERED,
     REPLY_RESOLVED,
-    REPLY_OPEN
+    REPLY_OPEN,
+    TARGETS_BASIC_SEARCHED,
+    BINS_BASIC_SEARCHED
 } from '../actions/types';
 
 const initialState = {
@@ -15,7 +17,8 @@ const initialState = {
     isSyncing: false,
     noteChangeFlag: true,
     replyChangeFlag: false,
-    notes: []
+    notes: [],
+    targetSearchResults: [],
 }
 
 export default function(state = initialState, action) {
@@ -64,6 +67,16 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 notes: action.payload
+            }
+        case TARGETS_BASIC_SEARCHED:
+            return {
+                ...state,
+                targetSearchResults: ((typeof(action.payload) === Array) ? (action.payload) : ([action.payload]))
+            }
+        case BINS_BASIC_SEARCHED:
+            return {
+                ...state,
+                binsSearchResults: ((typeof(action.payload) === Array) ? (action.payload) : ([action.payload]))
             }
         default:
             return state;

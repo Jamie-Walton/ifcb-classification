@@ -9,7 +9,9 @@ import {
     NOTES_RECORDED,
     REPLY_OPEN,
     REPLY_RESOLVED,
-    NOTEBOOK_FILTERED
+    NOTEBOOK_FILTERED,
+    TARGETS_BASIC_SEARCHED,
+    BINS_BASIC_SEARCHED
 } from "./types";
 
 export const sendNotesChange = () => (dispatch, getState) => {
@@ -78,12 +80,39 @@ export const filterNotebook = (appliedFilters, search) => (dispatch, getState) =
         .catch((err) => console.log(err));
 }
 
-export const downloadClasses = (className, optionalChoices) => (dispatch, getState) => {
-    const include = (optionalChoices.include.length < 1) ? ('None') : (optionalChoices.include.join('-'));
-    const exclude = (optionalChoices.exclude.length < 1) ? ('None') : (optionalChoices.exclude.join('-'));
-    const number = optionalChoices.number
+export const searchTargets = (search) => (dispatch, getState) => {
+    const searchTerms = JSON.stringify(search)
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
     axios
-        .get('/classdownload/' + className + '/' + include + '/' + exclude + '/' + number + '/')
+        .post('/searchtargets/', searchTerms, config, tokenConfig(getState))
+        .then(res => {
+            dispatch({
+                type: TARGETS_BASIC_SEARCHED,
+                payload: res.data
+            });
+        })
+        .catch((err) => console.log(err));
+}
+
+export const getBins = (bins) => (dispatch, getState) => {
+    const binIDs = JSON.stringify(bins);
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+    axios
+        .post('/bins/', binIDs, config, tokenConfig(getState))
+        .then(res => {
+            dispatch({
+                type: BINS_BASIC_SEARCHED,
+                payload: res.data
+            });
+        })
         .catch((err) => console.log(err));
 }
 

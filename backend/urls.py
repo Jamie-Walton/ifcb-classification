@@ -37,6 +37,8 @@ urlpatterns = [
     path('mat/<str:ifcb>/<str:file>/', views.saveMAT),
     path('classdownload/<str:classname>/<str:include>/<str:exclude>/<str:number>/', views.download_class),
     path('classdownload/classifiers/', views.get_target_classifiers),
+    path('searchtargets/', views.basic_search_targets),
+    path('bins/', views.retrieve_bins),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
     path('debug/', include(debug_toolbar.urls)),
 ]

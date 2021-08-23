@@ -3,6 +3,7 @@ import {
     NOTEBOOK_PAGE,
     ANALYSIS_PAGE,
     CLASSDOWNLOAD_PAGE,
+    SEARCH_PAGE,
 } from '../actions/types';
 
 export const goto_classify = () => (dispatch) => {
@@ -26,5 +27,11 @@ export const goto_analysis = () => (dispatch) => {
 export const goto_classdownload = () => (dispatch) => {
     dispatch({
         type: CLASSDOWNLOAD_PAGE
+    });
+};
+
+export const goto_search = () => (dispatch) => {
+    dispatch({
+        type: SEARCH_PAGE
     });
 };

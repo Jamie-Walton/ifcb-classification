@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import HttpResponse, FileResponse
 from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
 from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
-from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip
+from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip, search_targets
 import requests
 import math
 import pandas as pd
@@ -193,6 +193,29 @@ def download_class(request, classname, include, exclude, number):
     path = create_class_zip(classname, include, exclude, number)
     zip_file = open(path, 'rb')
     return FileResponse(zip_file)
+
+
+@api_view(('POST',))
+def basic_search_targets(request):
+    queryset = search_targets(request.data)
+    if type(queryset) != Target:
+        serializer = TargetSerializer(queryset, many=True)
+    else:
+        serializer = TargetSerializer(queryset, many=False)
+    
+    return Response(serializer.data)
+
+
+@api_view(('POST',))
+def retrieve_bins(request):
+    bins = list(set(request.data))
+    queryset = Bin.objects.filter(id__in=bins)
+    if type(queryset) != Bin:
+        serializer = BinSerializer(queryset, many=True)
+    else:
+        serializer = BinSerializer(queryset, many=False)
+    
+    return Response(serializer.data)
 
 
 @api_view(('GET',))

@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import os
+import re
 import requests
 import math
 import datetime
@@ -280,3 +281,24 @@ def create_class_zip(class_name, include, exclude, number):
             zf.writestr(image_name, image_url.read())
 
     return path
+
+
+def search_targets(search_terms):
+    if (len(search_terms) == 30 or len(search_terms) == 34) and (search_terms.count('_') == 2):
+        terms = re.split('_|.jpg', search_terms)
+        b = Bin.objects.get(file=terms[0])
+        targets = Target.objects.get(bin=b, number=terms[2])
+    else:
+        terms = search_terms.split(' ')
+        targets = Target.objects.all()
+        for i in range(len(terms)):
+            try:
+                number = str(int(terms[i]))
+            except:
+                number = 0
+            targets = targets.filter(Q(number=terms[i]) | Q(number=number) | \
+                Q(class_name__icontains=terms[i]) | Q(class_abbr__icontains=terms[i]) | \
+                Q(editor__icontains=terms[i]) | Q(bin__file=terms[i]) | \
+                Q(notes__entry__icontains=terms[i])
+                )
+    return targets

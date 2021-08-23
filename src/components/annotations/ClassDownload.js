@@ -8,7 +8,6 @@ import Header from '../layout/Header';
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
 import loader from "./loader.GIF";
-import { downloadClasses } from "../../actions/classify";
 
 class ClassDownload extends Component {
     constructor(props) {
@@ -31,7 +30,6 @@ class ClassDownload extends Component {
         onClassify: PropTypes.bool,
         onNotebook: PropTypes.bool,
         onAnalysis: PropTypes.bool,
-        downloadClasses: PropTypes.func,
     }
 
     componentDidMount() {
@@ -246,4 +244,4 @@ const mapStateToProps = state => ({
     onAnalysis: state.menu.onAnalysis,
  });
 
-export default connect(mapStateToProps, { downloadClasses })(ClassDownload);
+export default connect(mapStateToProps)(ClassDownload);

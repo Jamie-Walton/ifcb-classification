@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
 import Header from '../layout/Header';
-import { goto_classdownload } from "../../actions/menu";
+import { goto_classdownload, goto_search, searchTargets } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
@@ -38,17 +38,20 @@ class Analysis extends Component {
         onClassify: PropTypes.bool,
         onNotebook: PropTypes.bool,
         onClassDownload: PropTypes.bool,
+        onSearch: PropTypes.bool,
         goto_classdownload: PropTypes.func,
+        goto_search: PropTypes.func,
     }
 
     renderAnalysisOption(option) {
         var handleClick
         switch (option.heading) {
             case 'Search':
+                handleClick = this.props.goto_search;
             case 'Download by Class':
                 handleClick = this.props.goto_classdownload;
             default:
-                handleClick = this.props.goto_classdownload;
+                handleClick = this.props.goto_search;
         }
         return (
             <AnalysisOption
@@ -71,6 +74,10 @@ class Analysis extends Component {
 
         if(this.props.onClassDownload) {
             return <Redirect to="/analysis/classdownload" />
+        }
+
+        if(this.props.onSearch) {
+            return <Redirect to="/analysis/search" />
         }
 
         return(
@@ -99,6 +106,7 @@ const mapStateToProps = state => ({
     onClassify: state.menu.onClassify,
     onNotebook: state.menu.onClassify,
     onClassDownload: state.menu.onClassDownload,
+    onSearch: state.menu.onSearch,
  });
 
-export default connect(mapStateToProps, { goto_classdownload })(Analysis);
+export default connect(mapStateToProps, { goto_classdownload, goto_search })(Analysis);
