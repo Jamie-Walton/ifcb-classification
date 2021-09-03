@@ -28,8 +28,8 @@ class Target extends Component {
     showLess() {
         document.getElementById(this.props.target.id + '-info').style.display = 'none';
         document.getElementById(this.props.target.id + '-preview').style.display = 'flex';
-        const style = {height: String(Number(this.props.target.height)*0.056)+'vw'}
-        document.getElementById(this.props.target.id + '-image').style = style;
+        const style = String(Number(this.props.target.height)*0.056)+'vw'
+        document.getElementById(this.props.target.id + '-image').style.height = style;
     }
     
     render() {
