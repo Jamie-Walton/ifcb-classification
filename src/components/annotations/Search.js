@@ -8,29 +8,80 @@ import Header from '../layout/Header';
 import { searchTargets, getBins } from "../../actions/classify";
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
+import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
 
 class Target extends Component {
+    
+    showMore() {
+        document.getElementById(this.props.target.id + '-info').style.display = 'block';
+        document.getElementById(this.props.target.id + '-preview').style.display = 'none';
+        
+        const initialWidth = Number(this.props.target.height);
+        const idWidth = document.getElementById(this.props.target.id + '-info').style.width;
+        const scale = idWidth / initialWidth;
+        const style = {height: String(Number(this.props.target.height)*0.056*scale)+'vw'}
+        document.getElementById(this.props.target.id + '-image').style = style;
+
+    }
+
+    showLess() {
+        document.getElementById(this.props.target.id + '-info').style.display = 'none';
+        document.getElementById(this.props.target.id + '-preview').style.display = 'flex';
+        const style = {height: String(Number(this.props.target.height)*0.056)+'vw'}
+        document.getElementById(this.props.target.id + '-image').style = style;
+    }
+    
     render() {
-        const desiredBin = (element) => element[0].id === this.props.target.bin;
-        const binIndex = this.props.bins.findIndex(desiredBin);
-        const bin = this.props.bins[binIndex][0];
-        const url = 'http://128.114.25.154:8888/' + bin.timeseries + '/' + bin.file + '_' + bin.ifcb + '_' + this.props.target.number + '.jpg';
-        return(
-            <div>
-                <img src={url} className="image"
-                    alt={this.props.target.class_name}
-                    id={this.props.target.number + '-image'}
-                    style={{height: String(Number(this.props.height)*0.056)+'vw'}}>
-                </img>
-                <div className='id'>
-                    <div className='search-result-plus' id={this.props.id + '-plus'}>+</div>
-                    <div className='search-result-info' id={this.props.id + '-info'}>
-                        Insert info here
+        if (this.props.bins !== []) {
+            
+            const desiredBin = (element) => element.id === this.props.target.bin;
+            const binIndex = this.props.bins.findIndex(desiredBin);
+            const bin = this.props.bins[binIndex];
+            const url = 'http://128.114.25.154:8888/' + bin.timeseries + '/' + bin.file + '_' + bin.ifcb + '_' + this.props.target.number + '.jpg';
+            
+            return(
+                <div className="search-result">
+                    <img src={url} className="image searh-result-image"
+                        alt={this.props.target.class_name}
+                        id={this.props.target.id + '-image'}
+                        style={{height: String(Number(this.props.target.height)*0.056)+'vw'}}>
+                    </img>
+                    <div className='id' id={this.props.target.id + '-preview'}>
+                        <div className='search-result-plus' id={this.props.target.id + '-plus'} onClick={() => this.showMore()}><p className="plus">+</p></div>
+                    </div>
+                    <div className='id description' style={{display: 'none'}} id={this.props.target.id + '-info'}>
+                        <div className='search-result-plus exit' onClick={() => this.showLess()}>
+                            <p className="plus x">X</p>
+                        </div>
+                        <p className="description-heading">{this.props.target.class_name}</p>
+                        <div style={{display: 'flex'}}>
+                            <p className="description-label">{'File: '}</p>
+                            <p>{bin.file}</p>
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <p className="description-label">{'IFCB: '}</p>
+                            <p>{bin.ifcb}</p>
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <p className="description-label">{'Target: '}</p>
+                            <p>{this.props.target.number}</p>
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <p className="description-label">{'Classifer: '}</p>
+                            <p>{this.props.target.editor}</p>
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <p className="description-label">{'Date: '}</p>
+                            <p>{this.props.target.date}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
+        else {
+            return <div/>
+        }
     }
 }
 
@@ -38,9 +89,11 @@ class Search extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            targets: [],
+            targets: [[]],
+            bins: [[]],
             basicSearch: '',
             loading: false,
+            renderable: false,
         }
     }
 
@@ -58,16 +111,32 @@ class Search extends Component {
 
     onSubmit = e => {
         e.preventDefault();
+        this.setState({ renderable: false });
         document.getElementById("no-results").style.display = 'none';
         this.props.searchTargets(this.state.basicSearch);
-        const bins = this.props.targetSearchResults.map(target => target.bin);
-        this.props.getBins(bins);
         this.setState({ 
-            targets: this.props.targetSearchResults,
-            bins: this.props.binsSearchResults
+            targets: this.props.targetSearchResults
         });
         if (this.props.targetSearchResults === [[]]) {
             document.getElementById("no-results").style.display = 'flex';
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.targetSearchResults !== this.props.targetSearchResults) {
+            var targets;
+            if (this.props.targetSearchResults[0].length !== undefined) {
+                targets = this.props.targetSearchResults[0];
+            } else {
+                targets = this.props.targetSearchResults;
+            }
+            this.props.getBins(targets.map(target => target.bin));
+        }
+
+        if (prevProps.binsSearchResults !== this.props.binsSearchResults) {
+            this.setState({
+                renderable: true,
+            });
         }
     }
 
@@ -75,7 +144,8 @@ class Search extends Component {
         return( 
             <Target
                 target={target}
-                bins={this.state.bins}
+                bins={this.props.binsSearchResults[0]}
+                key={target.id}
             />
         );
     }
@@ -97,7 +167,13 @@ class Search extends Component {
             return <Redirect to="/analysis" />
         }
 
-        return(
+        var targets;
+        var resultsDisplay;
+        ((typeof this.props.targetSearchResults[0].length !== "undefined")) 
+           ? (targets = this.props.targetSearchResults[0]) : (targets = this.props.targetSearchResults);
+        (targets.length === 0) ? (resultsDisplay = {display: 'flex'}) : (resultsDisplay = {display: 'none'})
+        
+           return(
             <div>
                 <Header />
                 <div className='main'>
@@ -122,11 +198,11 @@ class Search extends Component {
                                 </form>
                             </div>
                             <div>
-                                <p className="no-results" id="no-results" style={{ display: 'none' }}>No results</p>
+                                <p className="no-results" id="no-results" style={resultsDisplay}>No results</p>
                                 <div className="image-grid">
                                     {
                                     (this.state.loading) ? this.renderLoader() :
-                                    this.state.targets.map((target, i) => this.renderTarget(target, i))
+                                    (this.state.renderable) ? (targets.map((target) => this.renderTarget(target))) : (<div/>)
                                     }
                                 </div>
                             </div>

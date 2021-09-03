@@ -18,7 +18,8 @@ const initialState = {
     noteChangeFlag: true,
     replyChangeFlag: false,
     notes: [],
-    targetSearchResults: [],
+    targetSearchResults: [[]],
+    binsSearchResults: [[]],
 }
 
 export default function(state = initialState, action) {

@@ -10,6 +10,7 @@ from .services import create_targets, get_files, get_days, get_rows, saveClassif
 import requests
 import math
 import pandas as pd
+import numpy as np
 import re
 import os
 from backend.settings import MEDIA_ROOT
@@ -208,7 +209,7 @@ def basic_search_targets(request):
 
 @api_view(('POST',))
 def retrieve_bins(request):
-    bins = list(set(request.data))
+    bins = np.unique(np.array(request.data))
     queryset = Bin.objects.filter(id__in=bins)
     if type(queryset) != Bin:
         serializer = BinSerializer(queryset, many=True)

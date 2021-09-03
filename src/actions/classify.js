@@ -92,7 +92,7 @@ export const searchTargets = (search) => (dispatch, getState) => {
         .then(res => {
             dispatch({
                 type: TARGETS_BASIC_SEARCHED,
-                payload: res.data
+                payload: (typeof res.data.length !== "undefined") ? (res.data) : (res.data)
             });
         })
         .catch((err) => console.log(err));
