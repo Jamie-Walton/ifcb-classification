@@ -5,7 +5,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from classify import views
 from django.views.generic import TemplateView
-import debug_toolbar
 
 router = routers.DefaultRouter()
 router.register(r'timeseries', views.TimeSeriesOptionView, 'timeseries')
@@ -40,5 +39,4 @@ urlpatterns = [
     path('searchtargets/', views.basic_search_targets),
     path('bins/', views.retrieve_bins),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
-    path('debug/', include(debug_toolbar.urls)),
 ]

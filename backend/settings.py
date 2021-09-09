@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'Rm(3}e$xPCBj_4)C[5K_[?;n7ddx9L%jVA{3dntG:%$x3!d?7,d(p&+e5H[a-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = [
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'classify',
-    'debug_toolbar',
     'knox',
     'accounts'
 ]
@@ -64,7 +63,6 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
