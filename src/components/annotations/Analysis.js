@@ -26,7 +26,7 @@ class Analysis extends Component {
         this.state = {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help \
-                    of classification filtering, file look-up, and more.", redirect: this.goToClassDownload},
+                    of classification filtering, file look-up, and more.", redirect: this.goToSearch},
                 {heading: 'Download by Class', description: "Download a ZIP file containing all, or a \
                     desired subset of, images classified as a particular species.", redirect: this.goToClassDownload}
             ]
@@ -50,8 +50,6 @@ class Analysis extends Component {
                 handleClick = this.props.goto_search;
             case 'Download by Class':
                 handleClick = this.props.goto_classdownload;
-            default:
-                handleClick = this.props.goto_search;
         }
         return (
             <AnalysisOption

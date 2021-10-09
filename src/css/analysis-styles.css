@@ -25,11 +25,6 @@
     max-width: 100%;
 }
 
-.id {
-    display: flex;
-    justify-content: center;
-}
-
 .search-result-plus {
     display: flex;
     flex-direction: column;
@@ -50,7 +45,7 @@
     align-self: center;
 }
 
-.show-info {
+.show-search-result-info {
     display: flex;
 }
 
