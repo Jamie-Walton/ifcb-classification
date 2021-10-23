@@ -25,12 +25,14 @@ export const goto_analysis = () => (dispatch) => {
 };
 
 export const goto_classdownload = () => (dispatch) => {
+    console.log('Going to Download');
     dispatch({
         type: CLASSDOWNLOAD_PAGE
     });
 };
 
 export const goto_search = () => (dispatch) => {
+    console.log('Going to Download');
     dispatch({
         type: SEARCH_PAGE
     });

@@ -26,9 +26,9 @@ class Analysis extends Component {
         this.state = {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help \
-                    of classification filtering, file look-up, and more.", redirect: this.goToSearch},
+                    of classification filtering, file look-up, and more."},
                 {heading: 'Download by Class', description: "Download a ZIP file containing all, or a \
-                    desired subset of, images classified as a particular species.", redirect: this.goToClassDownload}
+                    desired subset of, images classified as a particular species."}
             ]
         }
     }
@@ -45,11 +45,13 @@ class Analysis extends Component {
 
     renderAnalysisOption(option) {
         var handleClick
-        switch (option.heading) {
-            case 'Search':
-                handleClick = this.props.goto_search;
-            case 'Download by Class':
-                handleClick = this.props.goto_classdownload;
+        console.log(option);
+        if (option.heading === 'Search') {
+            handleClick = this.props.goto_search;
+            console.log('Search');
+        } else if (option.heading === 'Download by Class') {
+            handleClick = this.props.goto_classdownload;
+            console.log('Download');
         }
         return (
             <AnalysisOption
