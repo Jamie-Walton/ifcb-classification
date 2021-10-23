@@ -301,4 +301,4 @@ def search_targets(search_terms):
                 Q(editor__icontains=terms[i]) | Q(bin__file=terms[i]) | \
                 Q(notes__entry__icontains=terms[i])
                 )
-    return targets
+    return targets.order_by('-date')
