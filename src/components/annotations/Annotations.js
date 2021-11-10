@@ -66,8 +66,8 @@ class YearControl extends React.Component {
 }
 
 class Bar extends React.Component {
-    handleHover() {
-        document.getElementById('day' + this.props.number).classList.toggle('show');
+    handleHover(num) {
+        this.props.onHover(num);
     }
     render() {
         return(
@@ -75,8 +75,8 @@ class Bar extends React.Component {
                 <div className="day" id={'day' + this.props.number}>{this.props.day}</div>
                 <div className="bar" id={'bar' + this.props.number} 
                     onClick={() => this.props.onClick(this.props.number)}
-                    onMouseEnter={() => this.handleHover()}
-                    onMouseLeave={() => this.handleHover()}
+                    onMouseEnter={() => this.handleHover(this.props.number)}
+                    onMouseLeave={() => this.handleHover(this.props.current)}
                     style={{height: String(this.props.height*8) + 'vw'}}></div>
             </div>
         );}
@@ -84,10 +84,14 @@ class Bar extends React.Component {
 
 class DayControl extends React.Component {
     handleDropdown() {
-        document.getElementById('day_dropdown').classList.toggle('show-day');
+        document.getElementById('day_dropdown').classList.toggle('show');
+        document.getElementById('day_label').classList.toggle('hide');
+        document.getElementById('day_bar').classList.toggle('accommodate-dropdown');
     }
     
     render() {
+        const options = this.props.options.map((x) => 
+        <li key={x} onClick={() => this.props.onClick(x)}><button id={x}>{x}</button></li>)
         return(
             <div>
                 <div className="time" id='day_bar'>
@@ -95,11 +99,15 @@ class DayControl extends React.Component {
                     <img src={dropdown} className="time-icon" 
                     alt={'Select Day'} onClick={() => this.handleDropdown()}></img>
                 </div>
+                <div className="time-dropdown" id='day_dropdown'>
+                    <ul className="year-option">{options}</ul>
+                </div>
                 <p className="time-label" id='day_label'>Day</p>
             </div>
         );
     }
 }
+
 
 class FileControl extends React.Component {
     handleDropdown() {
@@ -309,6 +317,16 @@ class ClassMenu extends React.Component {
   }
 }
 
+class NavButton extends React.Component {
+    render() {
+        return(
+            <div className={this.props.className} onClick={() => this.props.onClick()}>
+                <p>{this.props.text}</p>
+            </div>
+        )
+    }
+}
+
 class Annotations extends React.Component {
   constructor(props) {
       super(props);
@@ -327,6 +345,7 @@ class Annotations extends React.Component {
           barHeights: [],
           fileOptions: [],
           setOptions: [],
+          filledDays: [],
           targets: [],
           history: [],
           rows: [],
@@ -336,6 +355,9 @@ class Annotations extends React.Component {
           sort: 'A to Z',
           sortCode: 'AZ',
           lastScroll: 0,
+          dayOption: '',
+          previous: 'Previous',
+          next: 'Next',
       }
   }
 
@@ -362,7 +384,7 @@ class Annotations extends React.Component {
             day: this.state.bin.day,
             file: this.state.bin.file,
             edited: false
-        }
+        },
     });
     axios
       .get('/classes/' + option + '/')
@@ -384,7 +406,9 @@ class Annotations extends React.Component {
                 fileOptions: binResponse.data.options.file_options,
                 setOptions: binResponse.data.options.set_options,
                 rows: binResponse.data.options.rows,
-                set: 1
+                filledDays: binResponse.data.options.filled_days,
+                set: 1,
+                dayOption: binResponse.data.bin.day,
             });
             axios
                 .get('/process/targets/' + option + '/' + binResponse.data.bin.file + '/1/' + this.state.sortCode + '/')
@@ -412,7 +436,11 @@ class Annotations extends React.Component {
     this.setState({ 
         loading: true, 
         rows: [], 
-        targets: [] });  
+        targets: [] }); 
+        
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
+        
     axios
         .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
         .then((yearResponse) => {
@@ -422,7 +450,9 @@ class Annotations extends React.Component {
                 dayOptions: yearResponse.data.options.day_options[1],
                 fileOptions: yearResponse.data.options.file_options,
                 setOptions: yearResponse.data.options.set_options,
+                filledDays: yearResponse.data.options.filled_days,
                 set: 1,
+                dayOption: yearResponse.data.bin.day,
              });
              axios
                 .get('/process/targets/' + this.state.bin.timeseries + '/' + yearResponse.data.bin.file + '/1/' + this.state.sortCode + '/')
@@ -438,8 +468,15 @@ class Annotations extends React.Component {
         .catch((err) => console.log(err));
   }
 
+  handleBarHover(option) {
+      this.setState({ dayOption: this.state.dayOptions[option] });
+  }
+
   handleBar(option) {
-    document.getElementById('day_dropdown').classList.toggle('show-day');
+    const histogram = document.getElementById('histogram_dropdown').classList;
+    if (histogram.contains('show-day')) {
+        histogram.toggle('show-day');
+    }
 
     this.setState({
         loading: true,
@@ -453,7 +490,8 @@ class Annotations extends React.Component {
                 bin: dayResponse.data.bin,
                 fileOptions: dayResponse.data.options.file_options,
                 setOptions: dayResponse.data.options.set_options,
-                set: 1
+                set: 1,
+                dayOption: dayResponse.data.bin.day,
             });
             axios
                 .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/1/' + this.state.sortCode + '/')
@@ -469,10 +507,24 @@ class Annotations extends React.Component {
         .catch((err) => console.log(err));
   }
 
+  handleNewDay(option) {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
+    const newDay = (element) => element === option;
+    const dayNumber = this.state.dayOptions.findIndex(newDay);
+    this.handleBar(dayNumber);
+  }
+
   handleNewFile(option) {
-    document.getElementById('file_dropdown').classList.toggle('show');
-    document.getElementById('file_label').classList.toggle('hide');
-    document.getElementById('file_bar').classList.toggle('accommodate-dropdown');
+
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
+    
+    if (document.getElementById('file_dropdown').classList.contains('show')) {
+        document.getElementById('file_dropdown').classList.toggle('show');
+        document.getElementById('file_label').classList.toggle('hide');
+        document.getElementById('file_bar').classList.toggle('accommodate-dropdown');
+    }
     
     const file = 'D' + this.state.bin.year + this.state.bin.day.slice(0,2) + this.state.bin.day.slice(3,5) + 
     option.slice(0,3) + option.slice(4,6) + option.slice(7,9);
@@ -494,7 +546,8 @@ class Annotations extends React.Component {
             this.setState({ 
                 bin: res.data.bin, 
                 setOptions: res.data.options.set_options,
-                rows: res.data.options.rows
+                rows: res.data.options.rows,
+                dayOption: res.data.bin.day,
             })
             axios
                 .get('/process/targets/' + this.state.bin.timeseries + '/' + file + '/1/' + this.state.sortCode + '/')
@@ -510,11 +563,16 @@ class Annotations extends React.Component {
   }
 
   handleNewSet(option) {
+    
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
+    
     this.setState({
         loading: true,
         set: option,
         rows: [],
     });
+
     axios
       .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + option + '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
       .then((rowResponse) => {
@@ -526,6 +584,7 @@ class Annotations extends React.Component {
       })
       .catch((err) => console.log(err));
     this.setState({loading: false});
+    
   }
 
   handleNewGroup(option) {
@@ -706,6 +765,13 @@ class Annotations extends React.Component {
     document.getElementById('sync').classList.toggle('syncing');
   }
 
+  handleHistogramClick() {
+    const histogram = document.getElementById('histogram');
+    const histogram_dropdown = document.getElementById('histogram_dropdown');
+    histogram_dropdown.classList.toggle('show-day');
+    histogram.scrollTop = histogram.scrollHeight;
+  }
+
   handleRowClick(j) {
     var targets = this.state.targets;
     const row = this.state.rows[j];
@@ -822,9 +888,10 @@ class Annotations extends React.Component {
   }
 
   renderDayControl() {
+    const options = this.state.filledDays.slice().reverse();
     return <DayControl
         day={this.state.bin.day} 
-        options={this.state.barHeights}
+        options={options}
         onClick={(option) => this.handleNewDay(option)}
     />;
   }
@@ -874,6 +941,7 @@ class Annotations extends React.Component {
         </div>
       );
   }
+
   
   renderPlankton(i) {
       return <Plankton 
@@ -920,12 +988,79 @@ class Annotations extends React.Component {
   }
 
   renderBar(gb, i) {
+    const currentDay = (element) => element === this.state.bin.day;
     return <Bar 
         onClick={(i) => this.handleBar(i)}
+        onHover={(i) => this.handleBarHover(i)}
         number={i}
         height={gb}
         day={this.state.dayOptions[i]}
+        current={this.state.dayOptions.findIndex(currentDay)}
     />;
+  }
+
+  renderNavButton(direction) {
+    var dir;
+    var text;
+    var className;
+    (direction === 'next') ? (dir = 1) : (dir = -1);
+    (direction === 'next') ? (className = 'next-button') : (className='previous-button');
+
+    if ((this.state.set === this.state.setOptions.length && dir === 1) || (this.state.set === 1 && dir === -1)) {
+        const currentFile = (element) => 
+            'D' + this.state.bin.year + this.state.bin.day.slice(0,2) + this.state.bin.day.slice(3,5) + element.slice(0,3) + element.slice(4,6) + element.slice(7,9) === this.state.bin.file;
+        const fileNumber = this.state.fileOptions.findIndex(currentFile);
+        if ((fileNumber === this.state.fileOptions.length-1 && dir === 1) || (fileNumber === 0 && dir === -1)) {
+            const currentDay = (element) => element === this.state.bin.day;
+            const dayNumber = this.state.filledDays.findIndex(currentDay);
+            if ((dayNumber === this.state.filledDays.length-1 && dir === 1) || (dayNumber === 0 && dir === -1)) {
+                const currentYear = (element) => element === Number(this.state.bin.year);
+                const yearOptions = this.state.yearOptions.slice().reverse()
+                const yearNumber = yearOptions.findIndex(currentYear);
+                if ((yearNumber === yearOptions.length-1 && dir === 1)) {
+                    return <NavButton
+                        text={'Up to Date'}
+                        className={'up-to-date-button'}
+                    />;
+                } else if (yearNumber === 0 && dir === -1) {
+                    return <NavButton
+                        text={'No Previous Data'}
+                        className={'up-to-date-button'}
+                    />;
+                } else {
+                    text = (direction === 'next') ? ('Next Year   >') : ('<   Previous Year');
+                    return <NavButton
+                        text={text}
+                        onClick={() => this.getNewYear(yearOptions[yearNumber + dir])}
+                        className={className}
+                    />
+                }
+            } else {
+                text = (direction === 'next') ? ('Next Day   >') : ('<   Previous Day');
+                return <NavButton
+                    text={text}
+                    onClick={() => this.handleNewDay(this.state.filledDays[dayNumber + dir])}
+                    className={className}
+                />
+            }
+        } else {
+            text = (direction === 'next') ? ('Next File   >') : ('<   Previous File');
+            return <NavButton
+                text={text}
+                onClick={() => this.handleNewFile(this.state.fileOptions[fileNumber + dir])}
+                className={className}
+            />
+        }
+    } else {
+        text = (direction === 'next') ? ('Next Set   >') : ('<   Previous Set');
+        return <NavButton
+            text={text}
+            onClick={() => this.handleNewSet(this.state.set + dir)}
+            className={className}
+        />
+    }
+
+    
   }
 
   renderLoader() {
@@ -940,6 +1075,9 @@ class Annotations extends React.Component {
     if(this.props.onAnalysis) {
         return <Redirect to="/analysis/" />
     }
+
+    var previous = (this.state.set === 1) ? 'Previous Day' : 'Previous Set'
+    var next = (this.state.set === this.state.setOptions.length) ? 'Next Day' : 'Next Set'
 
     return(
         <div className='body'>
@@ -963,28 +1101,34 @@ class Annotations extends React.Component {
                     <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
                     {this.renderSync()}
                     {this.renderDownload()}
+                    <div className="round-button histogram" onClick={() => this.handleHistogramClick()}></div>
                     <div className="scale-down" onClick={() => this.handleScale('down')}></div>
                     <div className="scale-up" onClick={() => this.handleScale('up')}></div>
                 </div>
-                <div className="day-dropdown" id='day_dropdown'>
-                    <div className="timeline">
-                        <div className="bars">
-                            {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
+                <div className='histogram-dropdown-container' id='histogram_dropdown'>
+                    <div className="histogram-dropdown" id='histogram'>
+                        <div className="timeline">
+                            <div className="bars">
+                                {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
+                            </div>
+                            <div className="axis">
+                                <p className="month">Jan</p>
+                                <p className="month">Feb</p>
+                                <p className="month">Mar</p>
+                                <p className="month">Apr</p>
+                                <p className="month">May</p>
+                                <p className="month">Jun</p>
+                                <p className="month">Jul</p>
+                                <p className="month">Aug</p>
+                                <p className="month">Sep</p>
+                                <p className="month">Oct</p>
+                                <p className="month">Nov</p>
+                                <p className="month">Dec</p>
+                            </div>
                         </div>
-                        <div className="axis">
-                            <p className="month">Jan</p>
-                            <p className="month">Feb</p>
-                            <p className="month">Mar</p>
-                            <p className="month">Apr</p>
-                            <p className="month">May</p>
-                            <p className="month">Jun</p>
-                            <p className="month">Jul</p>
-                            <p className="month">Aug</p>
-                            <p className="month">Sep</p>
-                            <p className="month">Oct</p>
-                            <p className="month">Nov</p>
-                            <p className="month">Dec</p>
-                        </div>
+                    </div>
+                    <div className='day-option'>
+                        <p className='day-option-text'>{this.state.dayOption}</p>
                     </div>
                 </div>
                 <div className="note-container" id="note-dropdown">
@@ -1007,6 +1151,10 @@ class Annotations extends React.Component {
                         }
                         <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
                     </div>
+                </div>
+                <div className='navigation-container'>
+                    {this.renderNavButton('previous')}
+                    {this.renderNavButton('next')}
                 </div>
             </div>
             </div>

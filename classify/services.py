@@ -161,7 +161,8 @@ def get_days(volume, year):
         else:
             heights = heights + [0]
     day_options = [heights, short_days]
-    return day_options
+    filled_days =  [day[5:] for day in days]
+    return day_options, filled_days
 
 
 def get_rows(b, set, sort, scale):

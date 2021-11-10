@@ -343,22 +343,21 @@ def new_timeseries(request, timeseries_name, sort, scale):
     day = volume[len(volume)-1]['day'][5:]
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
-    bin_url = bins['pid']
-    first_file = re.split('/|_', bin_url)[4]
-
-    if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries_name, year, day, first_file)
     
     last_year = int(volume[0]['day'][0:4])
     year_options = list(range(last_year, int(year)+1))
-    day_options = get_days(volume, year)
+    day_options, filled_days = get_days(volume, year)
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
+    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
 
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=first_file)))
+    if not Bin.objects.filter(year=year, day=day):
+        ifcb = create_targets(timeseries_name, year, day, recent_file)
+    
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=recent_file)))
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
 
-    b = Bin.objects.get(file=first_file)
+    b = Bin.objects.get(file=recent_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort, scale)
 
@@ -367,7 +366,8 @@ def new_timeseries(request, timeseries_name, sort, scale):
         'day_options': day_options,
         'file_options': file_options,
         'set_options': set_options,
-        'rows': rows
+        'rows': rows,
+        'filled_days': filled_days,
     }
 
     bin = {
@@ -375,7 +375,7 @@ def new_timeseries(request, timeseries_name, sort, scale):
         'ifcb': ifcb,
         'year': year, 
         'day': day, 
-        'file': first_file,
+        'file': recent_file,
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -412,7 +412,8 @@ def new_file(request, timeseries, file, sort, scale):
         'day_options': 'NA',
         'file_options': 'NA',
         'set_options': set_options,
-        'rows': rows
+        'rows': rows,
+        'filled_days': 'NA',
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -432,19 +433,18 @@ def new_day(request, timeseries, year, day, sort, scale):
     
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
-    bin_url = bins['pid']
-    first_file = re.split('/|_', bin_url)[4]
-
-    if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries, year, day, first_file)
     
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
 
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=first_file)))
+    if not Bin.objects.filter(year=year, day=day):
+        ifcb = create_targets(timeseries, year, day, recent_file)
+    
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=recent_file)))
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
 
-    b = Bin.objects.get(file=first_file)
+    b = Bin.objects.get(file=recent_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort, scale)
     
@@ -453,7 +453,7 @@ def new_day(request, timeseries, year, day, sort, scale):
         'ifcb': ifcb,
         'year': year, 
         'day': day, 
-        'file': first_file,
+        'file': recent_file,
     }
     
     options = {
@@ -461,7 +461,8 @@ def new_day(request, timeseries, year, day, sort, scale):
         'day_options': 'NA',
         'file_options': file_options,
         'set_options': set_options,
-        'rows': rows
+        'rows': rows,
+        'filled_days': 'NA',
     }
 
     package = FrontEndPackage(bin=bin, set=1, options=options)
@@ -477,23 +478,23 @@ def new_year(request, timeseries, year, sort, scale):
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
 
-    day_options = get_days(volume, year)
+    day_options, filled_days = get_days(volume, year)
     full_year = [x for x in volume if year in x['day']]
     day = full_year[len(full_year)-1]['day'][5:10]
     
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     file_options = get_files(int(full_year[len(full_year)-1]['bin_count']), bins, timeseries)
-    first_file = re.split('/|_', bins['pid'])[4]
+    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
 
     if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries, year, day, first_file)
+        ifcb = create_targets(timeseries, year, day, recent_file)
 
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=first_file)))
+    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=recent_file)))
     num_sets = math.ceil((num_targets)/500)
     set_options = list(range(1, num_sets+1))
     
-    b = Bin.objects.get(file=first_file)
+    b = Bin.objects.get(file=recent_file)
     ifcb = b.ifcb
     rows = get_rows(b, 1, sort, scale)
 
@@ -502,7 +503,8 @@ def new_year(request, timeseries, year, sort, scale):
         'day_options': day_options,
         'file_options': file_options,
         'set_options': set_options,
-        'rows': rows
+        'rows': rows,
+        'filled_days': filled_days,
     }
 
     bin = {
@@ -510,7 +512,7 @@ def new_year(request, timeseries, year, sort, scale):
         'ifcb': ifcb,
         'year': year, 
         'day': day, 
-        'file': first_file,
+        'file': recent_file,
     }
 
     package = FrontEndPackage(bin=bin, options=options)
