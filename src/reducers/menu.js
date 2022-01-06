@@ -6,9 +6,8 @@ import {
     SEARCH_PAGE,
 } from '../actions/types';
 
-
 const initialState = {
-    onClassify: true,
+    onClassify: false,
     onNotebook: false,
     onAnalysis: false,
     onClassDownload: false,

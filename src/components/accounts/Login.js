@@ -11,28 +11,47 @@ export class Login extends Component {
     state = {
         username: '',
         password: '',
+        attempted: false,
     }
 
     static propTypes = {
         login: PropTypes.func.isRequired,
-        isAuthenticated: PropTypes.bool
+        isAuthenticated: PropTypes.bool,
+        loginFailed: PropTypes.bool,
+        location: PropTypes.string
     };
 
     onSubmit = e => {
         e.preventDefault();
         this.props.login(this.state.username, this.state.password);
+        this.setState({ attempted: true });
     }
 
-    onChange = e => this.setState({ [e.target.name]: e.target.value })
+    onChange = e => this.setState({ 
+        [e.target.name]: e.target.value,
+        attempted: false
+    })
 
     render() {
-        if(this.props.isAuthenticated) {
-            return <Redirect to="/" />
+        if(document.getElementById('error')) {
+            const error = document.getElementById('error').classList;
+            if(this.props.isAuthenticated) {
+                return <Redirect push to={this.props.location} />
+            } else if(this.props.loginFailed && this.state.attempted) {
+                if (!error.contains('show')) {
+                    error.add('show');
+                }
+            } else {
+                if (error.contains('show')) {
+                    error.remove('show');
+                }
+            }
         }
         
         const { username, password } = this.state;
         return (
-            <body>
+            <div className='body'>
+                <title>IFCB | Login</title>
                 <main className="login-main">
                 <div className="header">
                     <h3>IFCB Classification</h3>
@@ -71,6 +90,7 @@ export class Login extends Component {
                         <label>Password</label>
                         </div>
                         <div className="form-group">
+                        <p className="error-message" id="error">Incorrect username or password.</p>
                         <button type="submit" className="login-submit">
                             Login
                         </button>
@@ -79,13 +99,15 @@ export class Login extends Component {
                     </div>
                 </div>
             </main>
-            </body>
+            </div>
         );
     }
 }
 
 const mapStateToProps = state => ({
-   isAuthenticated: state.auth.isAuthenticated 
+   isAuthenticated: state.auth.isAuthenticated,
+   loginFailed: state.auth.loginFailed,
+   location: state.auth.location 
 });
 
 export default connect(mapStateToProps, { login })(Login);

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { PropTypes } from "prop-types";
 
 import { addBinNote, sendNotesChange, receiveNotesChange, receiveReplyOpen } from "../../actions/classify";
-import Note from "./Note";
+import Note from "../features/Note";
 
 export class BinNote extends React.Component {
     state = {

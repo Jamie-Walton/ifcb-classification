@@ -7,7 +7,7 @@ import { Redirect } from "react-router-dom";
 import Header from '../layout/Header';
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
-import loader from "./loader.GIF";
+import loader from "../annotations/loader.GIF";
 
 class ClassDownload extends Component {
     constructor(props) {
@@ -156,11 +156,11 @@ class ClassDownload extends Component {
 
     render() {
         if(this.props.onClassify) {
-            return <Redirect to="/" />
+            return <Redirect to="/classify" />
         }
 
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook" />
+            return <Redirect to="/notebook/" />
         }
 
         if(this.props.onAnalysis) {
@@ -170,6 +170,7 @@ class ClassDownload extends Component {
         return(
             <div>
                 <Header />
+                <title>IFCB | Class Download</title>
                 <div className='main'>
                     <div className="page">
                         <div>
@@ -223,7 +224,7 @@ class ClassDownload extends Component {
                                 </div>
                                 <div className="download-button" onClick={() => this.download()}>Download</div>
                                 <div style={{display: 'none'}}>
-                                    <iframe id="download-src" onload={() => this.loadFrame()} />
+                                    <iframe title="Download Images" id="download-src" onload={() => this.loadFrame()} />
                                 </div>
                                 <div>{ (this.state.loading) ? this.renderLoader() : <div/> }</div>
                                 </div>

@@ -139,9 +139,14 @@ def sync_autoclass(timeseries, year, day, file):
     return serializer
 
 
-def get_files(bin_count, bins, timeseries):
-    files  = [bins['date'][10:]] + [0]*(bin_count-1)
-    for b in range(1, bin_count):
+def get_files(bin_count, bins, timeseries, day=0):
+    if day != 0 and bins['date'][5:9] != day:
+        files = [0]*(bin_count)
+        start = 0
+    else:
+        files = [bins['date'][10:]] + [0]*(bin_count-1)
+        start = 1
+    for b in range(start, bin_count):
         bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/after/pid/' + bins['pid'])
         bins = bins_response.json()[0]
         files[b] = bins['date'][10:]
@@ -165,7 +170,7 @@ def get_days(volume, year):
     return day_options, filled_days
 
 
-def get_rows(b, set, sort, scale):
+def get_rows(b, sort, scale):
 
     if sort == 'AZ':
         targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
@@ -176,18 +181,11 @@ def get_rows(b, set, sort, scale):
     elif sort == 'SL':
         targets = Target.objects.filter(bin=b).order_by('height')
 
-    if set == math.ceil((len(targets))/500):
-        start = 500*(set-1)
-        end = len(targets)
-    else:
-        start = 500*(set-1)
-        end = start+500
-
     rows = [[]]
     space = 70
     row = 0
-    for i in range(0,end-start):
-        target = targets[start+i]
+    for i in range(0,len(targets)):
+        target = targets[i]
         if (space - (target.width*(scale/10000)) - 1) < 0:
             rows.append([])
             row += 1

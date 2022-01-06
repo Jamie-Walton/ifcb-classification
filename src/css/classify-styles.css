@@ -106,7 +106,7 @@ li {
 	background-color: #FFFFFF;
 	box-shadow: 0px 6px 30px #00000029;
 	margin: 0 2vw 2vw;
-	padding: 0.5vw 0vw 5vw 7vw;
+	padding: 0.5vw 0vw 9vw 7vw;
 	min-height: 70vh;
 }
 
@@ -142,8 +142,14 @@ li {
 }
 
 .navigation-container {
-	cursor: pointer;
+	position: absolute;
+	right: 8vw;
+	width: fit-content;
+}
+
+.set-navigation-container {
 	display: flex;
+	justify-content: flex-end;
 }
 
 .previous-button {
@@ -152,7 +158,7 @@ li {
 	border-radius: 2vw;
 	display: flex;
 	justify-content: space-between;
-	margin: 0 0vw 0 68vw;
+	margin: 0 0vw 1vw 0vw;
 	padding: 0.5vw 1vw;
 	width: fit-content;
 	cursor: pointer;
@@ -164,7 +170,7 @@ li {
 	border-radius: 2vw;
 	display: flex;
 	justify-content: space-between;
-	margin: 0 0vw 0 1vw;
+	margin: 0 0vw 1vw 1vw;
 	padding: 0.5vw 1vw;
 	width: fit-content;
 	cursor: pointer;
@@ -175,12 +181,41 @@ li {
 	border-radius: 2vw;
 	display: flex;
 	justify-content: space-between;
-	margin: 0 0vw 0 1vw;
+	margin: 0 0vw 1vw 1vw;
 	padding: 0.5vw 1vw;
 	width: fit-content;
 	cursor: default;
 }
 
+
+/* File Not Found Page */
+
+.not-found-message {
+	font-size: 1.1vw;
+	width: 32vw;
+}
+
+.return-button {
+	background-color:#7dad0b;
+	border: none;
+	display: flex;
+	border-radius: 5vw;
+	font-family: proxima-nova, sans-serif;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 0.9vw;
+	justify-content: space-between;
+	margin: 3vw 0 0 0;
+	padding: 0.6vw 1vw;
+	width: fit-content;
+	height: 2.5vw;
+	cursor: pointer;
+}
+
+.return-button:hover {
+	background-color:#777777;
+}
 
 /* Time Menu */
 
@@ -560,7 +595,6 @@ li {
 
 .row {
 	display: flex;
-	overflow: scroll;
 }
 
 .row-select {
@@ -583,12 +617,15 @@ li {
 .image-row {
 	display: flex;
 	align-items: flex-start;
-	overflow: scroll;
+	overflow: visible;
 	max-width: 70vw;
+	overflow: scroll;
 }
 
 
 /* Images */
+
+.hide {display: none;}
 
 .image {
 	text-transform: none;
@@ -685,7 +722,8 @@ li {
 	display: inline-block;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	margin: 5vw 2vw 3vw 2vw;
+	margin: 5vw 0vw 3vw 2vw;
+	padding: 0;
 }
 
 .select-cont {

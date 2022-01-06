@@ -36,12 +36,13 @@ export class Register extends Component {
 
     render() {
         if(this.props.isAuthenticated) {
-            return <Redirect to="/" />;
+            return <Redirect to="/classify" />;
         }
         
         const { username, email, password, password2 } = this.state;
         return (
-            <body>
+            <div className='body'>
+                <title>IFCB | Register</title>
                 <main className="register-main">
                 <div className="header">
                     <h3>IFCB Classification</h3>
@@ -108,7 +109,7 @@ export class Register extends Component {
                     </div>
                 </div>
             </main>
-            </body>
+            </div>
         );
     }
 }

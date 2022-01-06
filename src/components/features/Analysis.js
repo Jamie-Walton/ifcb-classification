@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import axios from "axios";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
 import Header from '../layout/Header';
-import { goto_classdownload, goto_search, searchTargets } from "../../actions/menu";
+import { goto_classdownload, goto_search } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
@@ -25,10 +24,8 @@ class Analysis extends Component {
         super(props);
         this.state = {
             analysisOptions: [
-                {heading: 'Search', description: "Find any image or collection of images with the help \
-                    of classification filtering, file look-up, and more."},
-                {heading: 'Download by Class', description: "Download a ZIP file containing all, or a \
-                    desired subset of, images classified as a particular species."}
+                {heading: 'Search', description: "Find any image or collection of images with the help of classification filtering, file look-up, and more."},
+                {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."}
             ]
         }
     }
@@ -65,11 +62,11 @@ class Analysis extends Component {
 
     render() {
         if(this.props.onClassify) {
-            return <Redirect to="/" />
+            return <Redirect to="/classify" />
         }
 
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook" />
+            return <Redirect to="/notebook/" />
         }
 
         if(this.props.onClassDownload) {
@@ -83,6 +80,7 @@ class Analysis extends Component {
         return(
             <div>
                 <Header />
+                <title>IFCB | Analysis</title>
                 <div className='main'>
                     <div className="page">
                         <div>
@@ -104,7 +102,7 @@ class Analysis extends Component {
 const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
-    onNotebook: state.menu.onClassify,
+    onNotebook: state.menu.onNotebook,
     onClassDownload: state.menu.onClassDownload,
     onSearch: state.menu.onSearch,
  });

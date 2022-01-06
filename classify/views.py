@@ -118,7 +118,7 @@ def get_target_classifiers(request):
 
 
 @api_view(('GET',))
-def new_targets(request, timeseries, file, set, sort):
+def new_targets(request, timeseries, file, sort):
     if request.method == 'GET':
         b = Bin.objects.get(timeseries=timeseries, file=file)
         if sort == 'AZ':
@@ -130,19 +130,12 @@ def new_targets(request, timeseries, file, set, sort):
         elif sort == 'SL':
             model_targets = Target.objects.filter(bin=b).order_by('height')
 
-        if set == math.ceil((len(model_targets))/500):
-            start = 500*(set-1)
-            end = len(model_targets)
-        else:
-            start = 500*(set-1)
-            end = start+500
-
-        target_serializer = TargetSerializer(model_targets[start:end], many=True)
+        target_serializer = TargetSerializer(model_targets, many=True)
         return Response(target_serializer.data)
 
 
 @api_view(('PUT',))
-def save(request, timeseries, file, set, sort):
+def save(request, timeseries, file, sort):
     permission_classes = [
         permissions.IsAuthenticated,
     ]
@@ -150,21 +143,15 @@ def save(request, timeseries, file, set, sort):
     b = Bin.objects.get(timeseries=timeseries, file=file)
 
     targets = Target.objects.filter(bin=b)
-    if set == math.ceil((len(targets))/500):
-        start = 500*(set-1)
-        end = len(targets)
-    else:
-        start = 500*(set-1)
-        end = start+500
     
     if sort == 'AZ':
-        targets = targets.order_by('class_name', '-height')[start:end]
+        targets = targets.order_by('class_name', '-height')
     elif sort == 'ZA':
-        targets = targets.order_by('-class_name', '-height')[start:end]
+        targets = targets.order_by('-class_name', '-height')
     elif sort == 'LS':
-        targets = targets.order_by('-height')[start:end]
+        targets = targets.order_by('-height')
     elif sort == 'SL':
-        targets = targets.order_by('height')[start:end]
+        targets = targets.order_by('height')
     
     for i in range(len(targets)):
         target = targets[i]
@@ -266,7 +253,7 @@ def edit_targetrow(request, timeseries, file, sort, startInd, endInd):
 
 
 @api_view(('PUT',))
-def edit_all(request, timeseries, file, set, sort, className, classAbbr):
+def edit_all(request, timeseries, file, sort, className, classAbbr):
     permission_classes = [
         permissions.IsAuthenticated,
     ]
@@ -274,21 +261,15 @@ def edit_all(request, timeseries, file, set, sort, className, classAbbr):
 
     #queryset = Target.objects.all().iterator(chunk_size=200)
     filtered = Target.objects.filter(bin=b)
-    if set == math.ceil((len(filtered))/500):
-        start = 500*(set-1)
-        end = len(filtered)
-    else:
-        start = 500*(set-1)
-        end = start+500
     
     if sort == 'AZ':
-        filtered = filtered.order_by('class_name', '-height')[start:end]
+        filtered = filtered.order_by('class_name', '-height')
     elif sort == 'ZA':
-        filtered = filtered.order_by('-class_name', '-height')[start:end]
+        filtered = filtered.order_by('-class_name', '-height')
     elif sort == 'LS':
-        filtered = filtered.order_by('-height')[start:end]
+        filtered = filtered.order_by('-height')
     elif sort == 'SL':
-        filtered = filtered.order_by('height')[start:end]
+        filtered = filtered.order_by('height')
     
     targets = filtered.iterator(chunk_size=200)
     
@@ -320,9 +301,9 @@ def undo(request, timeseries, file, set):
 
 
 @api_view(('GET',))
-def new_rows(request, timeseries, file, set, sort, scale):
+def new_rows(request, timeseries, file, sort, scale):
     b = Bin.objects.get(timeseries=timeseries, file=file)
-    rows = get_rows(b, set, sort, scale)
+    rows = get_rows(b, sort, scale)
 
     options = {
         'rows': rows
@@ -335,7 +316,7 @@ def new_rows(request, timeseries, file, set, sort, scale):
 
 
 @api_view(('GET',))
-def new_timeseries(request, timeseries_name, sort, scale):
+def new_timeseries(request, timeseries_name):
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
     volume = volume_response.json()
@@ -344,39 +325,11 @@ def new_timeseries(request, timeseries_name, sort, scale):
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     
-    last_year = int(volume[0]['day'][0:4])
-    year_options = list(range(last_year, int(year)+1))
-    day_options, filled_days = get_days(volume, year)
     file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
     recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
 
-    if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries_name, year, day, recent_file)
-    
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries_name, file=recent_file)))
-    num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
-
-    b = Bin.objects.get(file=recent_file)
-    ifcb = b.ifcb
-    rows = get_rows(b, 1, sort, scale)
-
-    options = {
-        'year_options': year_options,
-        'day_options': day_options,
-        'file_options': file_options,
-        'set_options': set_options,
-        'rows': rows,
-        'filled_days': filled_days,
-    }
-
-    bin = {
-        'timeseries': timeseries_name, 
-        'ifcb': ifcb,
-        'year': year, 
-        'day': day, 
-        'file': recent_file,
-    }
+    options = {}
+    bin = {'file': recent_file}
 
     package = FrontEndPackage(bin=bin, options=options)
     front_end_package = FrontEndPackageSerializer(package)
@@ -386,18 +339,30 @@ def new_timeseries(request, timeseries_name, sort, scale):
 
 @api_view(('GET',))
 def new_file(request, timeseries, file, sort, scale):
+    
+    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+    volume = volume_response.json()
+    present_year = volume[len(volume)-1]['day'][0:4]
+    last_year = int(volume[0]['day'][0:4])
+    year_options = list(range(last_year, int(present_year)+1))
+
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
+    day_options, filled_days = get_days(volume, year)
     if not Bin.objects.filter(file=file):
         ifcb = create_targets(timeseries, year, day, file)
     
+    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
+    bins = bins_response.json()
+    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+    
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
+    set_options = ['All'] + list(range(1, num_sets+1))
 
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, 1, sort, scale)
+    rows = get_rows(b, sort, scale)
     
     bin = {
         'timeseries': timeseries, 
@@ -408,12 +373,12 @@ def new_file(request, timeseries, file, sort, scale):
     }
     
     options = {
-        'year_options': 'NA',
-        'day_options': 'NA',
-        'file_options': 'NA',
+        'year_options': year_options,
+        'day_options': day_options,
+        'file_options': file_options,
         'set_options': set_options,
         'rows': rows,
-        'filled_days': 'NA',
+        'filled_days': filled_days,
     }
 
     package = FrontEndPackage(bin=bin, options=options)
@@ -423,47 +388,24 @@ def new_file(request, timeseries, file, sort, scale):
 
 
 @api_view(('GET',))
-def new_day(request, timeseries, year, day, sort, scale):
+def new_day(request, timeseries, year, day):
     
     dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
     day = str(dates[day])[5:10]
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
+    df = pd.DataFrame(volume)
+    index = int(df[df['day']=='2021-10-16'].index.values)
     
     bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
     bins = bins_response.json()
     
-    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+    file_options = get_files(int(volume[index]['bin_count']), bins, timeseries, day)
     recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
-
-    if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries, year, day, recent_file)
     
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=recent_file)))
-    num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
-
-    b = Bin.objects.get(file=recent_file)
-    ifcb = b.ifcb
-    rows = get_rows(b, 1, sort, scale)
-    
-    bin = {
-        'timeseries': timeseries,
-        'ifcb': ifcb,
-        'year': year, 
-        'day': day, 
-        'file': recent_file,
-    }
-    
-    options = {
-        'year_options': 'NA',
-        'day_options': 'NA',
-        'file_options': file_options,
-        'set_options': set_options,
-        'rows': rows,
-        'filled_days': 'NA',
-    }
+    options = {}
+    bin = {'file': recent_file}
 
     package = FrontEndPackage(bin=bin, set=1, options=options)
     front_end_package = FrontEndPackageSerializer(package)
@@ -473,12 +415,11 @@ def new_day(request, timeseries, year, day, sort, scale):
     
 
 @api_view(('GET',))
-def new_year(request, timeseries, year, sort, scale):
+def new_year(request, timeseries, year):
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
 
-    day_options, filled_days = get_days(volume, year)
     full_year = [x for x in volume if year in x['day']]
     day = full_year[len(full_year)-1]['day'][5:10]
     
@@ -487,33 +428,8 @@ def new_year(request, timeseries, year, sort, scale):
     file_options = get_files(int(full_year[len(full_year)-1]['bin_count']), bins, timeseries)
     recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
 
-    if not Bin.objects.filter(year=year, day=day):
-        ifcb = create_targets(timeseries, year, day, recent_file)
-
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=recent_file)))
-    num_sets = math.ceil((num_targets)/500)
-    set_options = list(range(1, num_sets+1))
-    
-    b = Bin.objects.get(file=recent_file)
-    ifcb = b.ifcb
-    rows = get_rows(b, 1, sort, scale)
-
-    options = {
-        'year_options': 'NA',
-        'day_options': day_options,
-        'file_options': file_options,
-        'set_options': set_options,
-        'rows': rows,
-        'filled_days': filled_days,
-    }
-
-    bin = {
-        'timeseries': timeseries,
-        'ifcb': ifcb,
-        'year': year, 
-        'day': day, 
-        'file': recent_file,
-    }
+    options = {}
+    bin = {'file': recent_file}
 
     package = FrontEndPackage(bin=bin, options=options)
     front_end_package = FrontEndPackageSerializer(package)

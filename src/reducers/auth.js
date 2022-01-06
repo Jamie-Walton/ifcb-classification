@@ -1,7 +1,9 @@
 import {
     USER_LOADED,
     USER_LOADING,
+    LOCATION_SAVED,
     AUTH_ERROR,
+    LOGIN_ATTEMPT,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOGOUT_SUCCESS,
@@ -13,8 +15,12 @@ import {
 const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: null,
+    loginFailed: false,
+    registerFailed: false,
     isLoading: false,
-    user: null
+    user: null,
+    location: window.location.pathname,
+    locationCount: 1,
 }
 
 export default function(state = initialState, action) {
@@ -31,6 +37,17 @@ export default function(state = initialState, action) {
                 isLoading: false,
                 user: action.payload
             };
+        case LOCATION_SAVED:
+            return {
+                ...state,
+                location: action.payload
+            }
+        case LOGIN_ATTEMPT:
+            return {
+                ...state,
+                ...action.payload,
+                loginFailed: false
+            }
         case LOGIN_SUCCESS:
         case REGISTER_SUCCESS:
             localStorage.setItem('token', action.payload.token);
@@ -41,7 +58,6 @@ export default function(state = initialState, action) {
                 isLoading: false
             }
         case AUTH_ERROR:
-        case LOGIN_FAIL:
         case LOGOUT_SUCCESS:
         case REGISTER_FAIL:
             localStorage.removeItem('token');
@@ -50,7 +66,27 @@ export default function(state = initialState, action) {
                 token: null,
                 user: null,
                 isAuthenticated: false,
+                isLoading: false,
+                registerFailed: true,
+            }
+        case REGISTER_FAIL:
+            localStorage.removeItem('token');
+            return {
+                ...state,
+                token: null,
+                user: null,
+                isAuthenticated: false,
                 isLoading: false
+            }
+        case LOGIN_FAIL:
+            localStorage.removeItem('token');
+            return {
+                ...state,
+                token: null,
+                user: null,
+                isAuthenticated: false,
+                isLoading: false,
+                loginFailed: true,
             }
             
         default:

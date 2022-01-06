@@ -139,13 +139,13 @@ export const classifyAll = (timeseries, file, set, sort, className, classAbbr) =
         .catch((err) => console.log(err));
 }
 
-export const save = (targets, timeseries, file, set, sort) => (dispatch, getState) => {
+export const save = (targets, timeseries, file, sort) => (dispatch, getState) => {
     dispatch({
         type: SAVE_PROGRESS,
     });
     axios
         .put('/save/' + timeseries + '/' + file + 
-            '/' + set + '/' + sort + '/', targets, 
+            '/' + sort + '/', targets, 
             tokenConfig(getState))
         .then(res => {
             dispatch({

@@ -2,12 +2,14 @@ import axios from 'axios';
 import {
     USER_LOADED,
     USER_LOADING,
+    LOCATION_SAVED,
     AUTH_ERROR,
+    LOGIN_ATTEMPT,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOGOUT_SUCCESS,
     REGISTER_SUCCESS,
-    REGISTER_FAIL,
+    REGISTER_FAIL
 } from '../actions/types';
 
 // CHECK TOKEN & LOAD USER
@@ -31,8 +33,20 @@ export const loadUser = () => (dispatch, getState) => {
         })
 }
 
+// SAVE LOCATION
+export const saveLocation = (location) => (dispatch) => {
+    dispatch({ 
+        type: LOCATION_SAVED,
+        payload: location
+    });
+}
+
 // LOGIN USER
 export const login = (username, password) => dispatch => {
+    
+    dispatch({
+        type: LOGIN_ATTEMPT
+    });
     
     // Headers
     const config = {

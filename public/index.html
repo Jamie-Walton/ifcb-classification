@@ -7,10 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="https://use.typekit.net/oqp2qfn.css">
 	<meta charset="UTF-8">
-	<title>IFCB | Classify</title>
 
 </head>
 
 <div id="root"></div>
+
+<script type="text/javascript">
+	const path = window.location.pathname.split('/');
+	if (path[1] === 'classify') {
+		if (path.length < 3) {
+			document.title = 'IFCB | Classify'
+		} else {
+			document.title = 'IFCB | ' + path[3];
+		}
+	}
+</script>
 
 </html>

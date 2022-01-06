@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from "axios";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
@@ -9,7 +8,7 @@ import { searchTargets, getBins } from "../../actions/classify";
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
 import '../../css/classify-styles.css';
-import loader from "./loader.GIF";
+import loader from "../annotations/loader.GIF";
 
 class Target extends Component {
     
@@ -60,6 +59,10 @@ class Target extends Component {
                             <p>{bin.file}</p>
                         </div>
                         <div style={{display: 'flex'}}>
+                            <p className="description-label">{'Time Series: '}</p>
+                            <p>{bin.timeseries}</p>
+                        </div>
+                        <div style={{display: 'flex'}}>
                             <p className="description-label">{'IFCB: '}</p>
                             <p>{bin.ifcb}</p>
                         </div>
@@ -75,6 +78,7 @@ class Target extends Component {
                             <p className="description-label">{'Date: '}</p>
                             <p>{this.props.target.date}</p>
                         </div>
+                        <div className='search-redirect-button' onClick={() => this.props.redirectToFile(bin.timeseries, bin.file)}>Go to File</div>
                     </div>
                 </div>
             );
@@ -94,6 +98,7 @@ class Search extends Component {
             basicSearch: '',
             loading: false,
             renderable: false,
+            redirectInfo: ''
         }
     }
 
@@ -140,12 +145,17 @@ class Search extends Component {
         }
     }
 
+    redirectToFile(timeseries, file) {
+        this.setState({ redirectInfo: {timeseries: timeseries, file: file} });
+    }
+
     renderTarget(target) {
         return( 
             <Target
                 target={target}
                 bins={this.props.binsSearchResults[0]}
                 key={target.id}
+                redirectToFile={(timeseries, file) => this.redirectToFile(timeseries, file)}
             />
         );
     }
@@ -156,15 +166,21 @@ class Search extends Component {
 
     render() {
         if(this.props.onClassify) {
-            return <Redirect to="/" />
+            return <Redirect to="/classify" />
         }
 
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook" />
+            return <Redirect to="/notebook/" />
         }
 
         if(this.props.onAnalysis) {
             return <Redirect to="/analysis" />
+        }
+
+        if(this.state.redirectInfo !== '') {
+            const timeseries = this.state.redirectInfo.timeseries;
+            const file = this.state.redirectInfo.file;
+            return <Redirect to={"/classify/" + timeseries + "/" + file + "/AZ"} />
         }
 
         var targets;
@@ -176,6 +192,7 @@ class Search extends Component {
            return(
             <div>
                 <Header />
+                <title>IFCB | Search</title>
                 <div className='main'>
                     <div className="page">
                         <div>

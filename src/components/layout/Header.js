@@ -18,9 +18,11 @@ export class Header extends Component {
         const { isAuthenticated, user } = this.props.auth;
 
         if(this.props.onClassify) {
-            return <Redirect to="/" />
+            return <Redirect to="/classify" />
         } else if(this.props.onNotebook) {
-            return <Redirect to="/Notebook" />
+            return <Redirect to="/notebook/" />
+        } else if(this.props.onAnalysis) {
+            return <Redirect to="/analysis" />
         }
 
         const authLinks = (

@@ -186,3 +186,15 @@ label {
 .register-submit:hover {
     background-color: #0d79a3;
 }
+
+/* Error Message */
+.error-message {
+	color: #FFFFFF;
+	margin: 1vw 0;
+	font-size: 1vw;
+	display: none;
+}
+
+.show {
+	display: flex;
+}

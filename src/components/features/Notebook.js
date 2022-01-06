@@ -9,7 +9,6 @@ import { filterNotebook, receiveNotesChange } from "../../actions/classify";
 import Header from '../layout/Header';
 import Note from "./Note";
 import '../../css/notebook-styles.css';
-import loader from "./loader.GIF";
 
 class Filter extends Component {
     renderOption(option) {
@@ -170,7 +169,7 @@ class Notebook extends Component {
 
   render() {
     if(this.props.onClassify) {
-        return <Redirect to="/" />
+        return <Redirect to="/classify" />
     }
 
     if(this.props.onAnalysis) {
@@ -186,7 +185,6 @@ class Notebook extends Component {
     // Grid data as an array of arrays
     const notes = this.state.notes;
     const username = this.props.user.username;
-    const flags = this.state.flags
     var skips = 0;
     var rendered = [];
 
@@ -288,6 +286,7 @@ class Notebook extends Component {
     return (
             <div>
                 <Header />
+                <title>IFCB | Notebook</title>
                 <div className='main'>
                     <div className="page">
                         <div>
@@ -325,7 +324,6 @@ class Notebook extends Component {
                                         columnWidth={document.documentElement.clientWidth*0.29}
                                         rowHeight={cache.rowHeight}
                                         deferredMeasurementCache={cache}
-                                        cellRenderer={cellRenderer}
                                         rowCount={Math.ceil(this.state.notes.length/3)}
                                         height={height}
                                         width={width}
