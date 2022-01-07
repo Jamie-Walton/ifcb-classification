@@ -8,7 +8,6 @@ import YearControl from './time/YearControl';
 import DayControl from './time/DayControl';
 import Bar from './time/Bar';
 import FileControl from './time/FileControl';
-import SetControl from './time/SetControl';
 import Order from './time/Order';
 
 import PropTypes from 'prop-types';
@@ -90,6 +89,8 @@ class Annotations extends React.Component {
           targets: [],
           history: [],
           rows: [],
+          scrollToIndex: -1,
+          targetJumpEntry: '',
           scale: 0.056,
           set: 1,
           setDisplay: 1,
@@ -101,6 +102,8 @@ class Annotations extends React.Component {
           previous: 'Previous',
           next: 'Next',
       }
+      this.onTargetJumpSubmit = this.onTargetJumpSubmit.bind(this);
+      this.clearScrollToIndex = this.clearScrollToIndex.bind(this);
   }
 
   static propTypes = {
@@ -720,12 +723,27 @@ class Annotations extends React.Component {
       );
   }
 
+  clearScrollToIndex() {
+    this.setState({ scrollToIndex: -1 });
+  }
+
+  onTargetJumpChange = e => this.setState({ targetJumpEntry: e.target.value })
+
+  onTargetJumpSubmit = e => {
+    e.preventDefault();
+    this.setState({
+        scrollToIndex: Number(this.state.targetJumpEntry)
+      });
+  }
+
   renderPage() {
     const cache = new CellMeasurerCache({
         defaultHeight: 10,
         minHeight: 10,
         fixedWidth: true
       });
+
+    const scrollToIndex = this.state.scrollToIndex;
 
     const rowRenderer = ({index, key, parent, style}) => (
         
@@ -771,7 +789,7 @@ class Annotations extends React.Component {
             </CellMeasurer>
         )
       return(
-        <WindowScroller>
+        <WindowScroller onScroll={this.clearScrollToIndex}>
             {({ height, isScrolling, onChildScroll, scrollTop }) => (
         <div className='main'>
             <div className="page">
@@ -786,6 +804,17 @@ class Annotations extends React.Component {
                     {this.renderFileControl()}
                     {this.renderGroup()}
                     {this.renderSort()}
+                    <div className="target-jump-container">
+                        <form onSubmit={this.onTargetJumpSubmit} id="target-jump-form" className="target-jump-form">
+                            <input
+                                type="number" 
+                                className="target-jump-input"
+                                onChange={this.onTargetJumpChange}
+                                value={this.entry}
+                            />
+                        </form>
+                        <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
+                    </div>
                     <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
                     <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
                     {this.renderSync()}
@@ -837,15 +866,18 @@ class Annotations extends React.Component {
                         {
                         (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
                         }
+                        {console.log("scroll to index", scrollToIndex)}
                         <List
                             autoHeight
                             height={height}
-                            isScrolling={isScrolling}
-                            onScroll={onChildScroll}
                             rowCount={this.state.rows.length}
                             rowHeight={cache.rowHeight}
                             rowRenderer={rowRenderer}
+                            isScrolling={isScrolling}
+                            onScroll={onChildScroll}
                             scrollTop={scrollTop}
+                            scrollToAlignment="start"
+                            scrollToIndex={scrollToIndex}
                             width={document.documentElement.clientWidth*0.72}
                             images={this.state.rows}
                         />
