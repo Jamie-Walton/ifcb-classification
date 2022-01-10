@@ -37,6 +37,7 @@ urlpatterns = [
     path('classdownload/<str:classname>/<str:include>/<str:exclude>/<str:number>/', views.download_class),
     path('classdownload/classifiers/', views.get_target_classifiers),
     path('searchtargets/', views.basic_search_targets),
+    path('lastedit/<str:user>/', views.get_last_edit),
     path('bins/', views.retrieve_bins),
     re_path('.*',TemplateView.as_view(template_name='index.html')),
 ]

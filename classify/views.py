@@ -194,6 +194,15 @@ def basic_search_targets(request):
     return Response(serializer.data)
 
 
+@api_view(('GET',))
+def get_last_edit(request, user):
+    target = Target.objects.filter(editor=user).order_by('-date')[0]
+    serializer = BinSerializer(target.bin, many=False)
+    
+    return Response(serializer.data)
+
+
+
 @api_view(('POST',))
 def retrieve_bins(request):
     bins = np.unique(np.array(request.data))

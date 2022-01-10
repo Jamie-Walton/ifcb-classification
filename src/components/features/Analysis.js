@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
+import axios from "axios";
 
 import Header from '../layout/Header';
 import { goto_classdownload, goto_search } from "../../actions/menu";
@@ -25,8 +26,10 @@ class Analysis extends Component {
         this.state = {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help of classification filtering, file look-up, and more."},
-                {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."}
-            ]
+                {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."},
+                {heading: 'Pick Up Where You Left Off', description: "Jump back to the most recent file and target you classified in your last session to jump right back into classifying. "}
+            ],
+            bin: '',
         }
     }
 
@@ -40,15 +43,21 @@ class Analysis extends Component {
         goto_search: PropTypes.func,
     }
 
+    handleClassifyJump() {
+        axios
+          .get('/lastedit/' + this.props.user.username + '/')
+          .then((res) => this.setState({ bin: res.data }))
+          .catch((err) => console.log(err));
+    }
+
     renderAnalysisOption(option) {
         var handleClick
-        console.log(option);
         if (option.heading === 'Search') {
             handleClick = this.props.goto_search;
-            console.log('Search');
         } else if (option.heading === 'Download by Class') {
             handleClick = this.props.goto_classdownload;
-            console.log('Download');
+        } else if (option.heading === 'Pick Up Where You Left Off') {
+            handleClick = () => this.handleClassifyJump();
         }
         return (
             <AnalysisOption
@@ -75,6 +84,11 @@ class Analysis extends Component {
 
         if(this.props.onSearch) {
             return <Redirect to="/analysis/search" />
+        }
+
+        if(this.state.bin !== '') {
+            const bin = this.state.bin;
+            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/AZ/'} />
         }
 
         return(
