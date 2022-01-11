@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, serializers
 from rest_framework.response import Response
 from knox.models import AuthToken
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ClassifierSerializer
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
@@ -38,6 +38,15 @@ class UserAPI(generics.RetrieveAPIView):
     ]
 
     serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+# Get Classifier API
+class ClassifierAPI(generics.RetrieveAPIView):
+
+    serializer_class = ClassifierSerializer
 
     def get_object(self):
         return self.request.user

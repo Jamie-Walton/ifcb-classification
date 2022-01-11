@@ -27,9 +27,9 @@ class Analysis extends Component {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help of classification filtering, file look-up, and more."},
                 {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."},
-                {heading: 'Pick Up Where You Left Off', description: "Jump back to the most recent file and target you classified in your last session to jump right back into classifying. "}
             ],
             bin: '',
+            target: '',
         }
     }
 
@@ -43,21 +43,12 @@ class Analysis extends Component {
         goto_search: PropTypes.func,
     }
 
-    handleClassifyJump() {
-        axios
-          .get('/lastedit/' + this.props.user.username + '/')
-          .then((res) => this.setState({ bin: res.data }))
-          .catch((err) => console.log(err));
-    }
-
     renderAnalysisOption(option) {
         var handleClick
         if (option.heading === 'Search') {
             handleClick = this.props.goto_search;
         } else if (option.heading === 'Download by Class') {
             handleClick = this.props.goto_classdownload;
-        } else if (option.heading === 'Pick Up Where You Left Off') {
-            handleClick = () => this.handleClassifyJump();
         }
         return (
             <AnalysisOption
@@ -84,11 +75,6 @@ class Analysis extends Component {
 
         if(this.props.onSearch) {
             return <Redirect to="/analysis/search" />
-        }
-
-        if(this.state.bin !== '') {
-            const bin = this.state.bin;
-            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/AZ/'} />
         }
 
         return(

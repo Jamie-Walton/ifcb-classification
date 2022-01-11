@@ -30,6 +30,10 @@ class App extends Component {
                             exact path="/classify/:timeseries/:file/:sortcode" 
                             key={window.location.pathname}
                             component={withRouter(Annotations)} />
+                        <PrivateRoute 
+                            exact path="/classify/:timeseries/:file/:sortcode/:target" 
+                            key={window.location.pathname}
+                            component={withRouter(Annotations)} />
                         <PrivateRoute exact path="/classify/" component={Annotations} />
                         <PrivateRoute exact path="/notebook/" component={Notebook} />
                         <PrivateRoute exact path="/analysis" component={Analysis} />

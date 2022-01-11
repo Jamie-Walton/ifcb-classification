@@ -197,9 +197,15 @@ def basic_search_targets(request):
 @api_view(('GET',))
 def get_last_edit(request, user):
     target = Target.objects.filter(editor=user).order_by('-date')[0]
-    serializer = BinSerializer(target.bin, many=False)
+    bin = {
+        'timeseries': target.bin.timeseries,
+        'file': target.bin.file,
+    }
+
+    package = FrontEndPackage(bin=bin, options={'target': target.number})
+    front_end_package = FrontEndPackageSerializer(package)
     
-    return Response(serializer.data)
+    return Response(front_end_package.data)
 
 
 

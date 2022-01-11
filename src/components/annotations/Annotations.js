@@ -89,8 +89,12 @@ class Annotations extends React.Component {
           targets: [],
           history: [],
           rows: [],
-          scrollToIndex: -1,
+          scrollToIndex: undefined,
+          jumpEntry: '',
           targetJumpEntry: '',
+          initialTargetJump: '',
+          lastEditBin: '',
+          lastEditTarget: '',
           scale: 0.056,
           set: 1,
           setDisplay: 1,
@@ -102,8 +106,7 @@ class Annotations extends React.Component {
           previous: 'Previous',
           next: 'Next',
       }
-      this.onTargetJumpSubmit = this.onTargetJumpSubmit.bind(this);
-      this.clearScrollToIndex = this.clearScrollToIndex.bind(this);
+      this.onTargetJumpChange = this.onTargetJumpChange.bind(this);
   }
 
   static propTypes = {
@@ -178,7 +181,6 @@ class Annotations extends React.Component {
                 });
                 break;
             default:
-                // Add redirect to error page here
                 this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
                 return;
         }
@@ -231,7 +233,7 @@ class Annotations extends React.Component {
                 this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
                 return;
             });
-    }
+        }
   }
 
   componentDidUpdate(prevProps) {
@@ -707,6 +709,14 @@ class Annotations extends React.Component {
     this.setState({ newFile: 'blank' });
   }
 
+  jumpToLastEdit() {
+    console.log('clicked');
+    axios
+        .get('/lastedit/' + this.props.user.username + '/')
+        .then((res) => this.setState({ lastEditBin: res.data.bin, lastEditTarget: res.data.options }))
+        .catch((err) => console.log(err));
+  }
+
   renderNotFound() {
       return(
         <div className='main'>
@@ -723,17 +733,18 @@ class Annotations extends React.Component {
       );
   }
 
-  clearScrollToIndex() {
-    this.setState({ scrollToIndex: -1 });
-  }
+  onTargetJumpChange(event) {
+    var k = this.state.targets.findIndex(target => target.number === event.target.value);
+    var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
 
-  onTargetJumpChange = e => this.setState({ targetJumpEntry: e.target.value })
+    if (isNaN(scrollToIndex) || scrollToIndex<0) {
+      scrollToIndex = undefined;
+    }
 
-  onTargetJumpSubmit = e => {
-    e.preventDefault();
     this.setState({
-        scrollToIndex: Number(this.state.targetJumpEntry)
-      });
+        jumpEntry: event.target.value,
+        scrollToIndex: scrollToIndex
+    });
   }
 
   renderPage() {
@@ -743,7 +754,9 @@ class Annotations extends React.Component {
         fixedWidth: true
       });
 
+    const jumpEntry = this.state.jumpEntry;
     const scrollToIndex = this.state.scrollToIndex;
+
 
     const rowRenderer = ({index, key, parent, style}) => (
         
@@ -789,13 +802,13 @@ class Annotations extends React.Component {
             </CellMeasurer>
         )
       return(
-        <WindowScroller onScroll={this.clearScrollToIndex}>
-            {({ height, isScrolling, onChildScroll, scrollTop }) => (
+        
         <div className='main'>
             <div className="page">
 
             <div className="content">
             <div className="inner-content">
+                <h4 onClick={() => this.jumpToLastEdit()}>Last Edit →</h4>
                 <h1>Manual Classifications</h1>
                 <div className="time-controls">
                     {this.renderTimeSeriesControl()}
@@ -805,14 +818,13 @@ class Annotations extends React.Component {
                     {this.renderGroup()}
                     {this.renderSort()}
                     <div className="target-jump-container">
-                        <form onSubmit={this.onTargetJumpSubmit} id="target-jump-form" className="target-jump-form">
-                            <input
-                                type="number" 
-                                className="target-jump-input"
-                                onChange={this.onTargetJumpChange}
-                                value={this.entry}
-                            />
-                        </form>
+                        <input
+                            type="textarea" 
+                            className="target-jump-input"
+                            onChange={this.onTargetJumpChange}
+                            value={jumpEntry || ''}
+                            placeholder="Target..."
+                        />
                         <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
                     </div>
                     <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
@@ -866,20 +878,14 @@ class Annotations extends React.Component {
                         {
                         (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
                         }
-                        {console.log("scroll to index", scrollToIndex)}
                         <List
-                            autoHeight
-                            height={height}
+                            height={800} // fix later
                             rowCount={this.state.rows.length}
                             rowHeight={cache.rowHeight}
                             rowRenderer={rowRenderer}
-                            isScrolling={isScrolling}
-                            onScroll={onChildScroll}
-                            scrollTop={scrollTop}
                             scrollToAlignment="start"
                             scrollToIndex={scrollToIndex}
                             width={document.documentElement.clientWidth*0.72}
-                            images={this.state.rows}
                         />
                         <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
                     </div>
@@ -895,8 +901,7 @@ class Annotations extends React.Component {
 
             </div>
         </div>
-        )}
-        </WindowScroller>
+        
       );
   }
 
@@ -916,6 +921,31 @@ class Annotations extends React.Component {
         }
         const newURL = '/classify/' + this.state.newTimeSeries + '/' + this.state.newFile + '/' + this.state.sortCode;
         return <Redirect to={newURL} />
+    }
+
+    if (this.state.rows !== [] && this.state.initialTargetJump === '' && !this.state.loading) {
+        const urlInfo = this.props.location.pathname.split('/');
+        if (urlInfo.length > 5) {
+            const targetNum = urlInfo[5];
+            var k = this.state.targets.findIndex(target => target.number === targetNum);
+            var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
+
+            if (isNaN(scrollToIndex) || scrollToIndex<0) {
+                scrollToIndex = undefined;
+            }
+
+            this.setState({
+                jumpEntry: targetNum,
+                initialTargetJump: targetNum,
+                scrollToIndex: scrollToIndex
+            });
+        }
+    }
+
+    if (typeof(this.state.lastEditBin) !== 'string') {
+        this.setState({ loading: true });
+        const bin = this.state.lastEditBin;
+            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/AZ/' + this.state.lastEditTarget.target} />
     }
 
     return(
