@@ -78,7 +78,7 @@ class Target extends Component {
                             <p className="description-label">{'Date: '}</p>
                             <p>{this.props.target.date}</p>
                         </div>
-                        <div className='search-redirect-button' onClick={() => this.props.redirectToFile(bin.timeseries, bin.file)}>Go to File</div>
+                        <div className='search-redirect-button' onClick={() => this.props.redirectToFile(bin.timeseries, bin.file, this.props.target.number)}>Go to File</div>
                     </div>
                 </div>
             );
@@ -145,8 +145,8 @@ class Search extends Component {
         }
     }
 
-    redirectToFile(timeseries, file) {
-        this.setState({ redirectInfo: {timeseries: timeseries, file: file} });
+    redirectToFile(timeseries, file, target) {
+        this.setState({ redirectInfo: {timeseries: timeseries, file: file, target: target} });
     }
 
     renderTarget(target) {
@@ -155,7 +155,7 @@ class Search extends Component {
                 target={target}
                 bins={this.props.binsSearchResults[0]}
                 key={target.id}
-                redirectToFile={(timeseries, file) => this.redirectToFile(timeseries, file)}
+                redirectToFile={(timeseries, file, target) => this.redirectToFile(timeseries, file, target)}
             />
         );
     }
@@ -180,7 +180,8 @@ class Search extends Component {
         if(this.state.redirectInfo !== '') {
             const timeseries = this.state.redirectInfo.timeseries;
             const file = this.state.redirectInfo.file;
-            return <Redirect to={"/classify/" + timeseries + "/" + file + "/AZ"} />
+            const target = this.state.redirectInfo.target;
+            return <Redirect to={"/classify/" + timeseries + "/" + file + "/" + target} />
         }
 
         var targets;
