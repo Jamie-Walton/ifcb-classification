@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Classifier
+from .models import Preferences
 from django.contrib.auth import authenticate
 
 # User Serializer
@@ -9,11 +9,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email')
 
-# Classifier Serializer
-class ClassifierSerializer(serializers.ModelSerializer):
+# Preferences Serializer
+class PreferencesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Classifier
-        fields = ('id', 'user', 'sort_preference', 'scale_preference', 'load_preference')
+        model = Preferences
+        fields = ('id', 'user', 'sort', 'scale', 'load')
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
@@ -25,6 +25,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(validated_data['username'], \
         validated_data['email'], validated_data['password'])
+
+        preferences = Preferences(user=user, sort='AZ', scale=0.560, load='recent')
+        preferences.save()
 
         return user
 

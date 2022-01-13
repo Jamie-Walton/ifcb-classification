@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Header from '../layout/Header';
+import Preferences from './Preferences';
 import BinNote from './BinNote';
 import Plankton from './Plankton';
 import TimeSeriesControl from './time/TimeSeriesControl';
@@ -15,6 +16,7 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import { List, WindowScroller, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { classifyTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
+import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
@@ -96,11 +98,6 @@ class Annotations extends React.Component {
           lastEditBin: '',
           lastEditTarget: '',
           scale: 0.056,
-          set: 1,
-          setDisplay: 1,
-          group: 'Class',
-          sort: 'A to Z',
-          sortCode: 'AZ',
           lastScroll: 0,
           dayOption: '',
           previous: 'Previous',
@@ -110,8 +107,10 @@ class Annotations extends React.Component {
   }
 
   static propTypes = {
+    preferences: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
+    changeScale: PropTypes.func,
     classifyTarget: PropTypes.func.isRequired,
     classifyRow: PropTypes.func.isRequired,
     classifyAll: PropTypes.func.isRequired,
@@ -120,6 +119,7 @@ class Annotations extends React.Component {
     sync: PropTypes.func.isRequired,
     isSyncing: PropTypes.bool,
     user: PropTypes.object,
+    scaleEntry: PropTypes.number,
     onNotebook: PropTypes.bool,
     onAnalysis: PropTypes.bool,
   };
@@ -147,43 +147,15 @@ class Annotations extends React.Component {
   componentDidMount() {
     this.setState({ loading: false });
     const urlInfo = this.props.location.pathname.split('/');
-    if(urlInfo.length<4) {
-        this.getNewTimeSeries('IFCB104');
+    if(urlInfo.length<3) {
+        if(this.props.preferences.load==='edited') {
+            this.jumpToLastEdit();
+        } else {
+            this.getNewTimeSeries('IFCB104');
+        }
     } else {
         const timeseries = urlInfo[2];
         const file = urlInfo[3];
-        const sortCode = urlInfo[4];
-        this.setState({ sortCode: sortCode });
-
-        switch(sortCode) {
-            case 'AZ':
-                this.setState({
-                    group: 'Class',
-                    sort: 'A to Z',
-                });
-                break;
-            case 'ZA':
-                this.setState({
-                    group: 'Class',
-                    sort: 'Z to A',
-                });
-                break;
-            case 'LS':
-                this.setState({
-                    group: 'Size',
-                    sort: 'L to S',
-                });
-                break;
-            case 'SL':
-                this.setState({
-                    group: 'Size',
-                    sort: 'S to L',
-                });
-                break;
-            default:
-                this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
-                return;
-        }
 
         axios
             .get('/api/timeseries/')
@@ -204,8 +176,8 @@ class Annotations extends React.Component {
                 .catch((err) => console.log(err));
 
         axios
-            .get('/process/file/' + timeseries + '/' + file + '/' + sortCode + 
-                '/' + Math.round(this.state.scale * 10000) + '/')
+            .get('/process/file/' + timeseries + '/' + file + '/' + this.props.preferences.sort + 
+                '/' + Math.round(this.props.preferences.scale * 1000) + '/')
             .then((res) => {
                 this.setState({ 
                     bin: res.data.bin, 
@@ -219,7 +191,7 @@ class Annotations extends React.Component {
                     dayOption: res.data.bin.day,
                 })
                 axios
-                    .get('/process/targets/' + timeseries + '/' + file + '/' + sortCode + '/')
+                    .get('/process/targets/' + timeseries + '/' + file + '/' + this.props.preferences.sort + '/')
                     .then((targetResponse) => {
                         this.setState({ 
                             targets: targetResponse.data,
@@ -234,6 +206,10 @@ class Annotations extends React.Component {
                 return;
             });
         }
+    
+    if (this.props.scaleEntry !== this.props.preferences.scale) {
+        this.props.changeScale(this.props.preferences.scale);
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -296,28 +272,6 @@ class Annotations extends React.Component {
         newTimeSeries: this.state.bin.timeseries,
         newFile: file
     })
-  }
-
-  handleNewGroup(option) {
-    const code = (this.state.group === 'Class') ? 'LS' : 'AZ';
-    this.setState({
-        loading: true,
-        newTimeSeries: this.state.bin.timeseries,
-        newFile: this.state.bin.file,
-        sortCode: code,
-    });
-  }
-
-  handleNewSort(option) {
-    const code = (this.state.group === 'Class') 
-        ? (this.state.sort === 'A to Z') ? 'ZA' : 'AZ' 
-        : (this.state.sort === 'L to S') ? 'SL' : 'LS';
-    this.setState({
-        loading: true,
-        newTimeSeries: this.state.bin.timeseries,
-        newFile: this.state.bin.file,
-        sortCode: code,
-    });
   }
 
   handleMouseOver(element) {
@@ -405,7 +359,7 @@ class Annotations extends React.Component {
           targets: targets,
           history: this.state.history.concat([JSON.stringify(targets)])
      });
-     this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.state.sortCode);
+     this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort);
   }
 
   handleUndoClick() {
@@ -419,7 +373,7 @@ class Annotations extends React.Component {
           history: newHistory,
       });
       this.setState({ rows: rows });
-      this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.state.sortCode);
+      this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort);
     }
   }
 
@@ -428,7 +382,7 @@ class Annotations extends React.Component {
     this.setState({ rows: [] });
     this.props.sync(this.state.bin.timeseries, this.state.bin.year, this.state.bin.day, this.state.bin.file);
     axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.state.sortCode + '/')
+        .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.preferences.sort + '/')
         .then((targetResponse) => {
             this.setState({ 
                 targets: targetResponse.data,
@@ -437,7 +391,7 @@ class Annotations extends React.Component {
         });
     axios
         .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-            '/' + this.state.sortCode + '/' + Math.round(this.state.scale * 10000) + '/')
+            '/' + this.props.preferences.sort + '/' + Math.round(this.state.scale * 1000) + '/')
         .then((res) => {this.setState({ 
             rows: res.data.options.rows,
             loading: false,
@@ -475,7 +429,7 @@ class Annotations extends React.Component {
     const end = row[i];
     const targetRow = targets.slice(start, end+1);
 
-    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, this.state.sortCode, start, end);
+    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort, start, end);
   }
 
   disablePlanktonClick(targetNum, bool, infoShowing) {
@@ -542,7 +496,7 @@ class Annotations extends React.Component {
     }
     axios
       .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-        '/' + this.state.sortCode + '/' + Math.round((newScale) * 10000) + '/')
+        '/' + this.props.preferences.sort + '/' + Math.round((newScale) * 1000) + '/')
       .then((rowResponse) => { this.setState({ 
           scale: newScale,
           rows: rowResponse.data.options.rows 
@@ -550,7 +504,29 @@ class Annotations extends React.Component {
   }
 
   handleDownload() {
-    document.getElementById('download-src').src = 'http://ifcb-classification.herokuapp.com/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+    document.getElementById('download-src').src = 'http://dhcp-25-80.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+  }
+
+  openPreferences() {
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById('preferences').classList.toggle('show-pref');
+  }
+
+  closePreferences() {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById('preferences').classList.toggle('show-pref');
+    this.props.history.go(0);
+  }
+
+  renderPreferences() {
+      return (
+        <Preferences 
+            history={this.props.history}
+            load={this.props.preferences.load}
+            scale={this.props.preferences.scale}
+            sort={this.props.preferences.sort}
+        />
+      );
   }
 
   renderTimeSeriesControl() {
@@ -583,26 +559,6 @@ class Annotations extends React.Component {
         file={this.state.bin.file} 
         options={this.state.fileOptions}
         onClick={(option) => this.handleNewFile(option)} 
-    />;
-  }
-
-  renderSort() {
-    return <Order
-        type={'Sort'}
-        labelID={'sort_label'}
-        barID={'sort_bar'}
-        order={this.state.sort}
-        onClick={(option) => this.handleNewSort(option)}
-    />;
-  }
-
-  renderGroup() {
-    return <Order
-        type={'Group'}
-        labelID={'group_label'}
-        barID={'group_bar'}
-        order={this.state.group}
-        onClick={(option) => this.handleNewGroup(option)}
     />;
   }
 
@@ -710,7 +666,6 @@ class Annotations extends React.Component {
   }
 
   jumpToLastEdit() {
-    console.log('clicked');
     axios
         .get('/lastedit/' + this.props.user.username + '/')
         .then((res) => this.setState({ lastEditBin: res.data.bin, lastEditTarget: res.data.options }))
@@ -786,7 +741,7 @@ class Annotations extends React.Component {
                                 class_abbr={this.state.targets[i].class_abbr}
                                 height={this.state.targets[i].height}
                                 width={this.state.targets[i].width}
-                                scale={this.state.scale}
+                                scale={this.props.scaleEntry / 10}
                                 ifcb={this.state.bin.ifcb}
                                 editor={this.state.targets[i].editor}
                                 date={this.state.targets[i].date}
@@ -805,100 +760,97 @@ class Annotations extends React.Component {
         
         <div className='main'>
             <div className="page">
-
             <div className="content">
-            <div className="inner-content">
-                <h4 onClick={() => this.jumpToLastEdit()}>Last Edit →</h4>
-                <h1>Manual Classifications</h1>
-                <div className="time-controls">
-                    {this.renderTimeSeriesControl()}
-                    {this.renderYearControl()}
-                    {this.renderDayControl()}
-                    {this.renderFileControl()}
-                    {this.renderGroup()}
-                    {this.renderSort()}
-                    <div className="target-jump-container">
-                        <input
-                            type="textarea" 
-                            className="target-jump-input"
-                            onChange={this.onTargetJumpChange}
-                            value={jumpEntry || ''}
-                            placeholder="Target..."
-                        />
-                        <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
-                    </div>
-                    <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
-                    <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
-                    {this.renderSync()}
-                    {this.renderDownload()}
-                    <div className="round-button histogram" onClick={() => this.handleHistogramClick()}></div>
-                    <div className="scale-down" onClick={() => this.handleScale('down')}></div>
-                    <div className="scale-up" onClick={() => this.handleScale('up')}></div>
-                </div>
-                <div className='histogram-dropdown-container' id='histogram_dropdown'>
-                    <div className="histogram-dropdown" id='histogram'>
-                        <div className="timeline">
-                            <div className="bars">
-                                {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
+                <div className="overlay" id="overlay" onClick={() => this.closePreferences()}></div>
+                {this.renderPreferences()}
+                    <div className="inner-content">
+                        <h4 onClick={() => this.jumpToLastEdit()}>Last Edit →</h4>
+                        <h1>Manual Classifications</h1>
+                        <div className="time-controls">
+                            {this.renderTimeSeriesControl()}
+                            {this.renderYearControl()}
+                            {this.renderDayControl()}
+                            {this.renderFileControl()}
+                            <div className="target-jump-container">
+                                <input
+                                    type="textarea" 
+                                    className="target-jump-input"
+                                    onChange={this.onTargetJumpChange}
+                                    value={jumpEntry || ''}
+                                    placeholder="Target..."
+                                />
+                                <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
                             </div>
-                            <div className="axis">
-                                <p className="month">Jan</p>
-                                <p className="month">Feb</p>
-                                <p className="month">Mar</p>
-                                <p className="month">Apr</p>
-                                <p className="month">May</p>
-                                <p className="month">Jun</p>
-                                <p className="month">Jul</p>
-                                <p className="month">Aug</p>
-                                <p className="month">Sep</p>
-                                <p className="month">Oct</p>
-                                <p className="month">Nov</p>
-                                <p className="month">Dec</p>
+                            <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
+                            <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
+                            {this.renderSync()}
+                            {this.renderDownload()}
+                            <div className="round-button histogram" onClick={() => this.handleHistogramClick()}></div>
+                            <div className="preferences-button" onClick={() => this.openPreferences()}></div>
+                        </div>
+                        <div className='histogram-dropdown-container' id='histogram_dropdown'>
+                            <div className="histogram-dropdown" id='histogram'>
+                                <div className="timeline">
+                                    <div className="bars">
+                                        {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
+                                    </div>
+                                    <div className="axis">
+                                        <p className="month">Jan</p>
+                                        <p className="month">Feb</p>
+                                        <p className="month">Mar</p>
+                                        <p className="month">Apr</p>
+                                        <p className="month">May</p>
+                                        <p className="month">Jun</p>
+                                        <p className="month">Jul</p>
+                                        <p className="month">Aug</p>
+                                        <p className="month">Sep</p>
+                                        <p className="month">Oct</p>
+                                        <p className="month">Nov</p>
+                                        <p className="month">Dec</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='day-option'>
+                                <p className='day-option-text'>{this.state.dayOption}</p>
+                            </div>
+                        </div>
+                        <div className="note-container" id="note-dropdown">
+                            {((this.state.bin.timeseries) === '' || this.state.bin.file === '') ? 
+                            <div></div> :
+                            <BinNote 
+                                timeseries={this.state.bin.timeseries}
+                                ifcb={this.state.bin.ifcb}
+                                file={this.state.bin.file}
+                                type='bin'
+                                image='None'
+                            /> }
+                        </div>
+                        <div className="annotations">
+                            {this.renderClassMenu()}
+                            <div className="image-grid" id="image-grid">
+                                {
+                                (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
+                                }
+                                <List
+                                    height={800} // fix later
+                                    rowCount={this.state.rows.length}
+                                    rowHeight={cache.rowHeight}
+                                    rowRenderer={rowRenderer}
+                                    scrollToAlignment="start"
+                                    scrollToIndex={scrollToIndex}
+                                    width={document.documentElement.clientWidth*0.72}
+                                />
+                                <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
+                            </div>
+                        </div>
+                        <div className='navigation-container'>
+                            <div style={{'display':'flex'}}>
+                                {this.renderNavButton('previous')}
+                                {this.renderNavButton('next')}
                             </div>
                         </div>
                     </div>
-                    <div className='day-option'>
-                        <p className='day-option-text'>{this.state.dayOption}</p>
-                    </div>
                 </div>
-                <div className="note-container" id="note-dropdown">
-                    {((this.state.bin.timeseries) === '' || this.state.bin.file === '') ? 
-                    <div></div> :
-                    <BinNote 
-                        timeseries={this.state.bin.timeseries}
-                        ifcb={this.state.bin.ifcb}
-                        file={this.state.bin.file}
-                        type='bin'
-                        image='None'
-                    /> }
-                </div>
-                <div className="annotations">
-                    {this.renderClassMenu()}
-                    <div className="image-grid" id="image-grid">
-                        {
-                        (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
-                        }
-                        <List
-                            height={800} // fix later
-                            rowCount={this.state.rows.length}
-                            rowHeight={cache.rowHeight}
-                            rowRenderer={rowRenderer}
-                            scrollToAlignment="start"
-                            scrollToIndex={scrollToIndex}
-                            width={document.documentElement.clientWidth*0.72}
-                        />
-                        <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
-                    </div>
-                </div>
-                <div className='navigation-container'>
-                    <div style={{'display':'flex'}}>
-                        {this.renderNavButton('previous')}
-                        {this.renderNavButton('next')}
-                    </div>
-                </div>
-            </div>
-            </div>
-
             </div>
         </div>
         
@@ -919,14 +871,14 @@ class Annotations extends React.Component {
         if (this.state.newFile === 'blank') {
             return <Redirect to='/classify/' />
         }
-        const newURL = '/classify/' + this.state.newTimeSeries + '/' + this.state.newFile + '/' + this.state.sortCode;
+        const newURL = '/classify/' + this.state.newTimeSeries + '/' + this.state.newFile;
         return <Redirect to={newURL} />
     }
 
     if (this.state.rows !== [] && this.state.initialTargetJump === '' && !this.state.loading) {
         const urlInfo = this.props.location.pathname.split('/');
-        if (urlInfo.length > 5) {
-            const targetNum = urlInfo[5];
+        if (urlInfo.length > 4) {
+            const targetNum = urlInfo[4];
             var k = this.state.targets.findIndex(target => target.number === targetNum);
             var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
 
@@ -945,7 +897,7 @@ class Annotations extends React.Component {
     if (typeof(this.state.lastEditBin) !== 'string') {
         this.setState({ loading: true });
         const bin = this.state.lastEditBin;
-            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/AZ/' + this.state.lastEditTarget.target} />
+            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/' + this.state.lastEditTarget.target} />
     }
 
     return(
@@ -961,10 +913,12 @@ class Annotations extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    preferences: state.auth.preferences,
     isSaving: state.classify.isSaving,
     user: state.auth.user,
+    scaleEntry: state.classify.scaleEntry,
     onNotebook: state.menu.onNotebook,
     onAnalysis: state.menu.onAnalysis,
  });
 
-export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync })(Annotations);
+export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync, changeScale })(Annotations);

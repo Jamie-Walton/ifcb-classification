@@ -1,6 +1,8 @@
 import {
     USER_LOADED,
     USER_LOADING,
+    PREFERENCES_LOADED,
+    PREFERENCES_ERROR,
     LOCATION_SAVED,
     AUTH_ERROR,
     LOGIN_ATTEMPT,
@@ -19,6 +21,7 @@ const initialState = {
     registerFailed: false,
     isLoading: false,
     user: null,
+    preferences: null,
     location: window.location.pathname,
     locationCount: 1,
 }
@@ -35,7 +38,13 @@ export default function(state = initialState, action) {
                 ...state,
                 isAuthenticated: true,
                 isLoading: false,
-                user: action.payload
+                user: action.payload.user,
+                preferences: action.payload.preferences
+            };
+        case PREFERENCES_LOADED:
+            return {
+                ...state,
+                preferences: action.payload
             };
         case LOCATION_SAVED:
             return {

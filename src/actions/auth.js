@@ -2,6 +2,8 @@ import axios from 'axios';
 import {
     USER_LOADED,
     USER_LOADING,
+    PREFERENCES_LOADED,
+    PREFERENCES_ERROR,
     LOCATION_SAVED,
     AUTH_ERROR,
     LOGIN_ATTEMPT,
@@ -20,11 +22,20 @@ export const loadUser = () => (dispatch, getState) => {
     
     axios
         .get('/api/auth/user', tokenConfig(getState))
-        .then(res => {
-            dispatch({
-                type: USER_LOADED,
-                payload: res.data
-            });
+        .then(userRes => {
+            axios
+                .get('/preferences/' + userRes.data.username + '/')
+                .then(prefRes => {
+                    dispatch({
+                        type: USER_LOADED,
+                        payload: {user: userRes.data, preferences: prefRes.data}
+                    });
+                })
+                .catch(err => {
+                    dispatch({
+                        type: PREFERENCES_ERROR
+                    });
+                });
         })
         .catch(err => {
             dispatch({

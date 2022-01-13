@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Classifier
+from .models import Preferences
 
 class ClassifierAdmin(admin.ModelAdmin):
-    list_display = ('user', 'sort_preference', 'scale_preference', 'load_preference')
+    list_display = ('user', 'sort', 'scale', 'load')
 
-admin.site.register(Classifier, ClassifierAdmin)
+admin.site.register(Preferences, ClassifierAdmin)

@@ -14,6 +14,7 @@ import {
     BINS_BASIC_SEARCHED
 } from "./types";
 
+
 export const sendNotesChange = () => (dispatch, getState) => {
     dispatch({
         type: NOTES_CHANGED

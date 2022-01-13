@@ -56,7 +56,7 @@ export class Header extends Component {
                     </li>
                     <li>
                         <a  
-                            href="http://ifcb-classification.herokuapp.com/admin/" // TODO: Fix URL later
+                            href="http://dhcp-25-80.ucsc.edu:8000/admin/" // TODO: Fix URL later
                             className="login-nav-link">
                                 Admin
                         </a>

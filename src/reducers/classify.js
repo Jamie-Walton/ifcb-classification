@@ -3,6 +3,7 @@ import {
     SAVE_SUCCESS,
     SYNC_PROGRESS,
     SYNC_SUCCESS,
+    SCALE_CHANGED,
     NOTES_CHANGED,
     NOTES_RECORDED,
     NOTEBOOK_FILTERED,
@@ -15,6 +16,7 @@ import {
 const initialState = {
     isSaving: false,
     isSyncing: false,
+    scaleEntry: 0.560,
     noteChangeFlag: true,
     replyChangeFlag: false,
     notes: [],
@@ -43,6 +45,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isSyncing: false
+            }
+        case SCALE_CHANGED:
+            return {
+                ...state,
+                scaleEntry: action.payload
             }
         case NOTES_CHANGED:
             return {

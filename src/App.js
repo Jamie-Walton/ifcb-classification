@@ -27,11 +27,11 @@ class App extends Component {
                 <BrowserRouter>
                     <Switch>
                         <PrivateRoute 
-                            exact path="/classify/:timeseries/:file/:sortcode" 
+                            exact path="/classify/:timeseries/:file" 
                             key={window.location.pathname}
                             component={withRouter(Annotations)} />
                         <PrivateRoute 
-                            exact path="/classify/:timeseries/:file/:sortcode/:target" 
+                            exact path="/classify/:timeseries/:file/:target" 
                             key={window.location.pathname}
                             component={withRouter(Annotations)} />
                         <PrivateRoute exact path="/classify/" component={Annotations} />

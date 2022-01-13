@@ -10,6 +10,11 @@ export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAIL = "REGISTER_FAIL";
 
+// Preferences
+export const SCALE_CHANGED = "SCALE_CHANGED";
+export const PREFERENCES_LOADED = "USER_LOADED";
+export const PREFERENCES_ERROR = "PREFERENCES_ERROR";
+
 // Menu
 export const CLASSIFY_PAGE = "CLASSIFY_PAGE";
 export const NOTEBOOK_PAGE = "NOTEBOOK_PAGE";
