@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
     USER_LOADED,
     USER_LOADING,
-    PREFERENCES_LOADED,
     PREFERENCES_ERROR,
     LOCATION_SAVED,
     AUTH_ERROR,
@@ -19,7 +18,6 @@ export const loadUser = () => (dispatch, getState) => {
     // User Loading
     dispatch({ type: USER_LOADING });
 
-    
     axios
         .get('/api/auth/user', tokenConfig(getState))
         .then(userRes => {

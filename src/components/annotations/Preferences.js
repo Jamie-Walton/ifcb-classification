@@ -162,7 +162,7 @@ class Preferences extends React.Component {
 
                     <div className="right-pref-col">
                         <div className="pref-category">
-                            <p className="pref-subheading">On Website Load</p>
+                            <p className="pref-subheading">Sort Targets</p>
                             <div className="pref-form">
                                 <input 
                                     type="radio" 

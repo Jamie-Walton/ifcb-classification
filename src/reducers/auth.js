@@ -66,6 +66,8 @@ export default function(state = initialState, action) {
                 isAuthenticated: true,
                 isLoading: false
             }
+        case PREFERENCES_ERROR:
+            console.log('Failed to load user preferences.');
         case AUTH_ERROR:
         case LOGOUT_SUCCESS:
         case REGISTER_FAIL:

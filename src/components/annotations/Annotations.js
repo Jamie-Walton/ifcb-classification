@@ -147,6 +147,9 @@ class Annotations extends React.Component {
   componentDidMount() {
     this.setState({ loading: false });
     const urlInfo = this.props.location.pathname.split('/');
+    if(typeof(this.props.preferences) !== 'object') {
+        this.props.loadPreferences(this.props.user.username);
+    }
     if(urlInfo.length<3) {
         if(this.props.preferences.load==='edited') {
             this.jumpToLastEdit();

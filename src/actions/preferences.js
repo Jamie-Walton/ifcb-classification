@@ -1,9 +1,27 @@
 import axios from "axios";
 import { tokenConfig } from './auth';
 import { 
+    PREFERENCES_LOADED,
+    PREFERENCES_ERROR,
     SCALE_CHANGED,
 } from "./types";
 
+
+export const loadPreferences = (username) => (dispatch) => {
+    axios
+        .get('/preferences/' + username + '/')
+        .then(prefRes => {
+            dispatch({
+                type: PREFERENCES_LOADED,
+                payload: prefRes.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: PREFERENCES_ERROR
+            });
+        });
+}
 
 export const setLoadPreference = (loadPref, username) => (dispatch, getState) => {
     const config = {
