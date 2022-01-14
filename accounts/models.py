@@ -9,3 +9,4 @@ class Preferences(models.Model):
     sort = models.CharField(max_length=2, default='AZ', choices=SORTS.choices)
     scale = models.DecimalField(default='0.560', max_digits=5, decimal_places=3)
     load = models.CharField(max_length=6, default='recent', choices=LOADS.choices)
+    phytoguide = models.BooleanField(default=True)

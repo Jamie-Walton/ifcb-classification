@@ -53,6 +53,9 @@ class ClassOption(models.Model):
     threshold = models.FloatField(default=0.5)
     in_use = models.BooleanField(default=True)
     timeseries = models.ManyToManyField(TimeSeriesOption)
+    description = models.CharField(max_length=300, blank=True)
+    examples = models.TextField(max_length=1000, blank=True)
+    nonexamples = models.TextField(max_length=1000, blank=True)
 
     def _str_(self):
         return self.display_name

@@ -4,58 +4,23 @@ import Header from '../layout/Header';
 import Preferences from './Preferences';
 import BinNote from './BinNote';
 import Plankton from './Plankton';
+import ClassMenu from './ClassMenu';
 import TimeSeriesControl from './time/TimeSeriesControl';
 import YearControl from './time/YearControl';
 import DayControl from './time/DayControl';
 import Bar from './time/Bar';
 import FileControl from './time/FileControl';
-import Order from './time/Order';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
-import { List, WindowScroller, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { classifyTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
 import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
 import toTop from "../../icons/to-top.png";
-
-class Micrometer extends React.Component {
-    render() {
-        return(
-            <div className="drag-box">
-                <div className="micrometer-block"
-                style={{width: (String(34*this.props.scale) + 'vw')}}></div>
-                <p className="micrometer-text">10µm</p>
-            </div>
-        );
-    }
-}
-
-class ClassMenu extends React.Component {
-  render() {
-      const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onClick={() => this.props.onClick(x)}>{x}</button></li>);
-      return(
-      <div className="sidebar">
-      <div className="class-menu">
-          <div className="control-box">
-            <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
-                <p className="control-text">Select All</p>
-            </div>
-            <div className="annotation-control" onClick={() =>  this.props.handleUndoClick()}>
-                <p className="control-text">Undo</p>
-            </div>
-          </div>
-          <ul className="class-menu-options">{options}</ul>
-      </div>
-      <Micrometer scale={this.props.scale}/>
-      </div>
-      );
-  }
-}
 
 class NavButton extends React.Component {
     render() {
@@ -588,6 +553,7 @@ class Annotations extends React.Component {
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
           scale={this.state.scale}
+          showPhytoGuide={this.props.preferences.phytoguide}
       />;
   }
 

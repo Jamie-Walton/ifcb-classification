@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class PreferencesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Preferences
-        fields = ('id', 'user', 'sort', 'scale', 'load')
+        fields = ('id', 'user', 'sort', 'scale', 'load', 'phytoguide')
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):

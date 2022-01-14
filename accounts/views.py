@@ -41,3 +41,13 @@ def set_load(request, username):
     preferences.save()
 
     return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(('POST',))
+def set_phytoguide(request, username):
+    user = User.objects.get(username=username)
+    preferences = Preferences.objects.get(user=user)
+    preferences.phytoguide = request.data
+    preferences.save()
+
+    return Response(status=status.HTTP_201_CREATED)

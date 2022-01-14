@@ -14,4 +14,5 @@ urlpatterns = [
     path('preferences/setsort/<str:username>/', views.set_sort),
     path('preferences/setscale/<str:username>/', views.set_scale),
     path('preferences/setload/<str:username>/', views.set_load),
+    path('preferences/setphytoguide/<str:username>/', views.set_phytoguide),
 ]

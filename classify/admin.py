@@ -12,7 +12,7 @@ class TimeSeriesInline(admin.TabularInline):
     model = ClassOption.timeseries.through
 
 class ClassOptionAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'autoclass_name', 'class_id', 'abbr', 'in_use')
+    list_display = ('display_name', 'autoclass_name', 'class_id', 'abbr', 'in_use', 'description', 'examples', 'nonexamples')
     inlines = [TimeSeriesInline]
 
 class TimeSeriesOptionAdmin(admin.ModelAdmin):
