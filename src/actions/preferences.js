@@ -68,6 +68,17 @@ export const setSortPreference = (sortPref, username) => (dispatch, getState) =>
         .catch((err) => console.log(err));
 }
 
+export const setPhytoGuidePreference = (phytoGuidePref, username) => (dispatch, getState) => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+    axios
+        .post('/preferences/setphytoguide/' + username + '/', JSON.stringify(phytoGuidePref), config, tokenConfig(getState))
+        .catch((err) => console.log(err));
+}
+
 export const changeScale = (newScale) => (dispatch) => {
     dispatch({
         type: SCALE_CHANGED,

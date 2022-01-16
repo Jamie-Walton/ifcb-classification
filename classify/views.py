@@ -316,9 +316,9 @@ def undo(request, timeseries, file, set):
 
 
 @api_view(('GET',))
-def new_rows(request, timeseries, file, sort, scale):
+def new_rows(request, timeseries, file, sort, scale, phytoguide):
     b = Bin.objects.get(timeseries=timeseries, file=file)
-    rows = get_rows(b, sort, scale)
+    rows = get_rows(b, sort, scale, phytoguide)
 
     options = {
         'rows': rows
@@ -353,7 +353,7 @@ def new_timeseries(request, timeseries_name):
 
 
 @api_view(('GET',))
-def new_file(request, timeseries, file, sort, scale):
+def new_file(request, timeseries, file, sort, scale, phytoguide):
     
     volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
     volume = volume_response.json()
@@ -377,7 +377,7 @@ def new_file(request, timeseries, file, sort, scale):
 
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, sort, scale)
+    rows = get_rows(b, sort, scale, phytoguide)
     
     bin = {
         'timeseries': timeseries, 

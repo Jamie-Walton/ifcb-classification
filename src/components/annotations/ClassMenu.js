@@ -1,7 +1,5 @@
 import React from "react";
 import '../../css/classify-styles.css';
-import phytoGuide from './PhytoGuide';
-import Chaetoceros from '../../assets/classify_examples/Chaetoceros/Yes/1.jpg';
 
 class Micrometer extends React.Component {
     render() {
@@ -19,19 +17,18 @@ class ClassMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            classSelected: 'Unclassified',
+            indexSelected: 0,
         }
     }
     
-    handleMenuClick(x) {
-        this.setState({ classSelected: x })
+    handleMenuClick(x, i) {
+        this.setState({ indexSelected: i })
         this.props.onClick(x)
     }
   
     render() {
-      const options = this.props.classes.map((x) => 
-      <li key={x}><button id={x} onClick={() => this.handleMenuClick(x)}>{x}</button></li>);
-      const guide = phytoGuide.phytoGuide;
+      const options = this.props.classes.map((x, i) => 
+      <li key={x}><button id={x} onClick={() => this.handleMenuClick(x, i)}>{x}</button></li>);
 
       return(
       <div className="sidebar">
@@ -49,17 +46,29 @@ class ClassMenu extends React.Component {
             </div>
             {this.props.showPhytoGuide ? 
                     <div className="phyto-guide">
-                        <p className="phyto-guide-heading">{this.state.classSelected}</p>
-                        <p className="phyto-guide-description">{guide.Akashiwo.description}</p>
+                        <p className="phyto-guide-heading">{this.props.classes[this.state.indexSelected]}</p>
+                        <p className="phyto-guide-description">{this.props.descriptions[this.state.indexSelected]}</p>
                         <div className="yes-examples">
-                            {
-                                [...Array(guide.Chaetoceros.yesImages).keys()].map((i) => (
-                                    <img src={'http://128.114.25.154:8888/IFCB104/D20161013T081022_IFCB104_00032.jpg'} className="image" 
-                                        alt={'Chaetoceros example'}
+                            { (this.props.examples.length > 0) ?
+                                this.props.examples[this.state.indexSelected].map((image) => (
+                                    <img src={image} className="image" 
+                                        alt={this.props.classes[this.state.indexSelected] + ' example'}
                                         className="phyto-guide-image"
                                         >
                                     </img>
-                                ))
+                                )) : <div></div>
+                            }
+                        </div>
+                        <div className="no-examples">
+                            { (this.props.nonexamples.length) > 0 ? ((this.props.nonexamples[this.state.indexSelected].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
+                            { (this.props.nonexamples.length) > 0 ? 
+                                this.props.nonexamples[this.state.indexSelected].map((image) => (
+                                    <img src={image} className="image" 
+                                        alt={this.props.classes[this.state.indexSelected] + ' non-example'}
+                                        className="phyto-guide-image"
+                                        >
+                                    </img>
+                                )) : <div></div>
                             }
                         </div>
                     </div> : <div></div>}

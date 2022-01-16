@@ -170,7 +170,7 @@ def get_days(volume, year):
     return day_options, filled_days
 
 
-def get_rows(b, sort, scale):
+def get_rows(b, sort, scale, phytoguide):
 
     if sort == 'AZ':
         targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
@@ -183,13 +183,17 @@ def get_rows(b, sort, scale):
 
     rows = [[]]
     space = 70
+    initial_space = 70
+    if bool(phytoguide):
+        space = 55
+        initial_space = 55
     row = 0
     for i in range(0,len(targets)):
         target = targets[i]
         if (space - (target.width*(scale/10000)) - 1) < 0:
             rows.append([])
             row += 1
-            space = 70 - (target.width*(scale/10000))
+            space = initial_space - (target.width*(scale/10000))
         else:
             space -= ((target.width*(scale/10000)) + 1)
         rows[row].append(i)

@@ -41,6 +41,9 @@ class Annotations extends React.Component {
           newTimeSeries: '',
           classes: [],
           classAbbrs: [],
+          classDescriptions: [],
+          classExamples: [],
+          classNonexamples: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
           planktonClickEnabled: true,
@@ -136,16 +139,19 @@ class Annotations extends React.Component {
             axios
                 .get('/classes/IFCB104/')
                 .then((res) => {
-                this.setState({ 
-                    classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
-                    classAbbrs: res.data.map((c) => (c.abbr))
-                });
+                    this.setState({ 
+                        classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
+                        classAbbrs: res.data.map((c) => (c.abbr)),
+                        classDescriptions: res.data.map((c) => (c.description)),
+                        classExamples: res.data.map((c) => (c.examples.split(',').filter(n => n.length > 1))),
+                        classNonexamples: res.data.map((c) => (c.nonexamples.split(',').filter(n => n.length))),
+                    });
                 })
                 .catch((err) => console.log(err));
 
         axios
             .get('/process/file/' + timeseries + '/' + file + '/' + this.props.preferences.sort + 
-                '/' + Math.round(this.props.preferences.scale * 1000) + '/')
+                '/' + Math.round(this.props.preferences.scale * 1000) + '/' + this.props.preferences.phytoguide + '/')
             .then((res) => {
                 this.setState({ 
                     bin: res.data.bin, 
@@ -359,7 +365,8 @@ class Annotations extends React.Component {
         });
     axios
         .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-            '/' + this.props.preferences.sort + '/' + Math.round(this.state.scale * 1000) + '/')
+            '/' + this.props.preferences.sort + '/' + Math.round(this.state.scale * 1000) + '/' +
+            this.props.preferences.phytoguide + '/')
         .then((res) => {this.setState({ 
             rows: res.data.options.rows,
             loading: false,
@@ -464,7 +471,8 @@ class Annotations extends React.Component {
     }
     axios
       .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-        '/' + this.props.preferences.sort + '/' + Math.round((newScale) * 1000) + '/')
+        '/' + this.props.preferences.sort + '/' + Math.round((newScale) * 1000) + '/' +
+        this.props.preferences.phytoguide + '/')
       .then((rowResponse) => { this.setState({ 
           scale: newScale,
           rows: rowResponse.data.options.rows 
@@ -493,6 +501,7 @@ class Annotations extends React.Component {
             load={this.props.preferences.load}
             scale={this.props.preferences.scale}
             sort={this.props.preferences.sort}
+            phytoGuide={this.props.preferences.phytoguide}
         />
       );
   }
@@ -549,6 +558,9 @@ class Annotations extends React.Component {
   renderClassMenu() {
     return <ClassMenu 
           classes={this.state.classes}
+          descriptions={this.state.classDescriptions}
+          examples={this.state.classExamples}
+          nonexamples={this.state.classNonexamples}
           onClick={(name) => this.handleMenuClick(name)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
