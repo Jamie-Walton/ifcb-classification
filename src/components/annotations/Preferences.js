@@ -54,7 +54,7 @@ class Preferences extends React.Component {
         }
         this.setState({
             recentChecked: this.props.load==='recent',
-            phytoGuideChecked: this.props.phytoGuide==='True',
+            phytoGuideChecked: this.props.phytoGuide===true,
             scaleEntry: this.props.scale,
         });
     }
