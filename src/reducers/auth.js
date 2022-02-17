@@ -21,7 +21,7 @@ const initialState = {
     registerFailed: false,
     isLoading: false,
     user: null,
-    preferences: null,
+    preferences: {"id": 0, "user": 0, "sort": "AZ", "scale": "0.560", "load": "recent", "phytoguide": true},
     location: window.location.pathname,
     locationCount: 1,
 }

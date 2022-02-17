@@ -75,7 +75,7 @@ class Annotations extends React.Component {
   }
 
   static propTypes = {
-    preferences: PropTypes.object.isRequired,
+    preferences: PropTypes.object,
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     changeScale: PropTypes.func,
@@ -111,13 +111,11 @@ class Annotations extends React.Component {
         }) })
         .catch((err) => console.log(err));
   }
+  
 
   componentDidMount() {
     this.setState({ loading: false });
     const urlInfo = this.props.location.pathname.split('/');
-    if(typeof(this.props.preferences) !== 'object') {
-        this.props.loadPreferences(this.props.user.username);
-    }
     if(urlInfo.length<3) {
         if(this.props.preferences.load==='edited') {
             this.jumpToLastEdit();
