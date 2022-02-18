@@ -735,8 +735,6 @@ li {
 	background: #F0F0F0 0% 0% no-repeat padding-box;
 	border-radius: 0px 4vw 4vw 0px;
   	padding: 2.5vw 0;
-	flex-grow: 0;
-	flex-shrink: 0;
 	width: 14vw;
 	height: 92vh;
 	overflow: scroll;
@@ -750,6 +748,7 @@ li {
 	letter-spacing: 0.08vw;
 	margin: 5.5vw 1.5vw 1vw 1.5vw;
 	float: left;
+	width: 80%;
 }
 
 .phyto-guide-description {
