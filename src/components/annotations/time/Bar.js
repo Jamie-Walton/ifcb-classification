@@ -13,7 +13,7 @@ class Bar extends React.Component {
                     onClick={() => this.props.onClick(this.props.number)}
                     onMouseEnter={() => this.handleHover(this.props.number)}
                     onMouseLeave={() => this.handleHover(this.props.current)}
-                    style={{height: String(this.props.height*8) + 'vw'}}></div>
+                    style={{height: String(this.props.height*0.008) + 'vw'}}></div>
             </div>
         );}
   }

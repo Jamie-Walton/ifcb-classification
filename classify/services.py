@@ -7,7 +7,7 @@ from PIL import Image
 import os
 import re
 import requests
-import math
+import json
 import datetime
 from scipy.io import savemat
 from zipfile import ZipFile
@@ -19,49 +19,38 @@ def create_targets(timeseries, year, day, file):
     
     ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
     try:
-        target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + ifcb)
+        target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + ifcb)
     except:
         try:
             if not ifcb == 'IFCB104':
-                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB104')
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB104')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
         except:
             if not ifcb == 'IFCB117':
-                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB117')
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB117')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
 
-    bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + ifcb
+    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + ifcb
     target_bin = target_bin_response.json()
-    targets = target_bin['targets']
+    targets = json.loads(target_bin['coordinates'])
+    targets = sorted(targets, key = lambda i: i['pid'])
     
     nearest_bin = Bin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file)
     nearest_bin.save()
     
     classes = None
     maxes = None
-    try:
-        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-            if timeseries == 'IFCB104':
-                header = list(chunk.columns.values)
-                chunk.drop('Skeletonema', inplace=True, axis=1)
-                chunk.drop('Thalassionema', inplace=True, axis=1)
-                chunk.drop('Thalassiosira', inplace=True, axis=1)
-                chunk.drop('unclassified', inplace=True, axis=1)
-                header = header[0:8] + [header[8] + '_' + header[9] + '_' + header[10]] + \
-                    header[11:17] + [header[17] + '_' + header[18]] + header[19:27]
-                chunk.columns = header
-            chunk_classes = chunk.idxmax(axis='columns')
-            chunk_maxes = chunk.max(axis='columns')
-            if classes is None:
-                classes = chunk_classes
-                maxes = chunk_maxes
-            else:
-                classes = classes.add(chunk_classes, fill_value='')
-                maxes = maxes.add(chunk_maxes, fill_value=0)
-    except:
-        pass
+    for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+        chunk_classes = chunk.idxmax(axis='columns')
+        chunk_maxes = chunk.max(axis='columns')
+        if classes is None:
+            classes = chunk_classes
+            maxes = chunk_maxes
+        else:
+            classes = classes.add(chunk_classes, fill_value='')
+            maxes = maxes.add(chunk_maxes, fill_value=0)
 
     for i in range(len(targets)):
         target = targets[i]
@@ -74,9 +63,9 @@ def create_targets(timeseries, year, day, file):
                 class_name = c.display_name
                 class_abbr = c.abbr
                 class_id = c.class_id
-        num = '{:0>5}'.format(int(target['targetNumber']))
-        height = int(target['width'])
-        width = int(target['height'])
+        num = int(target['pid'])
+        height = int(target['height'])*(1/(target_bin['scale']))
+        width = int(target['width'])*(1/(target_bin['scale']))
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         nearest_bin.target_set.create(number=num, width=width, height=height, \
@@ -89,7 +78,7 @@ def sync_autoclass(timeseries, year, day, file):
     
     b = Bin.objects.get(timeseries=timeseries, file=file)
     targets = Target.objects.filter(bin=b)
-    bin_url = 'http://128.114.25.154:8888/' + timeseries + '/' + file + '_' + b.ifcb
+    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + timeseries
     
     classes = None
     maxes = None
@@ -139,29 +128,32 @@ def sync_autoclass(timeseries, year, day, file):
     return serializer
 
 
-def get_files(bin_count, bins, timeseries, day=0):
-    if day != 0 and bins['date'][5:9] != day:
-        files = [0]*(bin_count)
-        start = 0
-    else:
-        files = [bins['date'][10:]] + [0]*(bin_count-1)
-        start = 1
-    for b in range(start, bin_count):
-        bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/after/pid/' + bins['pid'])
-        bins = bins_response.json()[0]
-        files[b] = bins['date'][10:]
+def get_files(volume, date):
+    
+    files = []
+    i = 0
+
+    while volume[i]['date'][:10] != date:
+        i+=1
+    
+    while volume[i]['date'][:10] == date:
+        files += [volume[i]['date'][10:]]
+        i+=1
+
     return files
 
-def get_days(volume, year):
-    days = [x['day'] for x in volume if year in x['day']]
-    gbs = [x['gb'] for x in volume if year in x['day']]
+def get_days(timeline, year):
+    
+    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x'])-1) if year in timeline['x'][x]]
+    num_images = [timeline['y'][x] for x in range(0,len(timeline['y'])-1) if year in timeline['x'][x]]
+
     i = 0
     heights = []
     short_days = []
     for d in pd.date_range(start='1-1-' + year, end='12-31-' + year):
         short_days += [str(d)[5:10]]
         if i < len(days) and d == pd.Timestamp(days[i]):
-            heights = heights + [gbs[i]]
+            heights = heights + [num_images[i]]
             i += 1
         else:
             heights = heights + [0]
@@ -192,12 +184,17 @@ def get_rows(b, sort, scale, phytoguide):
         target = targets[i]
         if (space - (target.width*(scale/10000)) - 1) < 0:
             rows.append([])
-            row += 1
-            space = initial_space - (target.width*(scale/10000))
+            if target.width*(scale/10000) > initial_space:
+                row +=1
+                space = initial_space
+            else:
+                row += 1
+                space = initial_space - (target.width*(scale/10000))
         else:
             space -= ((target.width*(scale/10000)) + 1)
         rows[row].append(i)
-
+        if target.width*(scale/10000) > initial_space:
+                row +=1
     return rows
 
 

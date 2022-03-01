@@ -11,7 +11,7 @@ import requests
 import math
 import pandas as pd
 import numpy as np
-import re
+from datetime import date
 import os
 from backend.settings import MEDIA_ROOT
 
@@ -333,15 +333,9 @@ def new_rows(request, timeseries, file, sort, scale, phytoguide):
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
     
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/volume')
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
-    year = volume[len(volume)-1]['day'][0:4]
-    day = volume[len(volume)-1]['day'][5:]
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries_name + '/api/feed/nearest/' + year + '-' + day)
-    bins = bins_response.json()
-    
-    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries_name)
-    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
+    recent_file = volume[0]['pid'][35:51]
 
     options = {}
     bin = {'file': recent_file}
@@ -355,21 +349,23 @@ def new_timeseries(request, timeseries_name):
 @api_view(('GET',))
 def new_file(request, timeseries, file, sort, scale, phytoguide):
     
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
-    present_year = volume[len(volume)-1]['day'][0:4]
-    last_year = int(volume[0]['day'][0:4])
-    year_options = list(range(last_year, int(present_year)+1))
+
+    timeline_response = requests.get('http://128.114.25.154:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries)
+    timeline = timeline_response.json()
+
+    present_year = int(timeline['x'][len(timeline['x'])-1][0:4])
+    last_year = int(timeline['x'][0][0:4])
+    year_options = list(range(int(last_year), int(present_year)+1))
 
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
-    day_options, filled_days = get_days(volume, year)
+    day_options, filled_days = get_days(timeline, year)
     if not Bin.objects.filter(file=file):
         ifcb = create_targets(timeseries, year, day, file)
     
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
-    bins = bins_response.json()
-    file_options = get_files(int(volume[len(volume)-1]['bin_count']), bins, timeseries)
+    file_options = get_files(volume, date=year+'-'+day)
     
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
@@ -406,18 +402,14 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
 def new_day(request, timeseries, year, day):
     
     dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
-    day = str(dates[day])[5:10]
-    
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+    day = str(dates[day])[:10]
+
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
+
     df = pd.DataFrame(volume)
-    index = int(df[df['day']=='2021-10-16'].index.values)
-    
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
-    bins = bins_response.json()
-    
-    file_options = get_files(int(volume[index]['bin_count']), bins, timeseries, day)
-    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
+    index = int(df[df['date'].str.contains(day)].index.values[0])
+    recent_file = volume[index]['pid'][35:51]
     
     options = {}
     bin = {'file': recent_file}
@@ -432,16 +424,15 @@ def new_day(request, timeseries, year, day):
 @api_view(('GET',))
 def new_year(request, timeseries, year):
     
-    volume_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/volume')
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
-    full_year = [x for x in volume if year in x['day']]
-    day = full_year[len(full_year)-1]['day'][5:10]
+    full_year = [x for x in volume if year in x['date']]
+    day = full_year[len(full_year)-1]['date'][:10]
     
-    bins_response = requests.get('http://128.114.25.154:8888/' + timeseries + '/api/feed/nearest/' + year + '-' + day)
-    bins = bins_response.json()
-    file_options = get_files(int(full_year[len(full_year)-1]['bin_count']), bins, timeseries)
-    recent_file = 'D' + year + day.replace('-','') + file_options[len(file_options)-1].replace(':','').replace('Z','')
+    df = pd.DataFrame(volume)
+    index = int(df[df['date'].str.contains(day)].index.values[0])
+    recent_file = volume[index]['pid'][35:51]
 
     options = {}
     bin = {'file': recent_file}
