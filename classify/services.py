@@ -275,7 +275,7 @@ def create_class_zip(class_name, include, exclude, number):
     with ZipFile(path, 'w') as zf:
         for target in targets:
             b = target.bin
-            url = 'http://128.114.25.154:8888/' + b.timeseries + '/' + b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
+            url = 'http://128.114.25.154:8000/data/' + b.file + '_' + b.ifcb + '_' + b.number + '.jpg'
             image_url = urlopen(url)
             image_name = b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
             zf.writestr(image_name, image_url.read())

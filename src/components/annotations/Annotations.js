@@ -478,7 +478,7 @@ class Annotations extends React.Component {
   }
 
   handleDownload() {
-    document.getElementById('download-src').src = 'http://dhcp-25-80.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+    document.getElementById('download-src').src = 'http://dhcp-25-148.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
   openPreferences() {
@@ -848,7 +848,7 @@ class Annotations extends React.Component {
 
     if(this.state.newFile.length !== 0) {
         if (this.state.newFile === 'blank') {
-            return <Redirect to='/classify/' />
+            return <Redirect to='/classify' />
         }
         const newURL = '/classify/' + this.state.newTimeSeries + '/' + this.state.newFile;
         return <Redirect to={newURL} />

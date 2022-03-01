@@ -335,7 +335,7 @@ def new_timeseries(request, timeseries_name):
     
     volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
-    recent_file = volume[0]['pid'][35:51]
+    recent_file = volume[0]['pid'].split('/')[4][:16]
 
     options = {}
     bin = {'file': recent_file}
@@ -424,15 +424,13 @@ def new_day(request, timeseries, year, day):
 @api_view(('GET',))
 def new_year(request, timeseries, year):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/31-12-' + year)
     volume = volume_response.json()
 
-    full_year = [x for x in volume if year in x['date']]
-    day = full_year[len(full_year)-1]['date'][:10]
-    
-    df = pd.DataFrame(volume)
-    index = int(df[df['date'].str.contains(day)].index.values[0])
-    recent_file = volume[index]['pid'][35:51]
+    if year == date.today().strftime('%Y'):
+        recent_file = volume[0]['pid'][35:51]
+    else:
+        recent_file = volume[len(volume)-1]['pid'][35:51]
 
     options = {}
     bin = {'file': recent_file}
