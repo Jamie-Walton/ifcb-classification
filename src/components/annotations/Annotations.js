@@ -57,11 +57,12 @@ class Annotations extends React.Component {
           setOptions: [],
           filledDays: [],
           targets: [],
+          targetNumbers: [],
           history: [],
           rows: [],
           scrollToIndex: undefined,
           jumpEntry: '',
-          targetJumpEntry: '',
+          jumpSubmit: '',
           initialTargetJump: '',
           lastEditBin: '',
           lastEditTarget: '',
@@ -72,6 +73,7 @@ class Annotations extends React.Component {
           next: 'Next',
       }
       this.onTargetJumpChange = this.onTargetJumpChange.bind(this);
+      this.onTargetJumpSubmit = this.onTargetJumpSubmit.bind(this);
   }
 
   static propTypes = {
@@ -167,6 +169,7 @@ class Annotations extends React.Component {
                     .then((targetResponse) => {
                         this.setState({ 
                             targets: targetResponse.data,
+                            targetNumbers: targetResponse.data.map(t => t.number),
                             history: [JSON.stringify(targetResponse.data)],
                             loading: false,
                         });
@@ -184,10 +187,45 @@ class Annotations extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.match.url !== prevProps.match.url) {
         this.props.history.go(0);
     }
+
+    if(this.state.scrollToIndex !== prevState.scrollToIndex) {
+        const target = this.state.jumpSubmit;
+        if (this.state.targetNumbers.includes(this.state.jumpSubmit)) {
+            setTimeout(() => {
+                try { 
+                    this.highlightTarget(target);
+                } catch {
+                    console.log();
+                }
+            }, 1);
+            setTimeout(() => {
+                try {
+                    this.unhighlightTarget(target);
+                } catch {
+                    console.log();
+                }
+            }, 5000);
+            }
+    }
+
+  }
+
+  highlightTarget(targetNum) {
+    const container = document.getElementById(targetNum);
+    const text = document.getElementById(targetNum+'-text');
+    container.style.backgroundColor = '#16609F';
+    text.style.color = '#FFFFFF';
+  }
+
+  unhighlightTarget(targetNum) {
+    const container = document.getElementById(targetNum);
+    const text = document.getElementById(targetNum+'-text');
+    container.style.backgroundColor = '#FFFFFF';
+    text.style.color = '#4E4E4E';
   }
 
   getNewYear(option) {
@@ -668,15 +706,23 @@ class Annotations extends React.Component {
   }
 
   onTargetJumpChange(event) {
-    var k = this.state.targets.findIndex(target => target.number === event.target.value);
-    var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
+    this.setState({
+        jumpEntry: event.target.value,
+    });
+  }
 
+  onTargetJumpSubmit(e) {
+    e.preventDefault();
+
+    var k = this.state.targets.findIndex(target => target.number === this.state.jumpEntry);
+    var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
+    
     if (isNaN(scrollToIndex) || scrollToIndex<0) {
       scrollToIndex = undefined;
     }
-
+    
     this.setState({
-        jumpEntry: event.target.value,
+        jumpSubmit: this.state.jumpEntry,
         scrollToIndex: scrollToIndex
     });
   }
@@ -751,13 +797,15 @@ class Annotations extends React.Component {
                             {this.renderDayControl()}
                             {this.renderFileControl()}
                             <div className="target-jump-container">
-                                <input
-                                    type="textarea" 
-                                    className="target-jump-input"
-                                    onChange={this.onTargetJumpChange}
-                                    value={jumpEntry || ''}
-                                    placeholder="Target..."
-                                />
+                                <form onSubmit={this.onTargetJumpSubmit}>
+                                    <input
+                                        type="textarea" 
+                                        className="target-jump-input"
+                                        onChange={this.onTargetJumpChange}
+                                        value={jumpEntry || ''}
+                                        placeholder="Target..."
+                                    />
+                                </form>
                                 <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
                             </div>
                             <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
@@ -867,6 +915,7 @@ class Annotations extends React.Component {
 
             this.setState({
                 jumpEntry: targetNum,
+                jumpSubmit: targetNum,
                 initialTargetJump: targetNum,
                 scrollToIndex: scrollToIndex
             });
@@ -876,7 +925,7 @@ class Annotations extends React.Component {
     if (typeof(this.state.lastEditBin) !== 'string') {
         this.setState({ loading: true });
         const bin = this.state.lastEditBin;
-            return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/' + this.state.lastEditTarget.target} />
+        return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/' + this.state.lastEditTarget.target} />
     }
 
     return(
