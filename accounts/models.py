@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 
 class Preferences(models.Model):
     SORTS = models.TextChoices('SortOption', 'AZ ZA LS SL')

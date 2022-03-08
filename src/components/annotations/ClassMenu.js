@@ -18,17 +18,33 @@ class ClassMenu extends React.Component {
         super(props);
         this.state = {
             indexSelected: 0,
+            indexHovered: 0,
         }
     }
     
     handleMenuClick(x, i) {
-        this.setState({ indexSelected: i })
-        this.props.onClick(x)
+        this.setState({ 
+            indexSelected: i,
+            indexHovered: i,
+         });
+        this.props.onClick(x);
+    }
+
+    handleMouseOver(i) {
+        this.setState({ indexHovered: i });
+    }
+
+    handleMouseOut() {
+        this.setState({ indexHovered: this.state.indexSelected });
     }
   
     render() {
       const options = this.props.classes.map((x, i) => 
-      <li key={x}><button id={x} onClick={() => this.handleMenuClick(x, i)}>{x}</button></li>);
+      <li key={x}><button id={x} 
+            onClick={() => this.handleMenuClick(x, i)} 
+            onMouseEnter={() => this.handleMouseOver(i)} 
+            onMouseLeave={() => this.handleMouseOut(i)}>{x}</button></li>);
+
 
       return(
       <div className="sidebar">
@@ -46,13 +62,13 @@ class ClassMenu extends React.Component {
             </div>
             {this.props.showPhytoGuide ? 
                     <div className="phyto-guide">
-                        <p className="phyto-guide-heading">{this.props.classes[this.state.indexSelected]}</p>
-                        <p className="phyto-guide-description">{this.props.descriptions[this.state.indexSelected]}</p>
+                        <p className="phyto-guide-heading">{this.props.classes[this.state.indexHovered]}</p>
+                        <p className="phyto-guide-description">{this.props.descriptions[this.state.indexHovered]}</p>
                         <div className="yes-examples">
                             { (this.props.examples.length > 0) ?
-                                this.props.examples[this.state.indexSelected].map((image) => (
+                                this.props.examples[this.state.indexHovered].map((image) => (
                                     <img src={image} className="image" 
-                                        alt={this.props.classes[this.state.indexSelected] + ' example'}
+                                        alt={this.props.classes[this.state.indexHovered] + ' example'}
                                         className="phyto-guide-image"
                                         >
                                     </img>
@@ -60,11 +76,11 @@ class ClassMenu extends React.Component {
                             }
                         </div>
                         <div className="no-examples">
-                            { (this.props.nonexamples.length) > 0 ? ((this.props.nonexamples[this.state.indexSelected].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
+                            { (this.props.nonexamples.length) > 0 ? ((this.props.nonexamples[this.state.indexHovered].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
                             { (this.props.nonexamples.length) > 0 ? 
-                                this.props.nonexamples[this.state.indexSelected].map((image) => (
+                                this.props.nonexamples[this.state.indexHovered].map((image) => (
                                     <img src={image} className="image" 
-                                        alt={this.props.classes[this.state.indexSelected] + ' non-example'}
+                                        alt={this.props.classes[this.state.indexHovered] + ' non-example'}
                                         className="phyto-guide-image"
                                         >
                                     </img>
