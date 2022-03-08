@@ -1,5 +1,8 @@
 import React from "react";
 import '../../css/classify-styles.css';
+import correctIcon from "../../icons/green-check.png";
+import incorrectIcon from "../../icons/red-x.png";
+
 
 class Micrometer extends React.Component {
     render() {
@@ -67,11 +70,14 @@ class ClassMenu extends React.Component {
                         <div className="yes-examples">
                             { (this.props.examples.length > 0) ?
                                 this.props.examples[this.state.indexHovered].map((image) => (
-                                    <img src={image} className="image" 
-                                        alt={this.props.classes[this.state.indexHovered] + ' example'}
-                                        className="phyto-guide-image"
-                                        >
-                                    </img>
+                                    <div>
+                                        <img src={correctIcon} className='phyto-guide-icon'></img>
+                                        <img src={image} className="image" 
+                                            alt={this.props.classes[this.state.indexHovered] + ' example'}
+                                            className="phyto-guide-image"
+                                            >
+                                        </img>
+                                    </div>
                                 )) : <div></div>
                             }
                         </div>
@@ -79,11 +85,14 @@ class ClassMenu extends React.Component {
                             { (this.props.nonexamples.length) > 0 ? ((this.props.nonexamples[this.state.indexHovered].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
                             { (this.props.nonexamples.length) > 0 ? 
                                 this.props.nonexamples[this.state.indexHovered].map((image) => (
-                                    <img src={image} className="image" 
-                                        alt={this.props.classes[this.state.indexHovered] + ' non-example'}
-                                        className="phyto-guide-image"
-                                        >
-                                    </img>
+                                    <div>
+                                        <img src={incorrectIcon} className='phyto-guide-icon'></img>
+                                        <img src={image} className="image" 
+                                            alt={this.props.classes[this.state.indexHovered] + ' non-example'}
+                                            className="phyto-guide-image"
+                                            >
+                                        </img>
+                                    </div>
                                 )) : <div></div>
                             }
                         </div>
