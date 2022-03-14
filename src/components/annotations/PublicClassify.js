@@ -32,7 +32,7 @@ class NavButton extends React.Component {
     }
 }
 
-class Annotations extends React.Component {
+class PublicClassify extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
@@ -72,8 +72,6 @@ class Annotations extends React.Component {
           previous: 'Previous',
           next: 'Next',
       }
-      this.onTargetJumpChange = this.onTargetJumpChange.bind(this);
-      this.onTargetJumpSubmit = this.onTargetJumpSubmit.bind(this);
   }
 
   static propTypes = {
@@ -326,52 +324,6 @@ class Annotations extends React.Component {
       }
   }
 
-  backToTop() {
-    if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
-        if(document.body.scrollTop !== 0) {
-            this.setState({ lastScroll: document.body.scrollTop });
-        } else {
-            this.setState({ lastScroll: document.documentElement.scrollTop });
-        }
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0;
-    } else {
-        document.body.scrollTop = this.state.lastScroll;
-        document.documentElement.scrollTop = this.state.lastScroll;
-    }
-  }
-
-  flipBackToTop() {
-    if (document.getElementById('to-top') !== null) {
-        if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
-            document.getElementById('to-top').classList.remove('flip');
-        } else if (!document.getElementById('to-top').classList.contains('flip')) {
-            document.getElementById('to-top').classList.add('flip');
-        }
-    }
-  }
-
-  handleSelectAllClick() {
-      var targets = this.state.targets;
-      const className = this.state.classPicker;
-      const classAbbrFunc = (element) => element === this.state.classPicker;
-      const classAbbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbrFunc)];
-      for (let i = 0; i < targets.length; i++) {
-          targets[i].class_name = className;
-          targets[i].class_abbr = classAbbr;
-          targets[i].editor = this.props.user.username;
-          const container = document.getElementById(targets[i].number);
-          const text = document.getElementById(targets[i].number+'-text');
-          container.style.backgroundColor = '#16609F';
-          text.style.color = '#FFFFFF';
-      }
-      this.setState({ 
-          targets: targets,
-          history: this.state.history.concat([JSON.stringify(targets)])
-     });
-     this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort);
-  }
-
   handleUndoClick() {
     if (this.state.history.length > 1) {
       const newHistory = this.state.history.slice(0, this.state.history.length-1);
@@ -385,30 +337,6 @@ class Annotations extends React.Component {
       this.setState({ rows: rows });
       this.props.save(targets, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort);
     }
-  }
-
-  handleSyncClick() {
-    document.getElementById('sync').classList.toggle('syncing');
-    this.setState({ rows: [] });
-    this.props.sync(this.state.bin.timeseries, this.state.bin.year, this.state.bin.day, this.state.bin.file);
-    axios
-        .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.preferences.sort + '/')
-        .then((targetResponse) => {
-            this.setState({ 
-                targets: targetResponse.data,
-                history: this.state.history.concat([JSON.stringify(targetResponse.data)]),
-             });
-        });
-    axios
-        .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-            '/' + this.props.preferences.sort + '/' + Math.round(this.state.scale * 1000) + '/' +
-            this.props.preferences.phytoguide + '/')
-        .then((res) => {this.setState({ 
-            rows: res.data.options.rows,
-            loading: false,
-          })})
-        .catch((err) => console.log(err));
-    document.getElementById('sync').classList.toggle('syncing');
   }
 
   handleHistogramClick() {
@@ -488,15 +416,6 @@ class Annotations extends React.Component {
 
   }
 
-  hideInfo() {
-    const showButton = document.getElementById("hide-info-button");
-    (showButton.innerHTML === "Hide Info") ? showButton.innerHTML = "Show Info" : showButton.innerHTML = "Hide Info";
-    const infoButtons = document.getElementsByClassName('info');
-      for (let i = 0; i < infoButtons.length; i++) {
-          infoButtons[i].classList.toggle('hide');
-      }
-  }
-
   handleScale(dir) {
     const initialScale = this.state.scale
     var  newScale = 0;
@@ -513,10 +432,6 @@ class Annotations extends React.Component {
           scale: newScale,
           rows: rowResponse.data.options.rows 
         }); });
-  }
-
-  handleDownload() {
-    document.getElementById('download-src').src = 'http://dhcp-25-148.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
   openPreferences() {
@@ -573,22 +488,6 @@ class Annotations extends React.Component {
         options={this.state.fileOptions}
         onClick={(option) => this.handleNewFile(option)} 
     />;
-  }
-
-  renderSync() {
-    return(
-        <div className="round-button sync" id="sync-button" onClick={() => this.handleSyncClick()}></div>
-    );
-  }
-
-  renderDownload() {
-      return(
-        <div className="round-button download" onClick={() => this.handleDownload()}>
-            <div style={{display: 'none'}}>
-               <iframe id="download-src" />
-            </div>
-        </div>
-      );
   }
 
   renderClassMenu() {
@@ -682,13 +581,6 @@ class Annotations extends React.Component {
     this.setState({ newFile: 'blank' });
   }
 
-  jumpToLastEdit() {
-    axios
-        .get('/lastedit/' + this.props.user.username + '/')
-        .then((res) => this.setState({ lastEditBin: res.data.bin, lastEditTarget: res.data.options }))
-        .catch((err) => console.log(err));
-  }
-
   renderNotFound() {
       return(
         <div className='main'>
@@ -705,28 +597,6 @@ class Annotations extends React.Component {
       );
   }
 
-  onTargetJumpChange(event) {
-    this.setState({
-        jumpEntry: event.target.value,
-    });
-  }
-
-  onTargetJumpSubmit(e) {
-    e.preventDefault();
-
-    var k = this.state.targets.findIndex(target => target.number === this.state.jumpEntry);
-    var scrollToIndex = this.state.rows.findIndex(row => row.includes(k));
-    
-    if (isNaN(scrollToIndex) || scrollToIndex<0) {
-      scrollToIndex = undefined;
-    }
-    
-    this.setState({
-        jumpSubmit: this.state.jumpEntry,
-        scrollToIndex: scrollToIndex
-    });
-  }
-
   renderPage() {
     const cache = new CellMeasurerCache({
         defaultHeight: 10,
@@ -734,7 +604,6 @@ class Annotations extends React.Component {
         fixedWidth: true
       });
 
-    const jumpEntry = this.state.jumpEntry;
     const scrollToIndex = this.state.scrollToIndex;
 
 
@@ -773,7 +642,7 @@ class Annotations extends React.Component {
                                 onClick={(i) => this.handlePlanktonClick(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
-                                group={'lab'}
+                                group={'public'}
                             />
                         )}
                     </div>
@@ -790,29 +659,14 @@ class Annotations extends React.Component {
                 <div className="overlay" id="overlay" onClick={() => this.closePreferences()}></div>
                 {this.renderPreferences()}
                     <div className="inner-content">
-                        <h4 onClick={() => this.jumpToLastEdit()}>Last Edit →</h4>
-                        <h1>Manual Classifications</h1>
+                        <h1>Classify Phytoplankton</h1>
+                        <p className='subtitle'>Match each phytoplankton with their species!</p>
                         <div className="time-controls">
                             {this.renderTimeSeriesControl()}
                             {this.renderYearControl()}
                             {this.renderDayControl()}
                             {this.renderFileControl()}
-                            <div className="target-jump-container">
-                                <form onSubmit={this.onTargetJumpSubmit}>
-                                    <input
-                                        type="textarea" 
-                                        className="target-jump-input"
-                                        onChange={this.onTargetJumpChange}
-                                        value={jumpEntry || ''}
-                                        placeholder="Target..."
-                                    />
-                                </form>
-                                <p className="time-label jump-label" id='targetjump_label'>Jump to Target</p>
-                            </div>
                             <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
-                            <div className="hide-info-button" id="hide-info-button" onClick={() => this.hideInfo()}>Hide Info</div>
-                            {this.renderSync()}
-                            {this.renderDownload()}
                             <div className="round-button histogram" onClick={() => this.handleHistogramClick()}></div>
                             <div className="preferences-button" onClick={() => this.openPreferences()}></div>
                         </div>
@@ -923,12 +777,6 @@ class Annotations extends React.Component {
         }
     }
 
-    if (typeof(this.state.lastEditBin) !== 'string') {
-        this.setState({ loading: true });
-        const bin = this.state.lastEditBin;
-        return <Redirect to={"/classify/" + bin.timeseries + '/' + bin.file + '/' + this.state.lastEditTarget.target} />
-    }
-
     return(
         <div className='body'>
         <title>{'IFCB | ' + this.state.bin.file}</title>
@@ -950,4 +798,4 @@ const mapStateToProps = state => ({
     onAnalysis: state.menu.onAnalysis,
  });
 
-export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync, changeScale })(Annotations);
+export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync, changeScale })(PublicClassify);

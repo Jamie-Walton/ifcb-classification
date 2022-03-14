@@ -118,6 +118,12 @@ h4:hover {
 	color: #7dad0b;
 }
 
+.subtitle {
+	color: #727171;
+	font-size: 1.1vw;
+	margin: -1vw 0 3vw 0;
+}
+
 p {
 	font-family: proxima-nova, sans-serif;
 	color: #4E4E4E;

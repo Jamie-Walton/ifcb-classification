@@ -110,6 +110,13 @@ h2 {
     margin: 0.5vw 0 3vw 0;
 }
 
+.role-text {
+    font-size: 1.25vw;
+    color: #FFFFFF;
+    margin: 2vw 0 1vw 0;
+	font-style: italic;
+}
+
 .main-container {
     margin: 5vw 6vw;
 }
@@ -117,10 +124,74 @@ h2 {
 
 /* Form */
 
+.show-form {
+	display: block;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
     margin: 1vw 0 0 0;
+}
+
+.role-button {
+	background-color:#FFFFFF;
+	box-shadow: 0px 3px 10px #00000012;
+	border: 1px solid #DEDDDD;
+	border-radius: 2vw;
+	margin: 0.25vw 0.75vw 3vw 0;
+	padding: 0.75vw 1.5vw;
+    width: fit-content;
+	display: flex;
+    font-family: proxima-nova, sans-serif;
+	color: #0C84C8;
+	font-size: 1vw;
+	text-transform: uppercase;
+	font-weight: 600;
+	letter-spacing: 0.08vw;
+	cursor: pointer;
+}
+
+.role-button:hover {
+	background-color: #16609F;
+	color: #FFFFFF;
+	border: 1px solid #16609F;
+}
+
+.role-button-clicked {
+	background-color: #16609F;
+	color: #FFFFFF;
+	border: 1px solid #16609F;
+}
+
+.extra-margin {
+	margin-left: 0.75vw;
+}
+
+.role-community-icon {
+	width: 1.3vw;
+	height: 1.3vw;
+	margin: 0 0.5vw 0 0;
+	background-image: url("../icons/person-blue.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.role-community-icon-hover {
+	background-image: url("../icons/person-white.png");
+}
+
+.role-scientist-icon {
+	width: 1.5vw;
+	height: 1.5vw;
+	margin: 0 0.5vw 0 0;
+	background-image: url("../icons/scientist-blue.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.role-scientist-icon-hover {
+	background-image: url("../icons/scientist-white.png");
 }
 
 input {
@@ -136,6 +207,19 @@ input {
 	font-weight: 400;
     margin: 0.25vw 0 0 0;
     
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	color:#adadad;
+	opacity: 1; /* Firefox */
+  }
+  
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+	color:#adadad;;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+	color:#adadad;;
 }
 
 label {
@@ -180,7 +264,7 @@ label {
 	width: 11vw;
 	padding: 0.5vw 2vw;
 	cursor: pointer;
-    margin: 0.5vw 0 0 0;
+    margin: 2vw 0 0 0;
 }
 
 .register-submit:hover {

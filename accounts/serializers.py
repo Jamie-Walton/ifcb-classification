@@ -1,5 +1,6 @@
+from wsgiref import validate
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import Preferences
 from django.contrib.auth import authenticate
 
@@ -7,7 +8,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email', 'groups')
 
 # Preferences Serializer
 class PreferencesSerializer(serializers.ModelSerializer):
