@@ -42,15 +42,18 @@ def create_targets(timeseries, year, day, file):
     
     classes = None
     maxes = None
-    for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-        chunk_classes = chunk.idxmax(axis='columns')
-        chunk_maxes = chunk.max(axis='columns')
-        if classes is None:
-            classes = chunk_classes
-            maxes = chunk_maxes
-        else:
-            classes = classes.add(chunk_classes, fill_value='')
-            maxes = maxes.add(chunk_maxes, fill_value=0)
+    try:
+        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+            chunk_classes = chunk.idxmax(axis='columns')
+            chunk_maxes = chunk.max(axis='columns')
+            if classes is None:
+                classes = chunk_classes
+                maxes = chunk_maxes
+            else:
+                classes = classes.add(chunk_classes, fill_value='')
+                maxes = maxes.add(chunk_maxes, fill_value=0)
+    except:
+        pass
 
     for i in range(len(targets)):
         target = targets[i]
@@ -102,6 +105,9 @@ def sync_autoclass(timeseries, year, day, file):
                 classes = classes.add(chunk_classes, fill_value='')
                 maxes = maxes.add(chunk_maxes, fill_value=0)
     except:
+        print('===========================')
+        print('Unsucessful')
+        print('===========================')
         return 'Unsuccessful'
 
     for i in range(len(targets)):
@@ -184,16 +190,16 @@ def get_rows(b, sort, scale, phytoguide):
         target = targets[i]
         if (space - (target.width*(scale/10000)) - 1) < 0:
             rows.append([])
+            row += 1
             if target.width*(scale/10000) > initial_space:
-                row +=1
                 space = initial_space
             else:
-                row += 1
                 space = initial_space - (target.width*(scale/10000))
         else:
             space -= ((target.width*(scale/10000)) + 1)
         rows[row].append(i)
         if target.width*(scale/10000) > initial_space:
+                rows.append([])
                 row +=1
     return rows
 
