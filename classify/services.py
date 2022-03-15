@@ -150,8 +150,8 @@ def get_files(volume, date):
 
 def get_days(timeline, year):
     
-    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x'])-1) if year in timeline['x'][x]]
-    num_images = [timeline['y'][x] for x in range(0,len(timeline['y'])-1) if year in timeline['x'][x]]
+    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x'])) if year in timeline['x'][x]]
+    num_images = [timeline['y'][x] for x in range(0,len(timeline['y'])) if year in timeline['x'][x]]
 
     i = 0
     heights = []

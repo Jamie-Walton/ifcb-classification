@@ -335,7 +335,15 @@ def new_timeseries(request, timeseries_name):
     
     volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
-    recent_file = volume[0]['pid'].split('/')[4][:16]
+
+    timeline_response = requests.get('http://128.114.25.154:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries_name)
+    timeline = timeline_response.json()
+    timeline['x'][len(timeline)]
+    day = timeline['x'][len(timeline['x'])-1][:10]
+    df = pd.DataFrame(volume)
+    pid = df.loc[df['date'].str.contains(day, case=False)].iloc[-1]['pid']
+
+    recent_file = pid.split('/')[4][:16]
 
     options = {}
     bin = {'file': recent_file}
