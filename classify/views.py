@@ -11,7 +11,7 @@ import requests
 import math
 import pandas as pd
 import numpy as np
-from datetime import date
+import datetime
 import os
 from backend.settings import MEDIA_ROOT
 
@@ -333,7 +333,7 @@ def new_rows(request, timeseries, file, sort, scale, phytoguide):
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     timeline_response = requests.get('http://128.114.25.154:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries_name)
@@ -341,7 +341,7 @@ def new_timeseries(request, timeseries_name):
     timeline['x'][len(timeline)]
     day = timeline['x'][len(timeline['x'])-1][:10]
     df = pd.DataFrame(volume)
-    pid = df.loc[df['date'].str.contains(day, case=False)].iloc[-1]['pid']
+    pid = df.loc[df['date'].str.contains(day)].iloc[-1]['pid']
 
     recent_file = pid.split('/')[4][:16]
 
@@ -357,7 +357,7 @@ def new_timeseries(request, timeseries_name):
 @api_view(('GET',))
 def new_file(request, timeseries, file, sort, scale, phytoguide):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     timeline_response = requests.get('http://128.114.25.154:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries)
@@ -412,7 +412,7 @@ def new_day(request, timeseries, year, day):
     dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
     day = str(dates[day])[:10]
 
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     df = pd.DataFrame(volume)
@@ -435,7 +435,7 @@ def new_year(request, timeseries, year):
     volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/31-12-' + year)
     volume = volume_response.json()
 
-    if year == date.today().strftime('%Y'):
+    if year == datetime.date.today().strftime('%Y'):
         recent_file = volume[0]['pid'][35:51]
     else:
         recent_file = volume[len(volume)-1]['pid'][35:51]
