@@ -105,10 +105,7 @@ def sync_autoclass(timeseries, year, day, file):
                 classes = classes.add(chunk_classes, fill_value='')
                 maxes = maxes.add(chunk_maxes, fill_value=0)
     except:
-        print('===========================')
-        print('Unsucessful')
-        print('===========================')
-        return 'Unsuccessful'
+        pass
 
     for i in range(len(targets)):
         target = targets[i]
@@ -138,7 +135,7 @@ def get_files(volume, date):
     
     df = pd.DataFrame(volume)
     pids = df.loc[df['date'].str.contains(date)]['pid'].values.tolist()
-    files = [pid[:10] for pid in pids]
+    files = [pid.split('/')[4][9:12] + ':' + pid.split('/')[4][12:14] + ':' + pid.split('/')[4][14:16] + 'Z' for pid in pids]
 
     return files
 
