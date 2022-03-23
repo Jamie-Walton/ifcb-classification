@@ -1,5 +1,8 @@
 /* CSS Document */
 
+
+/* Header */
+
 header {
 	width: 100%;
 	/* position: fixed; */
@@ -27,4 +30,20 @@ header {
 	color: #FFFFFF;
 	font-size: 1vw;
 	font-weight: 400;
+}
+
+
+/* Static Pages */
+
+.landing-hero {
+	height: 100vh;
+	background-image: url('../assets/landing-hero.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.landing-hero-cover {
+	background-image: url('../assets/landing-hero-cover.png');
+	background-size: cover;
+	background-repeat: no-repeat;
 }

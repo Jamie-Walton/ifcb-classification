@@ -538,6 +538,76 @@ li {
 	font-weight: 500;
 }
 
+.public-time-controls {
+	display: flex;
+	border-radius: 3vw;
+	box-shadow: 0px 3px 10px #00000012;
+	border: 1px solid #DEDDDD;
+	padding: 1vw 2vw;
+	width: fit-content;
+	margin: 0 2vw 0 0;
+}
+
+.sdp {
+	font-family: proxima-nova, sans-serif !important;
+	width: 18vw !important;
+	height: 18vw !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.sdp--dates-grid {
+    margin: 0.5vw 0 0 !important;
+	gap: 0 !important;
+}
+
+.sdp--text {
+    font-size: 0.85vw !important;
+	color: #707070;
+}
+
+.sdp--square-btn {
+    padding: 0vw !important;
+	width: 2vw !important;
+    font-size: 0.85vw !important;
+	height: 1.75vw !important;
+}
+
+.sdp--square-btn__shadowed {
+	height: 1.25vw !important;
+	width: 1.25vw !important;
+}
+
+.sdp--dates-grid>p.sdp--text {
+    padding: 0 !important;
+}
+
+.sdp--date-btn__selected {
+    background-color: #7dad0b !important;
+}
+
+.timeseries-box {
+	padding: 2vw;
+}
+
+.timeseries-list-item {
+	font-family: proxima-nova, sans-serif;
+	background-color: #F8F7F7;
+	border: 1px solid #DEDDDD;
+	display: flex;
+	border-radius: 5vw;
+	justify-content: space-between;
+	margin: 1vw 0.5vw;
+	padding: 0.25vw 1vw;
+	height: 2vw;
+	cursor: pointer;
+	color: #707070;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 0.85vw;
+	width: fit-content;
+}
+
 .show {
 	display: flex;
 }

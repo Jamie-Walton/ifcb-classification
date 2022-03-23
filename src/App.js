@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Annotations from './components/annotations/Annotations';
+import Landing from './components/layout/Landing'
 import Classify from './components/annotations/Classify';
 import Notebook from './components/features/Notebook';
 import Analysis from './components/features/Analysis';

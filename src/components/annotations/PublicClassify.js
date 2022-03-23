@@ -1,21 +1,15 @@
 import React from "react";
 import axios from "axios";
 import Header from '../layout/Header';
-import Preferences from './Preferences';
-import BinNote from './BinNote';
 import Plankton from './Plankton';
 import ClassMenu from './ClassMenu';
-import TimeSeriesControl from './time/TimeSeriesControl';
-import YearControl from './time/YearControl';
-import DayControl from './time/DayControl';
-import Bar from './time/Bar';
-import FileControl from './time/FileControl';
+import DatePicker from 'sassy-datepicker';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { classifyTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
+import { classifyPublicTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
 import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
@@ -50,6 +44,7 @@ class PublicClassify extends React.Component {
           infoShowing: [],
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
+          timeSeriesNames: [],
           yearOptions: [],
           dayOptions: [],
           barHeights: [],
@@ -92,21 +87,18 @@ class PublicClassify extends React.Component {
     onAnalysis: PropTypes.bool,
   };
 
-  closeDropdown(element) {
-    if (document.getElementById(element + '_dropdown').classList.contains('show')) {
-        document.getElementById(element + '_dropdown').classList.toggle('show');
-        document.getElementById(element + '_label').classList.toggle('hide');
-        document.getElementById(element + '_bar').classList.toggle('accommodate-dropdown');
-    }
-  }
-
-  getNewTimeSeries(option) {
-    this.closeDropdown('timeseries');
+  getNewTimeSeries(option, timeseries) {
     this.setState({ loading: true });
+
+    if (timeseries === undefined) {
+        var k = this.state.timeSeriesOptions.findIndex(timeseries => timeseries === option);
+        timeseries = this.state.timeSeriesNames[k];
+    }
+
     axios
-        .get('/process/timeseries/' + option + '/')
+        .get('/process/public/timeseries/' + timeseries + '/')
         .then((res) => { this.setState({ 
-            newTimeSeries: option,
+            newTimeSeries: timeseries,
             newFile: res.data.bin.file
         }) })
         .catch((err) => console.log(err));
@@ -114,102 +106,73 @@ class PublicClassify extends React.Component {
   
 
   componentDidMount() {
-    this.setState({ loading: false });
-    const urlInfo = this.props.location.pathname.split('/');
-    if(urlInfo.length<3) {
-        if(this.props.preferences.load==='edited') {
-            this.jumpToLastEdit();
-        } else {
-            this.getNewTimeSeries('IFCB104');
-        }
-    } else {
-        const timeseries = urlInfo[2];
-        const file = urlInfo[3];
+    const urlInfo = this.props.location.pathname.split('/')
 
-        axios
-            .get('/api/timeseries/')
-            .then((res) => {this.setState({ timeSeriesOptions: res.data.map((c) => (c.name)) })})
-            .catch((err) => console.log(err));
-
-            this.setState({
-                loading: true,
-            });
-            axios
-                .get('/classes/IFCB104/')
-                .then((res) => {
-                    this.setState({ 
-                        classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
-                        classAbbrs: res.data.map((c) => (c.abbr)),
-                        classDescriptions: res.data.map((c) => (c.description)),
-                        classExamples: res.data.map((c) => (c.examples.split(',').filter(n => n.length > 1))),
-                        classNonexamples: res.data.map((c) => (c.nonexamples.split(',').filter(n => n.length))),
-                    });
-                })
-                .catch((err) => console.log(err));
-
-        axios
-            .get('/process/file/' + timeseries + '/' + file + '/' + this.props.preferences.sort + 
-                '/' + Math.round(this.props.preferences.scale * 1000) + '/' + this.props.preferences.phytoguide + '/')
-            .then((res) => {
-                this.setState({ 
-                    bin: res.data.bin, 
-                    yearOptions: res.data.options.year_options.reverse(),
-                    barHeights: res.data.options.day_options[0],
-                    dayOptions: res.data.options.day_options[1],
-                    fileOptions: res.data.options.file_options,
-                    setOptions: res.data.options.set_options,
-                    rows: res.data.options.rows,
-                    filledDays: res.data.options.filled_days,
-                    dayOption: res.data.bin.day,
-                })
-                axios
-                    .get('/process/targets/' + timeseries + '/' + file + '/' + this.props.preferences.sort + '/')
-                    .then((targetResponse) => {
-                        this.setState({ 
-                            targets: targetResponse.data,
-                            targetNumbers: targetResponse.data.map(t => t.number),
-                            history: [JSON.stringify(targetResponse.data)],
-                            loading: false,
-                        });
+    axios
+        .get('/api/timeseries/')
+        .then((res) => {
+            this.setState({ 
+                timeSeriesOptions: res.data.map((c) => (c.public_name)),
+                timeSeriesNames: res.data.map((c) => (c.name)),
                 });
+            if(urlInfo.length<3) {
+                this.getNewTimeSeries('Santa Cuz Wharf', 'IFCB104');
+            }
             })
-            .catch((err) => {
-                console.log(err);
-                this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
-                return;
+        .catch((err) => console.log(err));
+
+    const timeseries = urlInfo[2];
+    const file = urlInfo[3];
+    this.setState({ loading: true });
+
+    axios
+        .get('/classes/IFCB104/')
+        .then((res) => {
+            this.setState({ 
+                classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
+                classAbbrs: res.data.map((c) => (c.abbr)),
+                classDescriptions: res.data.map((c) => (c.description)),
+                classExamples: res.data.map((c) => (c.examples.split(',').filter(n => n.length > 1))),
+                classNonexamples: res.data.map((c) => (c.nonexamples.split(',').filter(n => n.length))),
             });
-        }
-    
-    if (this.props.scaleEntry !== this.props.preferences.scale) {
-        this.props.changeScale(this.props.preferences.scale);
-    }
+        })
+        .catch((err) => console.log(err));
+    axios
+        .get('/process/public/file/' + timeseries + '/' + file + '/AZ/560/true/')
+        .then((res) => {
+            this.setState({ 
+                bin: res.data.bin, 
+                yearOptions: res.data.options.year_options.reverse(),
+                barHeights: res.data.options.day_options[0],
+                dayOptions: res.data.options.day_options[1],
+                fileOptions: res.data.options.file_options,
+                setOptions: res.data.options.set_options,
+                rows: res.data.options.rows,
+                filledDays: res.data.options.filled_days,
+                dayOption: res.data.bin.day,
+            })
+            axios
+                .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.preferences.sort + '/')
+                .then((targetResponse) => {
+                    this.setState({ 
+                        targets: targetResponse.data,
+                        targetNumbers: targetResponse.data.map(t => t.number),
+                        history: [JSON.stringify(targetResponse.data)],
+                        loading: false,
+                    });
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+            this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
+            return;
+        });
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
         this.props.history.go(0);
     }
-
-    if(this.state.scrollToIndex !== prevState.scrollToIndex) {
-        const target = this.state.jumpSubmit;
-        if (this.state.targetNumbers.includes(this.state.jumpSubmit)) {
-            setTimeout(() => {
-                try { 
-                    this.highlightTarget(target);
-                } catch {
-                    console.log();
-                }
-            }, 1);
-            setTimeout(() => {
-                try {
-                    this.unhighlightTarget(target);
-                } catch {
-                    console.log();
-                }
-            }, 5000);
-            }
-    }
-
   }
 
   highlightTarget(targetNum) {
@@ -227,7 +190,6 @@ class PublicClassify extends React.Component {
   }
 
   getNewYear(option) {
-    this.closeDropdown('year');
     this.setState({ loading: true });
     axios
         .get('/process/year/' + this.state.bin.timeseries + '/' + option + '/')
@@ -248,7 +210,6 @@ class PublicClassify extends React.Component {
         histogram.toggle('show-day');
     }
 
-    this.closeDropdown('day');
     this.setState({ loading: true });
     axios
         .get('/process/day/' + this.state.bin.timeseries + '/' + this.state.bin.year + '/'  + option + '/')
@@ -271,7 +232,6 @@ class PublicClassify extends React.Component {
 
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
-    this.closeDropdown('file');
     
     const file = 'D' + this.state.bin.year + this.state.bin.day.slice(0,2) + this.state.bin.day.slice(3,5) + 
     option.slice(0,3) + option.slice(4,6) + option.slice(7,9);
@@ -315,7 +275,7 @@ class PublicClassify extends React.Component {
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
-          if (target.class_name === name) {
+          if (target.auto_class_name === name) {
               const container = document.getElementById(target.number);
               const text = document.getElementById(target.number+'-text');
               container.style.backgroundColor = '#16609F';
@@ -346,53 +306,13 @@ class PublicClassify extends React.Component {
     histogram.scrollTop = histogram.scrollHeight;
   }
 
-  handleRowClick(j) {
-    var targets = this.state.targets;
-    const row = this.state.rows[j];
-    for (var i in row) {
-        var k = row[i]
-        const classAbbr = (element) => element === this.state.classPicker;
-        targets[k].class_name = this.state.classPicker;
-        targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
-        targets[k].editor = this.props.user.username;
-        const container = document.getElementById(targets[k].number);
-        const text = document.getElementById(targets[k].number+'-text');
-        container.style.backgroundColor = '#16609F';
-        text.style.color = '#FFFFFF';
-    }
-    this.setState({ 
-        targets: targets,
-        history: this.state.history.concat([JSON.stringify(targets)])
-    });
-    const start = row[0]
-    const end = row[i];
-    const targetRow = targets.slice(start, end+1);
-
-    this.props.classifyRow(targetRow, this.state.bin.timeseries, this.state.bin.file, this.props.preferences.sort, start, end);
-  }
-
-  disablePlanktonClick(targetNum, bool, infoShowing) {
-    const infoClassList = document.getElementById(targetNum + '-info').classList;
-    if ((infoShowing) || (infoClassList.contains('show-info'))) {
-        if (!this.state.infoShowing.includes(targetNum)) {
-            this.setState({ infoShowing: this.state.infoShowing.concat([targetNum]) });
-        }
-        this.setState({ planktonClickEnabled: false });
-    } else {
-        const newInfoShowing = this.state.infoShowing.filter(function(item) {
-            return item !== targetNum
-        })
-        this.setState({ planktonClickEnabled: bool, infoShowing: newInfoShowing });
-    }
-  }
-
   handlePlanktonClick(i) {
     if (this.state.planktonClickEnabled) {
         var targets = this.state.targets;
         const k = targets.findIndex(target => target.number === i);
         const classAbbr = (element) => element === this.state.classPicker;
-        targets[k].class_name = this.state.classPicker;
-        targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        targets[k].auto_class_name = this.state.classPicker;
+        targets[k].auto_class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
         targets[k].editor = this.props.user.username;
         const history = this.state.history;
         this.setState({
@@ -404,90 +324,8 @@ class PublicClassify extends React.Component {
         container.style.backgroundColor = '#16609F';
         text.style.color = '#FFFFFF';
 
-        this.props.classifyTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
+        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
     }
-  }
-
-  showNotes() {
-      const noteDropdown = document.getElementById("note-dropdown");
-      noteDropdown.classList.toggle('show');
-      const showButton = document.getElementById("show-notes-button");
-      (showButton.innerHTML === "Show Notes") ? showButton.innerHTML = "Hide Notes" : showButton.innerHTML = "Show Notes";
-
-  }
-
-  handleScale(dir) {
-    const initialScale = this.state.scale
-    var  newScale = 0;
-    if (dir === 'up') {
-        newScale = initialScale + 0.01;
-    } else if  (dir === 'down') {
-        newScale = initialScale - 0.01;
-    }
-    axios
-      .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-        '/' + this.props.preferences.sort + '/' + Math.round((newScale) * 1000) + '/' +
-        this.props.preferences.phytoguide + '/')
-      .then((rowResponse) => { this.setState({ 
-          scale: newScale,
-          rows: rowResponse.data.options.rows 
-        }); });
-  }
-
-  openPreferences() {
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById('preferences').classList.toggle('show-pref');
-  }
-
-  closePreferences() {
-    document.getElementById("overlay").style.display = "none";
-    document.getElementById('preferences').classList.toggle('show-pref');
-    this.props.history.go(0);
-  }
-
-  renderPreferences() {
-      return (
-        <Preferences 
-            history={this.props.history}
-            load={this.props.preferences.load}
-            scale={this.props.preferences.scale}
-            sort={this.props.preferences.sort}
-            phytoGuide={this.props.preferences.phytoguide}
-        />
-      );
-  }
-
-  renderTimeSeriesControl() {
-    return <TimeSeriesControl
-        timeseries={this.state.bin.timeseries}
-        options={this.state.timeSeriesOptions}
-        onClick={(option) => this.getNewTimeSeries(option)}
-    />;
-  }
-
-  renderYearControl() {
-    return <YearControl
-        year={this.state.bin.year}
-        options={this.state.yearOptions}
-        onClick={(option) => this.getNewYear(option)} 
-    />;
-  }
-
-  renderDayControl() {
-    const options = this.state.filledDays.slice().reverse();
-    return <DayControl
-        day={this.state.bin.day} 
-        options={options}
-        onClick={(option) => this.handleNewDay(option)}
-    />;
-  }
-
-  renderFileControl() {
-    return <FileControl
-        file={this.state.bin.file} 
-        options={this.state.fileOptions}
-        onClick={(option) => this.handleNewFile(option)} 
-    />;
   }
 
   renderClassMenu() {
@@ -502,19 +340,6 @@ class PublicClassify extends React.Component {
           scale={this.state.scale}
           showPhytoGuide={this.props.preferences.phytoguide}
       />;
-  }
-
-  renderBar(gb, i) {
-    const currentDay = (element) => element === this.state.bin.day;
-    return <Bar 
-        key={i}
-        onClick={(i) => this.handleBar(i)}
-        onHover={(i) => this.handleBarHover(i)}
-        number={i}
-        height={gb}
-        day={this.state.dayOptions[i]}
-        current={this.state.dayOptions.findIndex(currentDay)}
-    />;
   }
 
   renderNavButton(direction) {
@@ -569,7 +394,6 @@ class PublicClassify extends React.Component {
             className={className}
         />
     }
-
     
   }
 
@@ -620,9 +444,6 @@ class PublicClassify extends React.Component {
             {({ measure, registerChild }) => (
             <div ref={registerChild} key={key} style={style}>
                 <div onLoad={measure} className="row">
-                    <div className="row-select" 
-                        alt={'Select row'} onClick={() => this.handleRowClick(index)}>
-                    </div>
                     <div className="image-row">
                         {this.state.rows[index].map((i) => 
                             <Plankton 
@@ -631,13 +452,13 @@ class PublicClassify extends React.Component {
                                 timestamp={this.state.bin.file}
                                 id={i}
                                 targetNum={this.state.targets[i].number}
-                                class_name={this.state.targets[i].class_name}
-                                class_abbr={this.state.targets[i].class_abbr}
+                                class_name={this.state.targets[i].auto_class_name}
+                                class_abbr={this.state.targets[i].auto_class_abbr}
                                 height={this.state.targets[i].height}
                                 width={this.state.targets[i].width}
                                 scale={this.props.scaleEntry / 10}
                                 ifcb={this.state.bin.ifcb}
-                                editor={this.state.targets[i].editor}
+                                editor={'jamiewalton'}
                                 date={this.state.targets[i].date}
                                 onClick={(i) => this.handlePlanktonClick(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
@@ -656,56 +477,17 @@ class PublicClassify extends React.Component {
         <div className='main'>
             <div className="page">
             <div className="content">
-                <div className="overlay" id="overlay" onClick={() => this.closePreferences()}></div>
-                {this.renderPreferences()}
                     <div className="inner-content">
                         <h1>Classify Phytoplankton</h1>
-                        <p className='subtitle'>Match each phytoplankton with their species!</p>
-                        <div className="time-controls">
-                            {this.renderTimeSeriesControl()}
-                            {this.renderYearControl()}
-                            {this.renderDayControl()}
-                            {this.renderFileControl()}
-                            <div className="show-notes-button" id="show-notes-button" onClick={() => this.showNotes()}>Show Notes</div>
-                            <div className="round-button histogram" onClick={() => this.handleHistogramClick()}></div>
-                            <div className="preferences-button" onClick={() => this.openPreferences()}></div>
-                        </div>
-                        <div className='histogram-dropdown-container' id='histogram_dropdown'>
-                            <div className="histogram-dropdown" id='histogram'>
-                                <div className="timeline">
-                                    <div className="bars">
-                                        {this.state.barHeights.map((gb, i) => this.renderBar(gb, i))}
-                                    </div>
-                                    <div className="axis">
-                                        <p className="month">Jan</p>
-                                        <p className="month">Feb</p>
-                                        <p className="month">Mar</p>
-                                        <p className="month">Apr</p>
-                                        <p className="month">May</p>
-                                        <p className="month">Jun</p>
-                                        <p className="month">Jul</p>
-                                        <p className="month">Aug</p>
-                                        <p className="month">Sep</p>
-                                        <p className="month">Oct</p>
-                                        <p className="month">Nov</p>
-                                        <p className="month">Dec</p>
-                                    </div>
+                        <p className='subtitle'>Match each phytoplankton with their species! Choose a dataset to get started.</p>
+                        <div style={{'display':'flex'}}>
+                            <div className="public-time-controls">
+                                <DatePicker />
+                                <div className="timeseries-box">
+                                    {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 
+                                        <li key={i} className="timeseries-list-item" onClick={option => this.getNewTimeSeries(option)}>{option}</li>)}
                                 </div>
                             </div>
-                            <div className='day-option'>
-                                <p className='day-option-text'>{this.state.dayOption}</p>
-                            </div>
-                        </div>
-                        <div className="note-container" id="note-dropdown">
-                            {((this.state.bin.timeseries) === '' || this.state.bin.file === '') ? 
-                            <div></div> :
-                            <BinNote 
-                                timeseries={this.state.bin.timeseries}
-                                ifcb={this.state.bin.ifcb}
-                                file={this.state.bin.file}
-                                type='bin'
-                                image='None'
-                            /> }
                         </div>
                         <div className="annotations">
                             {this.renderClassMenu()}
@@ -798,4 +580,4 @@ const mapStateToProps = state => ({
     onAnalysis: state.menu.onAnalysis,
  });
 
-export default connect(mapStateToProps, { classifyTarget, classifyRow, classifyAll, save, sync, changeScale })(PublicClassify);
+export default connect(mapStateToProps, { classifyPublicTarget, classifyRow, classifyAll, save, sync, changeScale })(PublicClassify);

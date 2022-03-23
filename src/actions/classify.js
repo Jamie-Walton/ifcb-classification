@@ -124,6 +124,23 @@ export const classifyTarget = (target, timeseries, file, number) => (dispatch, g
         .catch((err) => console.log(err));
 }
 
+export const classifyPublicTarget = (targetObj, timeseries, file, number) => (dispatch, getState) => {
+    const target = targetObj.id;
+    const editor = targetObj.editor;
+    const class_name = targetObj.auto_class_name;
+    const class_abbr = targetObj.auto_class_abbr;
+    const class_id = targetObj.auto_class_id;
+    const date = targetObj.date;
+
+    const classification = JSON.stringify({ target, editor, class_name, class_abbr, class_id, date });
+    console.log(classification);
+
+    axios
+        .put('/edit/public/target/' + timeseries + '/' + file + 
+            '/' + number + '/', classification, tokenConfig(getState))
+        .catch((err) => console.log(err));
+}
+
 export const classifyRow = (targets, timeseries, file, sort, startInd, endInd) => (dispatch, getState) => {
     axios
         .put('/edit/targetrow/' + timeseries + '/' + file + 

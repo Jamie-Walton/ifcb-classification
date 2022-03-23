@@ -3,17 +3,22 @@ from django.urls import path, include, re_path
 from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
-from classify import views
+from classify import views, publicviews
 from django.views.generic import TemplateView
 
 router = routers.DefaultRouter()
 router.register(r'timeseries', views.TimeSeriesOptionView, 'timeseries')
 router.register(r'bins', views.BinView, 'bin')
+router.register(r'public_bins', publicviews.PublicBinView, 'bin')
 
 urlpatterns = [
+    
+    # General Paths
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('', include('accounts.urls')),
+
+    # Lab Paths
     path('classes/<str:timeseries>/', views.get_classes),
     path('process/timeseries/<str:timeseries_name>/', views.new_timeseries),
     path('process/file/<str:timeseries>/<str:file>/<str:sort>/<int:scale>/<str:phytoguide>/', views.new_file),
@@ -39,5 +44,16 @@ urlpatterns = [
     path('searchtargets/', views.basic_search_targets),
     path('lastedit/<str:user>/', views.get_last_edit),
     path('bins/', views.retrieve_bins),
+
+    # Community Paths
+    path('process/public/timeseries/<str:timeseries_name>/', publicviews.new_timeseries),
+    path('process/public/file/<str:timeseries>/<str:file>/<str:sort>/<int:scale>/<str:phytoguide>/', publicviews.new_file),
+    path('process/public/day/<str:timeseries>/<str:year>/<int:day>/', publicviews.new_day),
+    path('process/publi/year/<str:timeseries>/<str:year>/', publicviews.new_year),
+    path('process/public/rows/<str:timeseries>/<str:file>/<str:sort>/<int:scale>/<str:phytoguide>/', publicviews.new_rows),
+    path('process/public/targets/<str:timeseries>/<str:file>/<str:sort>/', publicviews.new_targets),
+    path('edit/public/target/<str:timeseries>/<str:file>/<str:number>/', publicviews.edit_target),
+    path('bins/', publicviews.retrieve_bins),
+
     re_path('.*',TemplateView.as_view(template_name='index.html')),
 ]

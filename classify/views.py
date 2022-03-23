@@ -15,9 +15,13 @@ from datetime import date
 import os
 from backend.settings import MEDIA_ROOT
 
+
+####### TIME SETUP #######
+
 class TimeSeriesOptionView(viewsets.ModelViewSet):
     serializer_class = TimeSeriesOptionSerializer
     queryset = TimeSeriesOption.objects.all()
+
 
 class BinView(viewsets.ModelViewSet):
     serializer_class = BinSerializer
@@ -31,6 +35,20 @@ def get_classes(request, timeseries):
     serializer = ClassOptionSerializer(classes, many=True)
     return Response(serializer.data)
 
+
+@api_view(('POST',))
+def retrieve_bins(request):
+    bins = np.unique(np.array(request.data))
+    queryset = Bin.objects.filter(id__in=bins)
+    if type(queryset) != Bin:
+        serializer = BinSerializer(queryset, many=True)
+    else:
+        serializer = BinSerializer(queryset, many=False)
+    
+    return Response(serializer.data)
+
+
+####### NOTEBOOK #######
 
 @api_view(('GET',))
 def get_notebook(request):
@@ -103,19 +121,7 @@ def flag_note(request, id):
     return Response(status=status.HTTP_201_CREATED)
 
 
-@api_view(('GET',))
-def get_target_classifiers(request):
-    queryset = Target.objects.all()
-
-    options = {
-        'classifiers': queryset.values('editor').distinct(),
-    }
-
-    package = FrontEndPackage(bin={}, options=options)
-    front_end_package = FrontEndPackageSerializer(package)
-
-    return Response(front_end_package.data)
-
+####### TARGETS #######
 
 @api_view(('GET',))
 def new_targets(request, timeseries, file, sort):
@@ -176,23 +182,6 @@ def saveMAT(request, ifcb, file):
         })
     return response
 
-@api_view(('GET',))
-def download_class(request, classname, include, exclude, number):
-    path = create_class_zip(classname, include, exclude, number)
-    zip_file = open(path, 'rb')
-    return FileResponse(zip_file)
-
-
-@api_view(('POST',))
-def basic_search_targets(request):
-    queryset = search_targets(request.data)
-    if type(queryset) != Target:
-        serializer = TargetSerializer(queryset, many=True)
-    else:
-        serializer = TargetSerializer(queryset, many=False)
-    
-    return Response(serializer.data)
-
 
 @api_view(('GET',))
 def get_last_edit(request, user):
@@ -208,63 +197,18 @@ def get_last_edit(request, user):
     return Response(front_end_package.data)
 
 
-
-@api_view(('POST',))
-def retrieve_bins(request):
-    bins = np.unique(np.array(request.data))
-    queryset = Bin.objects.filter(id__in=bins)
-    if type(queryset) != Bin:
-        serializer = BinSerializer(queryset, many=True)
-    else:
-        serializer = BinSerializer(queryset, many=False)
-    
-    return Response(serializer.data)
-
-
 @api_view(('GET',))
-def sync(request, timeseries, year, day, file):
-    b = Bin.objects.get(timeseries=timeseries, file=file)
-    b.delete()
-    create_targets(timeseries, year, day, file)
+def get_target_classifiers(request):
+    queryset = Target.objects.all()
 
+    options = {
+        'classifiers': queryset.values('editor').distinct(),
+    }
 
-@api_view(('PUT',))
-def edit_target(request, timeseries, file, number):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-    b = Bin.objects.get(timeseries=timeseries, file=file)
-    t = Target.objects.get(bin=b, number=number)
-    serializer = TargetSerializer(t, data=request.data,context={'request': request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    package = FrontEndPackage(bin={}, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
 
-
-@api_view(('PUT',))
-def edit_targetrow(request, timeseries, file, sort, startInd, endInd):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-    b = Bin.objects.get(timeseries=timeseries, file=file)
-    if sort == 'AZ':
-        targets = Target.objects.filter(bin=b).order_by('class_name', '-height')[startInd:endInd+1]
-    elif sort == 'ZA':
-        targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')[startInd:endInd+1]
-    elif sort == 'LS':
-        targets = Target.objects.filter(bin=b).order_by('-height')[startInd:endInd+1]
-    elif sort == 'SL':
-        targets = Target.objects.filter(bin=b).order_by('height')[startInd:endInd+1]
-    for i in range(len(targets)):
-        target = targets[i]
-        t = Target.objects.get(bin=b, number=target.number)
-        serializer = TargetSerializer(t, data=request.data[i],context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(front_end_package.data)
 
 
 @api_view(('PUT',))
@@ -315,6 +259,31 @@ def undo(request, timeseries, file, set):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(('PUT',))
+def edit_targetrow(request, timeseries, file, sort, startInd, endInd):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    if sort == 'AZ':
+        targets = Target.objects.filter(bin=b).order_by('class_name', '-height')[startInd:endInd+1]
+    elif sort == 'ZA':
+        targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')[startInd:endInd+1]
+    elif sort == 'LS':
+        targets = Target.objects.filter(bin=b).order_by('-height')[startInd:endInd+1]
+    elif sort == 'SL':
+        targets = Target.objects.filter(bin=b).order_by('height')[startInd:endInd+1]
+    for i in range(len(targets)):
+        target = targets[i]
+        t = Target.objects.get(bin=b, number=target.number)
+        serializer = TargetSerializer(t, data=request.data[i],context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(('GET',))
 def new_rows(request, timeseries, file, sort, scale, phytoguide):
     b = Bin.objects.get(timeseries=timeseries, file=file)
@@ -329,6 +298,49 @@ def new_rows(request, timeseries, file, sort, scale, phytoguide):
     
     return Response(front_end_package.data)
 
+
+####### ANALYSIS FEATURES #######
+
+@api_view(('GET',))
+def download_class(request, classname, include, exclude, number):
+    path = create_class_zip(classname, include, exclude, number)
+    zip_file = open(path, 'rb')
+    return FileResponse(zip_file)
+
+
+@api_view(('POST',))
+def basic_search_targets(request):
+    queryset = search_targets(request.data)
+    if type(queryset) != Target:
+        serializer = TargetSerializer(queryset, many=True)
+    else:
+        serializer = TargetSerializer(queryset, many=False)
+    
+    return Response(serializer.data)
+
+
+@api_view(('GET',))
+def sync(request, timeseries, year, day, file):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    b.delete()
+    create_targets(timeseries, year, day, file)
+
+
+@api_view(('PUT',))
+def edit_target(request, timeseries, file, number):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    t = Target.objects.get(bin=b, number=number)
+    serializer = TargetSerializer(t, data=request.data,context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+####### TIME NAVIGATION #######
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):

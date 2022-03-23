@@ -1,5 +1,5 @@
 from django.db.models.query_utils import Q
-from .models import Bin, ClassOption, TimeSeriesOption, Target, Note
+from .models import Bin, ClassOption, TimeSeriesOption, Target, Note, PublicBin, PublicTarget
 from .serializers import TargetSerializer
 import pandas as pd
 import numpy as np
@@ -74,39 +74,46 @@ def create_targets(timeseries, year, day, file):
     
     return ifcb
 
-def sync_autoclass(timeseries, year, day, file):
+
+def create_public_targets(timeseries, year, day, file):
     
-    b = Bin.objects.get(timeseries=timeseries, file=file)
-    targets = Target.objects.filter(bin=b)
-    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + timeseries
+    ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
+    try:
+        target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + ifcb)
+    except:
+        try:
+            if not ifcb == 'IFCB104':
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB104')
+            else:
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+        except:
+            if not ifcb == 'IFCB117':
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB117')
+            else:
+                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+
+    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + ifcb
+    target_bin = target_bin_response.json()
+    targets = json.loads(target_bin['coordinates'])
+    targets = sorted(targets, key = lambda i: i['pid'])
+    
+    nearest_bin = PublicBin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file)
+    nearest_bin.save()
     
     classes = None
     maxes = None
-    try:
-        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-            if timeseries == 'IFCB104':
-                header = list(chunk.columns.values)
-                chunk.drop('Skeletonema', inplace=True, axis=1)
-                chunk.drop('Thalassionema', inplace=True, axis=1)
-                chunk.drop('Thalassiosira', inplace=True, axis=1)
-                chunk.drop('unclassified', inplace=True, axis=1)
-                header = header[0:8] + [header[8] + '_' + header[9] + '_' + header[10]] + \
-                    header[11:17] + [header[17] + '_' + header[18]] + header[19:27]
-                chunk.columns = header
-            chunk_classes = chunk.idxmax(axis='columns')
-            chunk_maxes = chunk.max(axis='columns')
-            if classes is None:
-                classes = chunk_classes
-                maxes = chunk_maxes
-            else:
-                classes = classes.add(chunk_classes, fill_value='')
-                maxes = maxes.add(chunk_maxes, fill_value=0)
-    except:
-        return 'Unsuccessful'
+    for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+        chunk_classes = chunk.idxmax(axis='columns')
+        chunk_maxes = chunk.max(axis='columns')
+        if classes is None:
+            classes = chunk_classes
+            maxes = chunk_maxes
+        else:
+            classes = classes.add(chunk_classes, fill_value='')
+            maxes = maxes.add(chunk_maxes, fill_value=0)
 
     for i in range(len(targets)):
         target = targets[i]
-        t = Target.objects.get(bin=b, number=target.number)
         class_name = 'Unclassified'
         class_abbr = 'UNCL'
         class_id = 1
@@ -116,16 +123,23 @@ def sync_autoclass(timeseries, year, day, file):
                 class_name = c.display_name
                 class_abbr = c.abbr
                 class_id = c.class_id
-        num = target.number
-        height = target.height
-        width = target.width
+        num = int(target['pid'])
+        height = int(target['height'])*(1/(target_bin['scale']))
+        width = int(target['width'])*(1/(target_bin['scale']))
         editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
-        serializer = TargetSerializer(t, data={'number': num, 'width': width, 'height': height, \
-            'class_name': class_name, 'class_abbr': class_abbr, 'class_id': class_id, \
-            'editor': editor, 'date': date})
+        nearest_bin.publictarget_set.create(number=num, width=width, height=height, \
+            auto_class_name=class_name, auto_class_abbr=class_abbr, auto_class_id=class_id, \
+            date=date)
     
-    return serializer
+    return ifcb
+
+
+def sync_autoclass(timeseries, year, day, file):
+    
+    # TODO: Fix later
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    b.delete()
 
 
 def get_files(volume, date):
@@ -162,16 +176,23 @@ def get_days(timeline, year):
     return day_options, filled_days
 
 
-def get_rows(b, sort, scale, phytoguide):
+def get_rows(b, sort, scale, phytoguide, status='Lab'):
+
+    if status == 'Public':
+        model = PublicTarget
+        class_name = 'auto_class_name'
+    else:
+        model = Target
+        class_name = 'class_name'
 
     if sort == 'AZ':
-        targets = Target.objects.filter(bin=b).order_by('class_name', '-height')
+        targets = model.objects.filter(bin=b).order_by(class_name, '-height')
     elif sort == 'ZA':
-        targets = Target.objects.filter(bin=b).order_by('-class_name', '-height')
+        targets = model.objects.filter(bin=b).order_by(-class_name, '-height')
     elif sort == 'LS':
-        targets = Target.objects.filter(bin=b).order_by('-height')
+        targets = model.objects.filter(bin=b).order_by('-height')
     elif sort == 'SL':
-        targets = Target.objects.filter(bin=b).order_by('height')
+        targets = model.objects.filter(bin=b).order_by('height')
 
     rows = [[]]
     space = 70
@@ -193,8 +214,8 @@ def get_rows(b, sort, scale, phytoguide):
         else:
             space -= ((target.width*(scale/10000)) + 1)
         rows[row].append(i)
-        if target.width*(scale/10000) > initial_space:
-                row +=1
+        #if target.width*(scale/10000) > initial_space:
+        #row +=1
     return rows
 
 
