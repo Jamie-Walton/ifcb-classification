@@ -21,7 +21,7 @@ class Plankton extends React.Component {
     renderImage() {  
       return (
           <PlanktonImage 
-              nameSpace={'http://128.114.25.154:8000/data/'}
+              nameSpace={'http://akashiwo.oceandatacenter.ucsc.edu:8000/data/'}
               timestamp={this.props.timestamp}
               timeseries={this.props.timeseries}
               ifcb={this.props.ifcb}

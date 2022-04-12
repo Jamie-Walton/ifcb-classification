@@ -37,7 +37,7 @@ class Target extends Component {
             const desiredBin = (element) => element.id === this.props.target.bin;
             const binIndex = this.props.bins.findIndex(desiredBin);
             const bin = this.props.bins[binIndex];
-            const url = 'http://128.114.25.154:8000/data/' + bin.file + '_' + bin.ifcb + '_' + this.props.target.number + '.jpg'
+            const url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/data/' + bin.file + '_' + bin.ifcb + '_' + this.props.target.number + '.jpg'
             
             return(
                 <div className="search-result">

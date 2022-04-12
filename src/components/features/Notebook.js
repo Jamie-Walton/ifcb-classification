@@ -231,7 +231,7 @@ class Notebook extends Component {
             const count = 0;
             var url = '';
             if (note.image !== 'None') {
-                url = 'http://128.114.25.154:8888/' + note.timeseries + '/' + note.file + '_' + note.ifcb + '_' + note.image + '.jpg';
+                url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/' + note.timeseries + '/' + note.file + '_' + note.ifcb + '_' + note.image + '.jpg';
             }
             const flatNote = JSON.stringify(note);
             const includesFlag = flatNote.includes('true');
