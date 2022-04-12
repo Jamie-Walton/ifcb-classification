@@ -47,12 +47,12 @@ urlpatterns = [
 
     # Community Paths
     path('process/public/timeseries/<str:timeseries_name>/', publicviews.new_timeseries),
-    path('process/public/file/<str:timeseries>/<str:file>/<str:sort>/<int:scale>/<str:phytoguide>/', publicviews.new_file),
-    path('process/public/day/<str:timeseries>/<str:year>/<int:day>/', publicviews.new_day),
+    path('process/public/file/<str:timeseries>/<str:file>/<str:user>/', publicviews.new_file),
+    path('process/public/day/<str:timeseries>/<str:date>/', publicviews.new_day),
     path('process/publi/year/<str:timeseries>/<str:year>/', publicviews.new_year),
     path('process/public/rows/<str:timeseries>/<str:file>/<str:sort>/<int:scale>/<str:phytoguide>/', publicviews.new_rows),
-    path('process/public/targets/<str:timeseries>/<str:file>/<str:sort>/', publicviews.new_targets),
-    path('edit/public/target/<str:timeseries>/<str:file>/<str:number>/', publicviews.edit_target),
+    path('process/public/targets/<str:timeseries>/<str:file>/<str:user>/', publicviews.new_targets),
+    path('edit/public/target/<str:timeseries>/<str:file>/<str:number>/<str:user>', publicviews.edit_target),
     path('bins/', publicviews.retrieve_bins),
 
     re_path('.*',TemplateView.as_view(template_name='index.html')),

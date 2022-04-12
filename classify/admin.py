@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note, PublicTarget, PublicBin, PublicClassification
+from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note, PublicTarget, PublicBin, PublicClassification, Classifier
 
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('author', 'date', 'entry', 'parent', 'timeseries', 'ifcb', 'file', 'image', 'flag')
@@ -9,7 +9,7 @@ class TargetAdmin(admin.ModelAdmin):
     list_display = ('bin', 'number', 'class_name', 'class_abbr', 'class_id', 'editor', 'date', 'notes')
 
 class PublicTargetAdmin(admin.ModelAdmin):
-    list_display = ('bin', 'number', 'auto_class_name', 'auto_class_abbr', 'auto_class_id', 'date')
+    list_display = ('bin', 'number', 'class_name', 'class_abbr', 'class_id', 'date')
 
 class TimeSeriesInline(admin.TabularInline):
     model = ClassOption.timeseries.through
@@ -30,6 +30,9 @@ class PublicBinAdmin(admin.ModelAdmin):
 class PublicClassificationAdmin(admin.ModelAdmin):
     list_display = ('target', 'editor', 'class_name', 'class_abbr', 'class_id', 'date',)
 
+class ClassifierAdmin(admin.ModelAdmin):
+    list_display = ('user',)
+
 admin.site.register(Note, NoteAdmin)
 admin.site.register(Target, TargetAdmin)
 admin.site.register(PublicTarget, PublicTargetAdmin)
@@ -38,3 +41,4 @@ admin.site.register(TimeSeriesOption, TimeSeriesOptionAdmin)
 admin.site.register(Bin, BinAdmin)
 admin.site.register(PublicBin, PublicBinAdmin)
 admin.site.register(PublicClassification, PublicClassificationAdmin)
+admin.site.register(Classifier, ClassifierAdmin)

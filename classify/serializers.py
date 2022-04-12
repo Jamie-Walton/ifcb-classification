@@ -46,7 +46,7 @@ class PublicBinSerializer(serializers.ModelSerializer):
 class PublicTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicTarget
-        fields = ('id', 'bin', 'number', 'height', 'width', 'auto_class_name', 'auto_class_abbr', 'auto_class_id', 'date')
+        fields = ('id', 'bin', 'number', 'height', 'width', 'class_name', 'class_abbr', 'class_id', 'date')
 
 class PublicClassificationSerializer(serializers.ModelSerializer):
     class Meta:

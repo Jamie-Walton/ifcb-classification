@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class TimeSeriesOption(models.Model):
     name = models.CharField(max_length=15)
@@ -85,13 +86,23 @@ class PublicTarget(models.Model):
     number = models.CharField(max_length=5)
     height = models.IntegerField(default=0)
     width = models.IntegerField(default=0)
-    auto_class_name = models.CharField(max_length=120, default='Unclassified')
-    auto_class_abbr = models.CharField(max_length=10, default="UNCL")
-    auto_class_id = models.IntegerField(default="1")
+    class_name = models.CharField(max_length=120, default='Unclassified')
+    class_abbr = models.CharField(max_length=10, default="UNCL")
+    class_id = models.IntegerField(default="1")
     date = models.DateField(auto_now=True)
 
     def _str_(self):
         return 'target_' + str(self.number)
+
+    
+class Classifier(models.Model):
+    user = models.CharField(max_length=50, default='Autoclassifier')
+    user_model = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    targets = models.ManyToManyField(PublicTarget, blank=True)
+    bins = models.ManyToManyField(PublicBin, blank=True)
+
+    def _str_(self):
+        return self.user
 
 
 class PublicClassification(models.Model):

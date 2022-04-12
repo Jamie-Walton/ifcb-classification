@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from django.contrib.auth.models import Group
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, PreferencesSerializer
+from classify.models import Classifier
+from django.contrib.auth.models import User
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
@@ -17,6 +19,10 @@ class RegisterAPI(generics.GenericAPIView):
 
         group = Group.objects.get(name=request.data['groups'])
         group.user_set.add(user)
+
+        user = User.objects.get(username=request.data['username'])
+        classifier = Classifier(user=request.data['username'], user_model=user)
+        classifier.save()
 
         return Response({
             'user': UserSerializer(user, context=self.get_serializer_context()).data,

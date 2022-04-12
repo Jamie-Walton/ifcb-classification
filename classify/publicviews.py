@@ -4,14 +4,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.http import HttpResponse, FileResponse
-from .serializers import PublicBinSerializer, PublicTargetSerializer, PublicClassificationSerializer, FrontEndPackageSerializer
-from .models import PublicBin, PublicTarget, PublicClassification, FrontEndPackage
+from .serializers import PublicBinSerializer, PublicTargetSerializer, FrontEndPackageSerializer
+from .models import PublicBin, PublicTarget, PublicClassification, FrontEndPackage, Classifier
 from .services import create_public_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip, search_targets
 import requests
 import math
 import pandas as pd
 import numpy as np
-from datetime import date
+import datetime
 import os
 from backend.settings import MEDIA_ROOT
 
@@ -39,37 +39,36 @@ def retrieve_bins(request):
 ####### TARGETS #######
 
 @api_view(('GET',))
-def new_targets(request, timeseries, file, sort):
+def new_targets(request, timeseries, file, user):
     if request.method == 'GET':
         b = PublicBin.objects.get(timeseries=timeseries, file=file)
-        if sort == 'AZ':
-            model_targets = PublicTarget.objects.filter(bin=b).order_by('auto_class_name', '-height')
-        elif sort == 'ZA':
-            model_targets = PublicTarget.objects.filter(bin=b).order_by('-auto_class_name', '-height')
-        elif sort == 'LS':
-            model_targets = PublicTarget.objects.filter(bin=b).order_by('-height')
-        elif sort == 'SL':
-            model_targets = PublicTarget.objects.filter(bin=b).order_by('height')
+        model_targets = PublicTarget.objects.filter(bin=b).filter(classifier__user=user).order_by('class_name', '-height')
 
         target_serializer = PublicTargetSerializer(model_targets, many=True)
         return Response(target_serializer.data)
 
 
 @api_view(('PUT',))
-def edit_target(request, timeseries, file, number):
+def edit_target(request, timeseries, file, number, user):
+    # TODO: Fix
     permission_classes = [
         permissions.IsAuthenticated,
     ]
     b = PublicBin.objects.get(timeseries=timeseries, file=file)
-    t = PublicTarget.objects.get(bin=b, number=number)
-    c = request.data
-    if PublicClassification.objects.filter(target=t).exists():
-        pass
-    else:
-        classification = PublicClassification(target=t, editor=c['editor'], class_name=c['class_name'], class_abbr=c['class_abbr'], class_id=c['class_id'], date=c['date'])
-        classification.save()
-
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    t = PublicTarget.objects.filter(bin=b, number=number, classifier__user=user).exclude(classifier__user='Auto Classifier')
+    if not t.exists():
+        autotarget = PublicTarget.objects.get(bin=b, number=number)
+        classifier = Classifier.objects.get(user=user)
+        classifier.targets.remove(autotarget)
+        b.target_set.create(number=0, width=0, height=0, \
+            class_name='', class_abbr='', class_id='', \
+            date=date)
+        t = PublicTarget.objects.get(bin=b, number=0)
+    serializer = PublicTargetSerializer(t, data=request.data,context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(('PUT',))
@@ -110,7 +109,7 @@ def new_rows(request, timeseries, file, sort, scale, phytoguide):
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
     recent_file = volume[0]['pid'].split('/')[4][:16]
 
@@ -124,12 +123,12 @@ def new_timeseries(request, timeseries_name):
 
 
 @api_view(('GET',))
-def new_file(request, timeseries, file, sort, scale, phytoguide):
+def new_file(request, timeseries, file, user):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
-    timeline_response = requests.get('http://128.114.25.154:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries)
+    timeline_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries)
     timeline = timeline_response.json()
 
     present_year = int(timeline['x'][len(timeline['x'])-1][0:4])
@@ -139,8 +138,15 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     day_options, filled_days = get_days(timeline, year)
-    if not PublicBin.objects.filter(file=file):
+    file_bin = PublicBin.objects.filter(file=file)
+    if not file_bin:
         ifcb = create_public_targets(timeseries, year, day, file)
+        file_bin = PublicBin.objects.filter(file=file)
+    editor_bin = Classifier.objects.filter(user=user, bins=file_bin[0])
+    if not editor_bin:
+        user = Classifier.objects.get(user=user)
+        targets = PublicTarget.objects.filter(bin=file_bin[0])
+        user.targets.add(*targets)    
     
     file_options = get_files(volume, date=year+'-'+day)
     
@@ -150,7 +156,7 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
 
     b = PublicBin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, sort, scale, phytoguide, 'Public')
+    rows = get_rows(b, 'AZ', 560, True, 'Public')
     
     bin = {
         'timeseries': timeseries, 
@@ -176,17 +182,16 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
 
 
 @api_view(('GET',))
-def new_day(request, timeseries, year, day):
+def new_day(request, timeseries, date):
     
-    dates = pd.date_range(start='1-1-' + year, end='12-31-' + year)
-    day = str(dates[day])[:10]
+    day = datetime.datetime.strptime(date, '%b%m%Y').strftime('%Y-%m-%d')
 
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     df = pd.DataFrame(volume)
     index = int(df[df['date'].str.contains(day)].index.values[0])
-    recent_file = volume[index]['pid'][35:51]
+    recent_file = volume[index]['pid'][54:70]
     
     options = {}
     bin = {'file': recent_file}
@@ -201,7 +206,7 @@ def new_day(request, timeseries, year, day):
 @api_view(('GET',))
 def new_year(request, timeseries, year):
     
-    volume_response = requests.get('http://128.114.25.154:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/31-12-' + year)
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/31-12-' + year)
     volume = volume_response.json()
 
     if year == date.today().strftime('%Y'):

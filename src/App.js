@@ -42,7 +42,7 @@ class App extends Component {
                         <PrivateRoute exact path="/analysis/search" component={Search} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
-                        <PrivateRoute exact path="/" component={Classify} />
+                        <Route exact path="/" component={Landing} />
                     </Switch>
                 </BrowserRouter>
             </Provider>

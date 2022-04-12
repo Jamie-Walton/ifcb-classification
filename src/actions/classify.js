@@ -124,20 +124,10 @@ export const classifyTarget = (target, timeseries, file, number) => (dispatch, g
         .catch((err) => console.log(err));
 }
 
-export const classifyPublicTarget = (targetObj, timeseries, file, number) => (dispatch, getState) => {
-    const target = targetObj.id;
-    const editor = targetObj.editor;
-    const class_name = targetObj.auto_class_name;
-    const class_abbr = targetObj.auto_class_abbr;
-    const class_id = targetObj.auto_class_id;
-    const date = targetObj.date;
-
-    const classification = JSON.stringify({ target, editor, class_name, class_abbr, class_id, date });
-    console.log(classification);
-
+export const classifyPublicTarget = (target, timeseries, file, number, user) => (dispatch, getState) => {
     axios
-        .put('/edit/public/target/' + timeseries + '/' + file + 
-            '/' + number + '/', classification, tokenConfig(getState))
+        .put('/edit/target/' + timeseries + '/' + file + 
+            '/' + number + '/' + user + '/', target, tokenConfig(getState))
         .catch((err) => console.log(err));
 }
 

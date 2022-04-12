@@ -138,7 +138,7 @@ class PublicClassify extends React.Component {
         })
         .catch((err) => console.log(err));
     axios
-        .get('/process/public/file/' + timeseries + '/' + file + '/AZ/560/true/')
+        .get('/process/public/file/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
         .then((res) => {
             this.setState({ 
                 bin: res.data.bin, 
@@ -152,7 +152,7 @@ class PublicClassify extends React.Component {
                 dayOption: res.data.bin.day,
             })
             axios
-                .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.preferences.sort + '/')
+                .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
                 .then((targetResponse) => {
                     this.setState({ 
                         targets: targetResponse.data,
@@ -220,12 +220,14 @@ class PublicClassify extends React.Component {
         .catch((err) => console.log(err));
   }
 
-  handleNewDay(option) {
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0;
-    const newDay = (element) => element === option;
-    const dayNumber = this.state.dayOptions.findIndex(newDay);
-    this.handleBar(dayNumber);
+  onDateChange(day) {
+    axios
+        .get('/process/public/day/' + this.state.bin.timeseries + '/' + String(day).split(' ').slice(1,4).join('') + '/')
+        .then((res) => { this.setState({ 
+            newTimeSeries: this.state.bin.timeseries,
+            newFile: res.data.bin.file
+        }) })
+        .catch((err) => console.log(err));
   }
 
   handleNewFile(option) {
@@ -275,7 +277,7 @@ class PublicClassify extends React.Component {
       menu.style.backgroundColor = '#16609F';
       
       for (const target of this.state.targets) {
-          if (target.auto_class_name === name) {
+          if (target.class_name === name) {
               const container = document.getElementById(target.number);
               const text = document.getElementById(target.number+'-text');
               container.style.backgroundColor = '#16609F';
@@ -311,8 +313,8 @@ class PublicClassify extends React.Component {
         var targets = this.state.targets;
         const k = targets.findIndex(target => target.number === i);
         const classAbbr = (element) => element === this.state.classPicker;
-        targets[k].auto_class_name = this.state.classPicker;
-        targets[k].auto_class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        targets[k].class_name = this.state.classPicker;
+        targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
         targets[k].editor = this.props.user.username;
         const history = this.state.history;
         this.setState({
@@ -324,7 +326,7 @@ class PublicClassify extends React.Component {
         container.style.backgroundColor = '#16609F';
         text.style.color = '#FFFFFF';
 
-        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number);
+        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user);
     }
   }
 
@@ -452,8 +454,8 @@ class PublicClassify extends React.Component {
                                 timestamp={this.state.bin.file}
                                 id={i}
                                 targetNum={this.state.targets[i].number}
-                                class_name={this.state.targets[i].auto_class_name}
-                                class_abbr={this.state.targets[i].auto_class_abbr}
+                                class_name={this.state.targets[i].class_name}
+                                class_abbr={this.state.targets[i].class_abbr}
                                 height={this.state.targets[i].height}
                                 width={this.state.targets[i].width}
                                 scale={this.props.scaleEntry / 10}
@@ -482,7 +484,10 @@ class PublicClassify extends React.Component {
                         <p className='subtitle'>Match each phytoplankton with their species! Choose a dataset to get started.</p>
                         <div style={{'display':'flex'}}>
                             <div className="public-time-controls">
-                                <DatePicker />
+                                <DatePicker 
+                                    onChange={(day) => this.onDateChange(day)}
+                                    selected={Date(this.state.bin.day + '-' + this.state.bin.year)}
+                                />
                                 <div className="timeseries-box">
                                     {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 
                                         <li key={i} className="timeseries-list-item" onClick={option => this.getNewTimeSeries(option)}>{option}</li>)}

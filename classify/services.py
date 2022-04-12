@@ -1,5 +1,5 @@
 from django.db.models.query_utils import Q
-from .models import Bin, ClassOption, TimeSeriesOption, Target, Note, PublicBin, PublicTarget
+from .models import Bin, ClassOption, TimeSeriesOption, Target, Note, PublicBin, PublicTarget, Classifier
 from .serializers import TargetSerializer
 import pandas as pd
 import numpy as np
@@ -19,20 +19,20 @@ def create_targets(timeseries, year, day, file):
     
     ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
     try:
-        target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + ifcb)
+        target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + ifcb)
     except:
         try:
             if not ifcb == 'IFCB104':
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB104')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB104')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB113')
         except:
             if not ifcb == 'IFCB117':
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB117')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB117')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB113')
 
-    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + ifcb
+    bin_url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/' + file + '_' + ifcb
     target_bin = target_bin_response.json()
     targets = json.loads(target_bin['coordinates'])
     targets = sorted(targets, key = lambda i: i['pid'])
@@ -79,20 +79,20 @@ def create_public_targets(timeseries, year, day, file):
     
     ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
     try:
-        target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + ifcb)
+        target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + ifcb)
     except:
         try:
             if not ifcb == 'IFCB104':
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB104')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB104')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB113')
         except:
             if not ifcb == 'IFCB117':
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB117')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB117')
             else:
-                target_bin_response = requests.get('http://128.114.25.154:8000/api/bin/' + file + '_' + 'IFCB113')
+                target_bin_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/bin/' + file + '_' + 'IFCB113')
 
-    bin_url = 'http://128.114.25.154:8000/' + timeseries + '/' + file + '_' + ifcb
+    bin_url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/' + file + '_' + ifcb
     target_bin = target_bin_response.json()
     targets = json.loads(target_bin['coordinates'])
     targets = sorted(targets, key = lambda i: i['pid'])
@@ -126,11 +126,14 @@ def create_public_targets(timeseries, year, day, file):
         num = int(target['pid'])
         height = int(target['height'])*(1/(target_bin['scale']))
         width = int(target['width'])*(1/(target_bin['scale']))
-        editor = "Auto Classifier"
         date = datetime.date(int(year), int(day[0:2]), int(day[3:]))
         nearest_bin.publictarget_set.create(number=num, width=width, height=height, \
-            auto_class_name=class_name, auto_class_abbr=class_abbr, auto_class_id=class_id, \
+            class_name=class_name, class_abbr=class_abbr, class_id=class_id, \
             date=date)
+        
+        autoclassifier = Classifier.objects.get(user='Auto Classifier')
+        classifier_targets = PublicTarget.objects.filter(bin=nearest_bin)
+        autoclassifier.targets.add(*classifier_targets)
     
     return ifcb
 
@@ -180,7 +183,7 @@ def get_rows(b, sort, scale, phytoguide, status='Lab'):
 
     if status == 'Public':
         model = PublicTarget
-        class_name = 'auto_class_name'
+        class_name = 'class_name'
     else:
         model = Target
         class_name = 'class_name'
@@ -296,7 +299,7 @@ def create_class_zip(class_name, include, exclude, number):
     with ZipFile(path, 'w') as zf:
         for target in targets:
             b = target.bin
-            url = 'http://128.114.25.154:8000/data/' + b.file + '_' + b.ifcb + '_' + b.number + '.jpg'
+            url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/data/' + b.file + '_' + b.ifcb + '_' + b.number + '.jpg'
             image_url = urlopen(url)
             image_name = b.file + '_' + b.ifcb + '_' + target.number + '.jpg'
             zf.writestr(image_name, image_url.read())
