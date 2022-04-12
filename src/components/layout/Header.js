@@ -56,7 +56,7 @@ export class Header extends Component {
                     </li>
                     <li>
                         <a  
-                            href="http://dhcp-25-148.ucsc.edu:8000/admin/"
+                            href="http://odontella.oceandatacenter.ucsc.edu:8000/admin/"
                             className="login-nav-link">
                                 Admin
                         </a>
