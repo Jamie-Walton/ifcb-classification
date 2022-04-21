@@ -586,6 +586,10 @@ li {
     background-color: #7dad0b !important;
 }
 
+.datepicker {
+	width: 13vw;
+}
+
 .timeseries-box {
 	padding: 2vw;
 }

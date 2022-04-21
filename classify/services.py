@@ -42,15 +42,18 @@ def create_targets(timeseries, year, day, file):
     
     classes = None
     maxes = None
-    for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-        chunk_classes = chunk.idxmax(axis='columns')
-        chunk_maxes = chunk.max(axis='columns')
-        if classes is None:
-            classes = chunk_classes
-            maxes = chunk_maxes
-        else:
-            classes = classes.add(chunk_classes, fill_value='')
-            maxes = maxes.add(chunk_maxes, fill_value=0)
+    try:
+        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+            chunk_classes = chunk.idxmax(axis='columns')
+            chunk_maxes = chunk.max(axis='columns')
+            if classes is None:
+                classes = chunk_classes
+                maxes = chunk_maxes
+            else:
+                classes = classes.add(chunk_classes, fill_value='')
+                maxes = maxes.add(chunk_maxes, fill_value=0)
+    except:
+        pass
 
     for i in range(len(targets)):
         target = targets[i]
@@ -102,15 +105,18 @@ def create_public_targets(timeseries, year, day, file):
     
     classes = None
     maxes = None
-    for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-        chunk_classes = chunk.idxmax(axis='columns')
-        chunk_maxes = chunk.max(axis='columns')
-        if classes is None:
-            classes = chunk_classes
-            maxes = chunk_maxes
-        else:
-            classes = classes.add(chunk_classes, fill_value='')
-            maxes = maxes.add(chunk_maxes, fill_value=0)
+    try:
+        for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
+            chunk_classes = chunk.idxmax(axis='columns')
+            chunk_maxes = chunk.max(axis='columns')
+            if classes is None:
+                classes = chunk_classes
+                maxes = chunk_maxes
+            else:
+                classes = classes.add(chunk_classes, fill_value='')
+                maxes = maxes.add(chunk_maxes, fill_value=0)
+    except:
+        pass
 
     for i in range(len(targets)):
         target = targets[i]
@@ -177,6 +183,20 @@ def get_days(timeline, year):
     day_options = [heights, short_days]
     filled_days =  [day[5:] for day in days]
     return day_options, filled_days
+
+
+def get_filled_days(timeline):
+    
+    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x'])-1)]
+    num_images = [timeline['y'][x] for x in range(0,len(timeline['y'])-1)]
+
+    filled_days = []
+
+    for d in range(0, len(days)-1):
+        if float(num_images[d]) > 0:
+            filled_days += [days[d]]
+
+    return filled_days
 
 
 def get_rows(b, sort, scale, phytoguide, status='Lab'):

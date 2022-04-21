@@ -38,9 +38,13 @@ header {
 .landing-hero {
 	height: 100vh;
 	background-image: url('../assets/landing-hero.png');
-	background-size: cover;
+	background-size: contain;
 	background-repeat: no-repeat;
 	padding: 200px 0 0 80px;
+}
+
+.landing-hero-container {
+	background-color: #1672D1;
 }
 
 .landing-title {

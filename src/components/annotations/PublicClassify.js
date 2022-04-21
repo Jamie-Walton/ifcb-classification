@@ -3,7 +3,8 @@ import axios from "axios";
 import Header from '../layout/Header';
 import Plankton from './Plankton';
 import ClassMenu from './ClassMenu';
-import DatePicker from 'sassy-datepicker';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -47,7 +48,7 @@ class PublicClassify extends React.Component {
           timeSeriesNames: [],
           yearOptions: [],
           dayOptions: [],
-          barHeights: [],
+          dateOptions: [],
           fileOptions: [],
           setOptions: [],
           filledDays: [],
@@ -116,7 +117,7 @@ class PublicClassify extends React.Component {
                 timeSeriesNames: res.data.map((c) => (c.name)),
                 });
             if(urlInfo.length<3) {
-                this.getNewTimeSeries('Santa Cuz Wharf', 'IFCB104');
+                this.getNewTimeSeries('Santa Cuz Wharf', 'SCW');
             }
             })
         .catch((err) => console.log(err));
@@ -126,7 +127,7 @@ class PublicClassify extends React.Component {
     this.setState({ loading: true });
 
     axios
-        .get('/classes/IFCB104/')
+        .get('/classes/SCW/')
         .then((res) => {
             this.setState({ 
                 classes: res.data.map((c) => (c.display_name.replace('_', ' '))),
@@ -143,8 +144,8 @@ class PublicClassify extends React.Component {
             this.setState({ 
                 bin: res.data.bin, 
                 yearOptions: res.data.options.year_options.reverse(),
-                barHeights: res.data.options.day_options[0],
                 dayOptions: res.data.options.day_options[1],
+                dateOptions: res.data.options.filled_days.map((date) => (new Date(date))),
                 fileOptions: res.data.options.file_options,
                 setOptions: res.data.options.set_options,
                 rows: res.data.options.rows,
@@ -167,6 +168,7 @@ class PublicClassify extends React.Component {
             this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
             return;
         });
+
   }
 
   componentDidUpdate(prevProps) {
@@ -432,6 +434,7 @@ class PublicClassify extends React.Component {
 
     const scrollToIndex = this.state.scrollToIndex;
 
+    const selectedDate = (this.state.bin.day === '') ? new Date() : new Date(this.state.bin.day + '-' + this.state.bin.year);
 
     const rowRenderer = ({index, key, parent, style}) => (
         
@@ -486,7 +489,10 @@ class PublicClassify extends React.Component {
                             <div className="public-time-controls">
                                 <DatePicker 
                                     onChange={(day) => this.onDateChange(day)}
-                                    selected={Date(this.state.bin.day + '-' + this.state.bin.year)}
+                                    value={selectedDate}
+                                    includeDates={this.state.dateOptions}
+                                    placeholderText={this.state.bin.day + '-' + this.state.bin.year}
+                                    className='datepicker'
                                 />
                                 <div className="timeseries-box">
                                     {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 

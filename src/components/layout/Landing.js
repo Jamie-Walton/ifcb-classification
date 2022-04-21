@@ -5,12 +5,15 @@ import ditylum from "../../assets/ditylum-gradient.png";
 
 export class Landing extends Component {
     // TODO: Make hero into img and add alt text
+    // media query smaller version when width is less than 950px
     render() {
         return (
             <main>
-                <div className='landing-hero'>
-                    <h2 className='landing-title'>Dive Into Phytoplankton</h2>
-                    <p className='landing-subtitle'>Identify phytoplankton types photographed by a robot! Help us monitor the ever-changing marine environment.</p>
+                <div className='landing-hero-container'>
+                    <div className='landing-hero'>
+                        <h2 className='landing-title'>Dive Into Phytoplankton</h2>
+                        <p className='landing-subtitle'>Identify phytoplankton types photographed by a robot! Help us monitor the ever-changing marine environment.</p>
+                    </div>
                 </div>
                 <div className='landing-content'>
                     <div className='main-panel'>

@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import HttpResponse, FileResponse
 from .serializers import PublicBinSerializer, PublicTargetSerializer, FrontEndPackageSerializer
 from .models import PublicBin, PublicTarget, PublicClassification, FrontEndPackage, Classifier
-from .services import create_public_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip, search_targets
+from .services import create_public_targets, get_files, get_days, get_rows, get_filled_days
 import requests
 import math
 import pandas as pd
@@ -137,7 +137,7 @@ def new_file(request, timeseries, file, user):
 
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
-    day_options, filled_days = get_days(timeline, year)
+    filled_days = get_filled_days(timeline)
     file_bin = PublicBin.objects.filter(file=file)
     if not file_bin:
         ifcb = create_public_targets(timeseries, year, day, file)
@@ -168,7 +168,7 @@ def new_file(request, timeseries, file, user):
     
     options = {
         'year_options': year_options,
-        'day_options': day_options,
+        'day_options': [[], []],
         'file_options': file_options,
         'set_options': set_options,
         'rows': rows,
@@ -209,7 +209,7 @@ def new_year(request, timeseries, year):
     volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/31-12-' + year)
     volume = volume_response.json()
 
-    if year == date.today().strftime('%Y'):
+    if year == datetime.date.today().strftime('%Y'):
         recent_file = volume[0]['pid'][35:51]
     else:
         recent_file = volume[len(volume)-1]['pid'][35:51]
