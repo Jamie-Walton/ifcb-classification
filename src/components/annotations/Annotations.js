@@ -122,7 +122,7 @@ class Annotations extends React.Component {
         if(this.props.preferences.load==='edited') {
             this.jumpToLastEdit();
         } else {
-            this.getNewTimeSeries('IFCB104');
+            this.getNewTimeSeries('SCW');
         }
     } else {
         const timeseries = urlInfo[2];
@@ -137,7 +137,7 @@ class Annotations extends React.Component {
                 loading: true,
             });
             axios
-                .get('/classes/IFCB104/')
+                .get('/classes/SCW/')
                 .then((res) => {
                     this.setState({ 
                         classes: res.data.map((c) => (c.display_name.replace('_', ' '))),

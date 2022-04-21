@@ -87,7 +87,7 @@ def sync_autoclass(timeseries, year, day, file):
     maxes = None
     try:
         for chunk in pd.read_csv(bin_url + '_class_scores.csv', chunksize=500, usecols=lambda x: x not in 'pid', dtype='float32'):
-            if timeseries == 'IFCB104':
+            if timeseries == 'SCW':
                 header = list(chunk.columns.values)
                 chunk.drop('Skeletonema', inplace=True, axis=1)
                 chunk.drop('Thalassionema', inplace=True, axis=1)

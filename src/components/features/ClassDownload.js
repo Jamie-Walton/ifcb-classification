@@ -34,7 +34,7 @@ class ClassDownload extends Component {
 
     componentDidMount() {
         axios
-            .get('/classes/IFCB104/')
+            .get('/classes/SCW/')
             .then((res) => {
                 this.setState({ 
                     classes: res.data.map((c) => (c.display_name)),
