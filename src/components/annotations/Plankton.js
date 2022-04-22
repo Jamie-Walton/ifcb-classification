@@ -67,7 +67,7 @@ class Plankton extends React.Component {
               <div className="plankton-button" id="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
                   <div className="plankton">
                       {this.renderImage()}
-                      <div className={this.props.group === 'lab' ? "info" : "hide"} onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
+                      <div className={this.props.public ? "hide" : "info"} onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
                           onMouseLeave={() => this.props.infoChange(this.props.targetNum, true, false)}
                           onClick={() => this.handleInfoClick()}></div>
                       <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>

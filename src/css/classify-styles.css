@@ -543,55 +543,22 @@ li {
 	border-radius: 3vw;
 	box-shadow: 0px 3px 10px #00000012;
 	border: 1px solid #DEDDDD;
-	padding: 1vw 2vw;
+	padding: 2vw 2vw;
 	width: fit-content;
 	margin: 0 2vw 0 0;
 }
 
-.sdp {
-	font-family: proxima-nova, sans-serif !important;
-	width: 18vw !important;
-	height: 18vw !important;
-	border: none !important;
-	box-shadow: none !important;
-}
-
-.sdp--dates-grid {
-    margin: 0.5vw 0 0 !important;
-	gap: 0 !important;
-}
-
-.sdp--text {
-    font-size: 0.85vw !important;
-	color: #707070;
-}
-
-.sdp--square-btn {
-    padding: 0vw !important;
-	width: 2vw !important;
-    font-size: 0.85vw !important;
-	height: 1.75vw !important;
-}
-
-.sdp--square-btn__shadowed {
-	height: 1.25vw !important;
-	width: 1.25vw !important;
-}
-
-.sdp--dates-grid>p.sdp--text {
-    padding: 0 !important;
-}
-
-.sdp--date-btn__selected {
-    background-color: #7dad0b !important;
-}
-
 .datepicker {
-	width: 13vw;
+	width: 11vw;
 }
+
+.react-datepicker__navigation {
+	width: 1.5vw;
+	height: 1.5vw;
+}	
 
 .timeseries-box {
-	padding: 2vw;
+	padding: 2vw 1vw 2vw 2vw;
 }
 
 .timeseries-list-item {
@@ -610,6 +577,11 @@ li {
 	text-align: center;
 	font-size: 0.85vw;
 	width: fit-content;
+}
+
+.akashiwo-character {
+	height: 12vw;
+	margin: 3vw 2vw 0 0;
 }
 
 .show {

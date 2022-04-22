@@ -4,7 +4,7 @@ import Header from '../layout/Header';
 import Plankton from './Plankton';
 import ClassMenu from './ClassMenu';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import '../../css/datepicker.css';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,6 +16,7 @@ import { changeScale } from "../../actions/preferences";
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
 import toTop from "../../icons/to-top.png";
+import akashiwo from "../../assets/akashiwo-character.png";
 
 class NavButton extends React.Component {
     render() {
@@ -468,7 +469,7 @@ class PublicClassify extends React.Component {
                                 onClick={(i) => this.handlePlanktonClick(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
-                                group={'public'}
+                                public={true}
                             />
                         )}
                     </div>
@@ -484,20 +485,23 @@ class PublicClassify extends React.Component {
             <div className="content">
                     <div className="inner-content">
                         <h1>Classify Phytoplankton</h1>
-                        <p className='subtitle'>Match each phytoplankton with their species! Choose a dataset to get started.</p>
+                        <p className='subtitle'>Match each phytoplankton with their species! Select a sample by choosing a date and an IFCB location.</p>
                         <div style={{'display':'flex'}}>
                             <div className="public-time-controls">
                                 <DatePicker 
                                     onChange={(day) => this.onDateChange(day)}
                                     value={selectedDate}
+                                    selected={selectedDate}
                                     includeDates={this.state.dateOptions}
                                     placeholderText={this.state.bin.day + '-' + this.state.bin.year}
                                     className='datepicker'
+                                    inline
                                 />
                                 <div className="timeseries-box">
                                     {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 
                                         <li key={i} className="timeseries-list-item" onClick={option => this.getNewTimeSeries(option)}>{option}</li>)}
                                 </div>
+                                <img src={akashiwo} alt="Drawing of a celebratory phytoplankton" className="akashiwo-character"></img>
                             </div>
                         </div>
                         <div className="annotations">

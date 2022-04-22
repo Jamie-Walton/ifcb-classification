@@ -187,16 +187,8 @@ def get_days(timeline, year):
 
 def get_filled_days(timeline):
     
-    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x'])-1)]
-    num_images = [timeline['y'][x] for x in range(0,len(timeline['y'])-1)]
-
-    filled_days = []
-
-    for d in range(0, len(days)-1):
-        if float(num_images[d]) > 0:
-            filled_days += [days[d]]
-
-    return filled_days
+    days = [timeline['x'][x][:10] for x in range(0,len(timeline['x']))]
+    return days
 
 
 def get_rows(b, sort, scale, phytoguide, status='Lab'):

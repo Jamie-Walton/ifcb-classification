@@ -1,5 +1,13 @@
 /* CSS Document */
 
+/* General */
+img {
+	font-family: proxima-nova, sans-serif;
+	color: #4E4E4E;
+	font-size: 0.85vw;
+	font-weight: 400;
+}
+
 
 /* Header */
 

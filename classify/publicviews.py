@@ -50,7 +50,6 @@ def new_targets(request, timeseries, file, user):
 
 @api_view(('PUT',))
 def edit_target(request, timeseries, file, number, user):
-    # TODO: Fix
     permission_classes = [
         permissions.IsAuthenticated,
     ]
@@ -62,7 +61,7 @@ def edit_target(request, timeseries, file, number, user):
         classifier.targets.remove(autotarget)
         b.target_set.create(number=0, width=0, height=0, \
             class_name='', class_abbr='', class_id='', \
-            date=date)
+            date=datetime.date.today())
         t = PublicTarget.objects.get(bin=b, number=0)
     serializer = PublicTargetSerializer(t, data=request.data,context={'request': request})
     if serializer.is_valid():
@@ -104,12 +103,12 @@ def new_rows(request, timeseries, file, sort, scale, phytoguide):
 
 
 ####### TIME NAVIGATION #######
-####### TODO: Fix all of these #######
 
 @api_view(('GET',))
 def new_timeseries(request, timeseries_name):
     
-    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries_name + '/api/feed/temperature/start/01-01-2015/end/' +  tomorrow.strftime('%Y-%m-%d'))
     volume = volume_response.json()
     recent_file = volume[0]['pid'].split('/')[4][:16]
 
@@ -125,7 +124,8 @@ def new_timeseries(request, timeseries_name):
 @api_view(('GET',))
 def new_file(request, timeseries, file, user):
     
-    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + tomorrow.strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     timeline_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/api/time-series/n_images?resolution=day&dataset=' + timeseries)
@@ -184,14 +184,15 @@ def new_file(request, timeseries, file, user):
 @api_view(('GET',))
 def new_day(request, timeseries, date):
     
-    day = datetime.datetime.strptime(date, '%b%m%Y').strftime('%Y-%m-%d')
+    day = datetime.datetime.strptime(date, '%b%d%Y').strftime('%Y-%m-%d')
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
-    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + datetime.date.today().strftime('%Y-%m-%d'))
+    volume_response = requests.get('http://akashiwo.oceandatacenter.ucsc.edu:8000/' + timeseries + '/api/feed/temperature/start/01-01-2015/end/' + tomorrow.strftime('%Y-%m-%d'))
     volume = volume_response.json()
 
     df = pd.DataFrame(volume)
     index = int(df[df['date'].str.contains(day)].index.values[0])
-    recent_file = volume[index]['pid'][54:70]
+    recent_file = volume[index]['pid'][50:66]
     
     options = {}
     bin = {'file': recent_file}
