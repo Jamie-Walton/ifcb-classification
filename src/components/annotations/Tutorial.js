@@ -7,10 +7,10 @@ class Tutorial extends React.Component {
         super(props);
         this.state = {
             toc: [
-                {id: 0, title: "Welcome!", text: "Let's start classifying phytoplankton.", buttons: null},
-                {id: 1, title: "Select a sample", text: "Some incredibly welcoming text here.", buttons: null},
+                {id: 0, title: "Welcome!", text: "Let's get started classifying phytoplankton.", buttons: null},
+                {id: 1, title: "Select a sample", text: "Each IFCB collects samples throughout the day full of phytoplankton images it captured. Load a sample by using the menu on the left to select a day and an IFCB location.", buttons: null},
                 {id: 2, title: "The AutoClassifier", text: "Each sample is run through an auto-clasification algorithm. Take a look at the first image. It has a code under it, like 'AKA' or 'UNCL.' This stands for the species name that the Auto Classifier assigned it. UNCL stands for 'unclassified' and it means that the classifier couldn't place it.", buttons: null},
-                {id: 3, title: "Does your image match?", text: "Your job is to check whether the classifier is right and classify the plankton it couldn't. Click on the classification name in the menu on the left that matches the code on the image. Does it match?", buttons: [{text: 'Yes', track: 0}, {text: 'No', track: 1}, {text: 'Unsure', track: 2}]},
+                {id: 3, title: "Does your image match?", text: "Your job is to check whether the classifier is right and classify the plankton it couldn't. Click on the classification name in the menu on the left that matches the code on the first image. Does the classification match your image?", buttons: [{text: 'Yes', track: 0}, {text: 'No', track: 1}, {text: 'Unsure', track: 2}]},
                 {id: 4, title: "Fantastic!", text: "You don't need to do anything with this image because it is already correct.", buttons: null},
                 {id: 5, title: "Good catch!", text: "Use your mouse to hover over the different names in the menu until you find one that looks like your image. There are a lot of options– you may find that you need to scroll.", buttons: null},
                 {id: 6, title: "Good call!", text: "It's always a good idea to be cautious if you're unsure. Use your mouse to hover over the different names in the menu and see if any match better. If you're still not sure, just skip this image– someone else may be able to get it.", buttons: null},
