@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { Link,  Redirect } from "react-router-dom";
+import Header from '../layout/HomeHeader';
 import ifcbGallery from "../../assets/ifcb-gallery.png";
 import ditylum from "../../assets/ditylum-gradient.png";
+import chaetoceros from "../../assets/chaetoceros-gradient.png";
+import lithodesmium from "../../assets/lithodesmium-gradient.png";
 
 export class Landing extends Component {
     // TODO: Make hero into img and add alt text
@@ -9,6 +12,7 @@ export class Landing extends Component {
     render() {
         return (
             <main>
+                <Header />
                 <div className='landing-hero-container'>
                     <div className='landing-hero'>
                         <h2 className='landing-title'>Dive Into Phytoplankton</h2>
@@ -26,16 +30,34 @@ export class Landing extends Component {
                         </div>
                         <div className='side-text'>
                             <h2 className='side-heading'>You can make a difference for our oceans.</h2>
-                            <p className='side-body'>Community scientist contributions drive data collection, etc.</p>
+                            <p className='side-body'>Community scientists have the potential to drive marine data collection.</p>
                         </div>
                         <div className='website-preview'></div>
                         <div className='get-involved-section'>
                         <img src={ifcbGallery} alt="Cursor clicking plankton images to identify them" width="80" loop="infinite" className="ifcb-gallery"></img>
                             <div className='side-text'>
                                 <h2 className='side-heading get-involved-heading'>Get Involved</h2>
-                                <p className='side-body'>Description of how people can start classifying with our site, what experience they need (none!), and what kind of impact they can make.</p>
+                                <p className='side-body'>Make an account and start classifying! No experience necessary. Explore the beautiful world of phytoplankton while making real contributions to scientific discovery and ocean conservation.</p>
                                 <button className='landing-button'>Learn More</button>
                             </div>
+                        </div>
+                    </div>
+                    <div className='external-container'>
+                        <div className='vert-section'>
+                            <img src={chaetoceros} alt="A long, ribbon-like phytoplankton with lots of tendrils" className="vert-image"></img>
+                            <div className='vert-text'>
+                                <h2 className='vert-heading'>What is an IFCB?</h2>
+                                <p className='vert-body'>An IFCB is a robotic microscope that collects water and takes pictures without a human.</p>
+                            </div>
+                            <button className='external-button'>Learn More</button>
+                        </div>
+                        <div className='vert-section righthand-container'>
+                            <img src={lithodesmium} alt="A translucent, pillow-like phytoplankton with a dark circular middle" className="vert-image"></img>
+                            <div className='vert-text'>
+                                <h2 className='vert-heading'>The Kudela Lab</h2>
+                                <p className='vert-body'>We use satellites, robots, and good old fashioned chemistry to understand phytoplankton.</p>
+                            </div>
+                            <button className='external-button'>Learn More</button>
                         </div>
                     </div>
                 </div>

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
 import { goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
 
-export class Header extends Component {
+export class HomeHeader extends Component {
     static propTypes = {
         auth: PropTypes.object.isRequired,
         logout: PropTypes.func.isRequired,
@@ -16,6 +16,7 @@ export class Header extends Component {
 
     render() {
         const { isAuthenticated, user } = this.props.auth;
+        var headerClass;
 
         if(this.props.onClassify) {
             return <Redirect to="/classify" />
@@ -23,6 +24,14 @@ export class Header extends Component {
             return <Redirect to="/notebook/" />
         } else if(this.props.onAnalysis) {
             return <Redirect to="/analysis" />
+        }
+
+        if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
+            headerClass = 'home-header';
+            console.log('scrolling');
+        } else {
+            headerClass = 'home-header';
+            console.log('at top');
         }
 
         const authLinks = (
@@ -83,7 +92,7 @@ export class Header extends Component {
         );
         
         return (
-            <header>
+            <header className={headerClass}>
                 <Link to="/" className="h3">IFCB Classification</Link>
                 { isAuthenticated ? authLinks : guestLinks }
             </header>
@@ -95,4 +104,4 @@ const mapStateToProps = state => ({
     auth: state.auth,
 });
 
-export default connect(mapStateToProps, { logout, goto_classify, goto_notebook, goto_analysis })(Header);
+export default connect(mapStateToProps, { logout, goto_classify, goto_notebook, goto_analysis })(HomeHeader);
