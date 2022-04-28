@@ -39,7 +39,7 @@ export default function(state = initialState, action) {
                 isAuthenticated: true,
                 isLoading: false,
                 user: action.payload.user,
-                preferences: action.payload.preferences
+                preferences: action.payload.preferences,
             };
         case PREFERENCES_LOADED:
             return {

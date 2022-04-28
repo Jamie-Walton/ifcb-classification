@@ -1,8 +1,38 @@
 /* CSS Document */
 
+/* General */
+.home-header {
+	background: none;
+	position: fixed;
+}
+
+img {
+	font-family: proxima-nova, sans-serif;
+	color: #4E4E4E;
+	font-size: 0.85vw;
+	font-weight: 400;
+}
+
+.h3 {
+	float: left;
+	margin: 6vw 0 0 6vw;
+	font-family: proxima-nova, sans-serif;
+	color: #FFFFFF;
+	font-size: 1.5vw;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0.1vw;
+	cursor: pointer;
+	text-decoration: none;
+	background: none;
+	border: none;
+}
+
+
+/* Header */
+
 header {
 	width: 100%;
-	/* position: fixed; */
 	height: 10vw;
 	z-index: 10000;
 }
@@ -27,4 +57,190 @@ header {
 	color: #FFFFFF;
 	font-size: 1vw;
 	font-weight: 400;
+}
+
+.scrolling-title {
+	background-color: burlywood;
+}
+
+
+/* Static Pages */
+
+.landing-hero {
+	height: 100vh;
+	background-image: url('../assets/landing-hero.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	padding: 200px 0 0 80px;
+}
+
+.landing-hero-container {
+	background-color: #1672D1;
+}
+
+.landing-title {
+	font-weight: 400;
+	font-size: 40px;
+	letter-spacing: 0.8px;
+	margin: 0 0 15px 0;
+}
+
+.landing-subtitle {
+	color: #FFFFFF;
+	font-size: 15px;
+	width: 350px;
+}
+
+.landing-content {
+	background-color: #F0F0F0;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.main-panel {
+	background-color: #809CAC;
+	box-shadow: 0px 6px 30px #4e4e4e29;
+	width: 850px;
+	margin: 60px auto;
+}
+
+.landing-button {
+	background-color: #FFFFFF;
+	border: none;
+	border-radius: 20px;
+	padding: 6px 20px;
+	margin: 40px 60px;
+	font-family: proxima-nova, sans-serif;
+	text-transform: uppercase;
+	color: #809CAC;
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.1vw;
+	cursor: pointer;
+}
+
+.landing-button:hover {
+	background-color: #365c72;
+	color: #FFFFFF;
+}
+
+.hor-section {
+	background-color: #FFFFFF;
+	display: flex;
+	height: 300px;
+}
+
+.hor-image {
+	background-image: url('../assets/ditylum-gradient.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 230px;
+}
+
+.section-heading {
+	color: #16619F;
+	font-size: 25px;
+	margin: 60px 0 20px 40px;
+}
+
+.section-body {
+	color: #16619F;
+	font-size: 13px;
+	margin: 0 0 0 40px;
+	width: 480px;
+}
+
+.website-preview {
+	background-color: #aaaaaa;
+	width: 400px;
+	height: 300px;
+	box-shadow: 0px 6px 30px #00000029;
+	border-radius: 32px;
+	position: relative;
+	top: -280px;
+	left: 350px;
+}
+
+.side-heading {
+	font-size: 25px;
+	margin: 60px 0 0 60px;
+	width: 250px;
+}
+
+.side-body {
+	color: #FFFFFF;
+	font-size: 13px;
+	margin: 20px 0 0 60px;
+	width: 250px;
+}
+
+.ifcb-gallery {
+	width: 350px;
+	margin: 0 0 0 60px;
+}
+
+.get-involved-section {
+	display: flex;
+	margin: -200px 0 200px 0;
+}
+
+.get-involved-heading {
+	margin-top: 20px;
+}
+
+.external-container {
+	display: flex;
+	position: relative;
+	top: -150px;
+	margin: auto;
+	justify-content: center;
+}
+
+.vert-section {
+	box-shadow: 0px 3px 10px #00000012;
+	background-color: #FFFFFF;
+	width: 300px;
+}
+
+.vert-image {
+	width: 300px;
+}
+
+.vert-text {
+	padding: 40px;
+}
+
+.vert-heading {
+	color: #16619F;
+	font-size: 25px;
+	margin: 0 0 10px 0;
+}
+
+.vert-body {
+	color: #16619F;
+	font-size: 13px;
+}
+
+.external-button {
+	background-color: #16619F;
+	border: none;
+	border-radius: 20px;
+	margin: 0px 40px 60px 40px;
+	padding: 6px 20px;
+	font-family: proxima-nova, sans-serif;
+	text-transform: uppercase;
+	color: #FFFFFF;
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.1vw;
+	cursor: pointer;
+}
+
+.external-button:hover {
+	background-color: #809CAC;
+}
+
+.righthand-container {
+	margin: 0 0 0 30px;
 }

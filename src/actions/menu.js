@@ -4,7 +4,21 @@ import {
     ANALYSIS_PAGE,
     CLASSDOWNLOAD_PAGE,
     SEARCH_PAGE,
+    HOME_PAGE,
+    LEARN_PAGE
 } from '../actions/types';
+
+export const goto_home = () => (dispatch) => {
+    dispatch({
+        type: HOME_PAGE
+    });
+};
+
+export const goto_learn = () => (dispatch) => {
+    dispatch({
+        type: LEARN_PAGE
+    });
+};
 
 export const goto_classify = () => (dispatch) => {
     dispatch({

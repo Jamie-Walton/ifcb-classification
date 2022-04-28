@@ -1,8 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class TimeSeriesOption(models.Model):
     name = models.CharField(max_length=15)
+    display_name = models.CharField(max_length=30, blank=True)
     ifcb = models.CharField(max_length=15)
+    public = models.BooleanField(default=True)
+    public_name = models.CharField(max_length=30, blank=True)
     def _str_(self):
         return self.name
 
@@ -64,3 +68,47 @@ class FrontEndPackage(models.Model):
     bin = models.JSONField()
     set = models.JSONField()
     options = models.JSONField()
+
+
+class PublicBin(models.Model):
+    timeseries = models.CharField(max_length=15)
+    ifcb = models.CharField(max_length=15)
+    year = models.CharField(max_length=4)
+    day = models.CharField(max_length=5)
+    file = models.CharField(max_length=17)
+
+    def _str_(self):
+        return self.file
+
+
+class PublicTarget(models.Model):
+    bin = models.ForeignKey(PublicBin, on_delete=models.CASCADE)
+    number = models.CharField(max_length=5)
+    height = models.IntegerField(default=0)
+    width = models.IntegerField(default=0)
+    class_name = models.CharField(max_length=120, default='Unclassified')
+    class_abbr = models.CharField(max_length=10, default="UNCL")
+    class_id = models.IntegerField(default="1")
+    date = models.DateField(auto_now=True)
+
+    def _str_(self):
+        return 'target_' + str(self.number)
+
+    
+class Classifier(models.Model):
+    user = models.CharField(max_length=50, default='Autoclassifier')
+    user_model = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    targets = models.ManyToManyField(PublicTarget, blank=True)
+    bins = models.ManyToManyField(PublicBin, blank=True)
+
+    def _str_(self):
+        return self.user
+
+
+class PublicClassification(models.Model):
+    target = models.ForeignKey(PublicTarget, on_delete=models.CASCADE)
+    editor = models.CharField(max_length=50)
+    class_name = models.CharField(max_length=120)
+    class_abbr = models.CharField(max_length=10)
+    class_id = models.IntegerField()
+    date = models.DateField(auto_now=True)

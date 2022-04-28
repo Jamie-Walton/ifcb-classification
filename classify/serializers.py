@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Bin, FrontEndPackage, Note, Target, ClassOption, TimeSeriesOption
-import datetime
+from .models import PublicBin, PublicTarget, PublicClassification
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +26,7 @@ class ClassOptionSerializer(serializers.ModelSerializer):
 class TimeSeriesOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSeriesOption
-        fields = ('id', 'name', 'ifcb')
+        fields = ('id', 'name', 'display_name', 'ifcb', 'public', 'public_name')
 
 class BinSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,3 +37,18 @@ class FrontEndPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FrontEndPackage
         fields = ('id', 'bin', 'options')
+
+class PublicBinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicBin
+        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file')
+
+class PublicTargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicTarget
+        fields = ('id', 'bin', 'number', 'height', 'width', 'class_name', 'class_abbr', 'class_id', 'date')
+
+class PublicClassificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicClassification
+        fields = ('id', 'target', 'editor', 'class_name', 'class_abbr', 'class_id', 'date')

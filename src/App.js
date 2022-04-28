@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Annotations from './components/annotations/Annotations';
+import Landing from './components/layout/Landing';
+import Learn from './components/layout/Learn';
+import Classify from './components/annotations/Classify';
 import Notebook from './components/features/Notebook';
 import Analysis from './components/features/Analysis';
 import ClassDownload from './components/features/ClassDownload';
@@ -29,19 +31,20 @@ class App extends Component {
                         <PrivateRoute 
                             exact path="/classify/:timeseries/:file" 
                             key={window.location.pathname}
-                            component={withRouter(Annotations)} />
+                            component={withRouter(Classify)} />
                         <PrivateRoute 
                             exact path="/classify/:timeseries/:file/:target" 
                             key={window.location.pathname}
-                            component={withRouter(Annotations)} />
-                        <PrivateRoute exact path="/classify/" component={Annotations} />
+                            component={withRouter(Classify)} />
+                        <PrivateRoute exact path="/classify/" component={Classify} />
                         <PrivateRoute exact path="/notebook/" component={Notebook} />
                         <PrivateRoute exact path="/analysis" component={Analysis} />
                         <PrivateRoute exact path="/analysis/classdownload" component={ClassDownload} />
                         <PrivateRoute exact path="/analysis/search" component={Search} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
-                        <PrivateRoute exact path="/" component={Annotations} />
+                        <Route exact path="/" key={window.location.pathname} component={Landing} />
+                        <Route exact path="/learn" component={Learn} />
                     </Switch>
                 </BrowserRouter>
             </Provider>

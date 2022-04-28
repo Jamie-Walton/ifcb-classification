@@ -169,6 +169,14 @@ class Search extends Component {
             return <Redirect to="/classify" />
         }
 
+        if(this.props.onHome) {
+            return <Redirect to="/" />
+        }
+    
+        if(this.props.onLearn) {
+            return <Redirect to="/learn" />
+        }
+
         if(this.props.onNotebook) {
             return <Redirect to="/notebook/" />
         }
@@ -235,6 +243,8 @@ class Search extends Component {
 
 const mapStateToProps = state => ({
     user: state.auth.user,
+    onHome: state.menu.onHome,
+    onLearn: state.menu.onLearn,
     onClassify: state.menu.onClassify,
     onNotebook: state.menu.onClassify,
     onAnalysis: state.menu.onAnalysis,
