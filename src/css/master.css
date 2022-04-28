@@ -31,7 +31,7 @@ img {
 
 header {
 	width: 100%;
-	/* position: fixed; */
+	position: fixed;
 	height: 10vw;
 	z-index: 10000;
 }
@@ -56,6 +56,10 @@ header {
 	color: #FFFFFF;
 	font-size: 1vw;
 	font-weight: 400;
+}
+
+.scrolling-title {
+	background-color: burlywood;
 }
 
 

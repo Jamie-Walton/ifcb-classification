@@ -8,6 +8,7 @@ import { goto_classify, goto_notebook, goto_analysis } from "../../actions/menu"
 export class Header extends Component {
     static propTypes = {
         auth: PropTypes.object.isRequired,
+        group: PropTypes.object.isRequired,
         logout: PropTypes.func.isRequired,
         goto_classify: PropTypes.func.isRequired,
         goto_notebook: PropTypes.func.isRequired,
@@ -24,52 +25,94 @@ export class Header extends Component {
         } else if(this.props.onAnalysis) {
             return <Redirect to="/analysis" />
         }
+        var authLinks;
 
-        const authLinks = (
-            <ul className="logoutbar">
-                <span className='nav-hello'>
-                    <strong className='nav-hello'>
-                        { user ? `Welcome, ${user.username}` : "" }
-                    </strong>
-                </span>
-                <div className="login-navbar">
-                    <li>
+        if(this.props.group[0] === 1) {
+            authLinks = (
+                <ul className="logoutbar">
+                    <span className='nav-hello'>
+                        <strong className='nav-hello'>
+                            { user ? `Welcome, ${user.username}` : "" }
+                        </strong>
+                    </span>
+                    <div className="login-navbar">
+                        <li>
+                            <button 
+                                onClick={this.props.goto_classify}
+                                className="login-nav-link">
+                                    Classify
+                            </button>
+                        </li>
+                        <li>
+                            <button  
+                                onClick={this.props.goto_notebook}
+                                className="login-nav-link">
+                                    Notebook
+                            </button>
+                        </li>
+                        <li>
+                            <button  
+                                onClick={this.props.goto_analysis}
+                                className="login-nav-link">
+                                    Analysis
+                            </button>
+                        </li>
+                        <li>
+                            <a  
+                                href="http://odontella.oceandatacenter.ucsc.edu:8000/admin/"
+                                className="login-nav-link">
+                                    Admin
+                            </a>
+                        </li>
+                    </div>
+                    <li className="nav-item">
                         <button 
-                            onClick={this.props.goto_classify}
-                            className="login-nav-link">
-                                Classify
-                        </button>
+                            onClick={this.props.logout} 
+                            to="/login" 
+                            className="logout">Logout</button>
                     </li>
-                    <li>
-                        <button  
-                            onClick={this.props.goto_notebook}
-                            className="login-nav-link">
-                                Notebook
-                        </button>
+                </ul>
+            );
+        } else {
+            authLinks = (
+                <ul className="logoutbar">
+                    <span className='nav-hello'>
+                        <strong className='nav-hello'>
+                            { user ? `Welcome, ${user.username}` : "" }
+                        </strong>
+                    </span>
+                    <div className="login-navbar">
+                        <li>
+                            <button 
+                                onClick={this.props.goto_classify}
+                                className="login-nav-link">
+                                    Home
+                            </button>
+                        </li>
+                        <li>
+                            <button  
+                                onClick={this.props.goto_notebook}
+                                className="login-nav-link">
+                                    Learn
+                            </button>
+                        </li>
+                        <li>
+                            <button  
+                                onClick={this.props.goto_classify}
+                                className="login-nav-link">
+                                    Classify
+                            </button>
+                        </li>
+                    </div>
+                    <li className="nav-item">
+                        <button 
+                            onClick={this.props.logout} 
+                            to="/login" 
+                            className="logout">Logout</button>
                     </li>
-                    <li>
-                        <button  
-                            onClick={this.props.goto_analysis}
-                            className="login-nav-link">
-                                Analysis
-                        </button>
-                    </li>
-                    <li>
-                        <a  
-                            href="http://dhcp-25-148.ucsc.edu:8000/admin/"
-                            className="login-nav-link">
-                                Admin
-                        </a>
-                    </li>
-                </div>
-                <li className="nav-item">
-                    <button 
-                        onClick={this.props.logout} 
-                        to="/login" 
-                        className="logout">Logout</button>
-                </li>
-            </ul>
-        );
+                </ul>
+            );
+        }
 
         const guestLinks = (
             <ul className="navbar">
@@ -93,6 +136,7 @@ export class Header extends Component {
 
 const mapStateToProps = state => ({
     auth: state.auth,
+    group: state.auth.user.groups,
 });
 
 export default connect(mapStateToProps, { logout, goto_classify, goto_notebook, goto_analysis })(Header);

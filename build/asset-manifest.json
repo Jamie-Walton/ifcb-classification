@@ -1,24 +1,29 @@
 {
   "files": {
-    "main.css": "/static/css/main.a3214730.chunk.css",
-    "main.js": "/static/js/main.5e801031.chunk.js",
-    "main.js.map": "/static/js/main.5e801031.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.57870858.js",
-    "runtime-main.js.map": "/static/js/runtime-main.57870858.js.map",
-    "static/js/2.ec31b67e.chunk.js": "/static/js/2.ec31b67e.chunk.js",
-    "static/js/2.ec31b67e.chunk.js.map": "/static/js/2.ec31b67e.chunk.js.map",
-    "static/js/3.7dce3e3c.chunk.js": "/static/js/3.7dce3e3c.chunk.js",
-    "static/js/3.7dce3e3c.chunk.js.map": "/static/js/3.7dce3e3c.chunk.js.map",
+    "main.css": "/static/css/main.d5ea9e50.chunk.css",
+    "main.js": "/static/js/main.98d82fcd.chunk.js",
+    "main.js.map": "/static/js/main.98d82fcd.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.9ec855a0.js",
+    "runtime-main.js.map": "/static/js/runtime-main.9ec855a0.js.map",
+    "static/js/2.d7d53c39.chunk.js": "/static/js/2.d7d53c39.chunk.js",
+    "static/js/2.d7d53c39.chunk.js.map": "/static/js/2.d7d53c39.chunk.js.map",
+    "static/js/3.ffa0306f.chunk.js": "/static/js/3.ffa0306f.chunk.js",
+    "static/js/3.ffa0306f.chunk.js.map": "/static/js/3.ffa0306f.chunk.js.map",
     "index.html": "/index.html",
-    "static/css/main.a3214730.chunk.css.map": "/static/css/main.a3214730.chunk.css.map",
-    "static/js/2.ec31b67e.chunk.js.LICENSE.txt": "/static/js/2.ec31b67e.chunk.js.LICENSE.txt",
+    "static/css/main.d5ea9e50.chunk.css.map": "/static/css/main.d5ea9e50.chunk.css.map",
+    "static/js/2.d7d53c39.chunk.js.LICENSE.txt": "/static/js/2.d7d53c39.chunk.js.LICENSE.txt",
+    "static/media/akashiwo-character.18a198bc.png": "/static/media/akashiwo-character.18a198bc.png",
+    "static/media/chaetoceros-gradient.f5286ef9.png": "/static/media/chaetoceros-gradient.f5286ef9.png",
+    "static/media/master.css": "/static/media/landing-hero.f3bd5496.png",
+    "static/media/ifcb-gallery.095b81b2.png": "/static/media/ifcb-gallery.095b81b2.png",
+    "static/media/lithodesmium-gradient.4b062529.png": "/static/media/lithodesmium-gradient.4b062529.png",
     "static/media/loader.a069fadb.GIF": "/static/media/loader.a069fadb.GIF",
     "static/media/auth-styles.css": "/static/media/register-plankton.a724b76b.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.57870858.js",
-    "static/js/2.ec31b67e.chunk.js",
-    "static/css/main.a3214730.chunk.css",
-    "static/js/main.5e801031.chunk.js"
+    "static/js/runtime-main.9ec855a0.js",
+    "static/js/2.d7d53c39.chunk.js",
+    "static/css/main.d5ea9e50.chunk.css",
+    "static/js/main.98d82fcd.chunk.js"
   ]
 }

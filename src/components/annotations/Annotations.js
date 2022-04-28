@@ -516,7 +516,7 @@ class Annotations extends React.Component {
   }
 
   handleDownload() {
-    document.getElementById('download-src').src = 'http://dhcp-25-148.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
+    document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
   openPreferences() {

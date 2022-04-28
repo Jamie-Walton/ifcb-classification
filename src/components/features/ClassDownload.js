@@ -126,7 +126,7 @@ class ClassDownload extends Component {
         const include = (this.state.optionalChoices.include.length < 1) ? ('None') : (this.state.optionalChoices.include.join('-'));
         const exclude = (this.state.optionalChoices.exclude.length < 1) ? ('None') : (this.state.optionalChoices.exclude.join('-'));
         const number = this.state.optionalChoices.number
-        document.getElementById('download-src').src = 'http://dhcp-25-148.ucsc.edu:8000/classdownload/' + this.state.classChoice + '/' + include + '/' + exclude + '/' + number + '/'
+        document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/classdownload/' + this.state.classChoice + '/' + include + '/' + exclude + '/' + number + '/'
     }
 
     loadFrame() {

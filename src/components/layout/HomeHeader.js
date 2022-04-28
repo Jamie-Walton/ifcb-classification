@@ -16,7 +16,7 @@ export class HomeHeader extends Component {
 
     render() {
         const { isAuthenticated, user } = this.props.auth;
-        var headerClass;
+        var title;
 
         if(this.props.onClassify) {
             return <Redirect to="/classify" />
@@ -26,12 +26,16 @@ export class HomeHeader extends Component {
             return <Redirect to="/analysis" />
         }
 
-        if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
-            headerClass = 'home-header';
-            console.log('scrolling');
-        } else {
-            headerClass = 'home-header';
-            console.log('at top');
+        if (document.getElementById('title')) {
+            if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
+                if (!document.getElementById('title').classList.contains('scrolling-title')) {
+                    document.getElementById('title').classList.add('scrolling-title');
+                }
+            } else {
+                if (document.getElementById('title').classList.contains('scrolling-title')) {
+                    document.getElementById('title').classList.remove('scrolling-title');
+                }
+            }
         }
 
         const authLinks = (
@@ -65,7 +69,7 @@ export class HomeHeader extends Component {
                     </li>
                     <li>
                         <a  
-                            href="http://dhcp-25-148.ucsc.edu:8000/admin/"
+                            href="http://odontella.oceandatacenter.ucsc.edu:8000/admin/"
                             className="login-nav-link">
                                 Admin
                         </a>
@@ -92,8 +96,8 @@ export class HomeHeader extends Component {
         );
         
         return (
-            <header className={headerClass}>
-                <Link to="/" className="h3">IFCB Classification</Link>
+            <header className='home-header'>
+                <Link to="/" id='title' className='h3'>IFCB Classification</Link>
                 { isAuthenticated ? authLinks : guestLinks }
             </header>
         );

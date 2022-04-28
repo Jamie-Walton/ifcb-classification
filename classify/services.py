@@ -153,15 +153,9 @@ def sync_autoclass(timeseries, year, day, file):
 
 def get_files(volume, date):
     
-    files = []
-    i = 0
-
-    while volume[i]['date'][:10] != date:
-        i+=1
-    
-    while volume[i]['date'][:10] == date:
-        files += [volume[i]['date'][10:]]
-        i+=1
+    df = pd.DataFrame(volume)
+    pids = df.loc[df['date'].str.contains(date)]['pid'].values.tolist()
+    files = [pid.split('/')[4][9:12] + ':' + pid.split('/')[4][12:14] + ':' + pid.split('/')[4][14:16] + 'Z' for pid in pids]
 
     return files
 
