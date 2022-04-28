@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import Header from '../layout/Header';
 import ifcbGallery from "../../assets/ifcb-gallery.png";
 import ditylum from "../../assets/ditylum-gradient.png";
-import preview from "../../assets/webpage.png";
 import chaetoceros from "../../assets/chaetoceros-gradient.png";
 import lithodesmium from "../../assets/lithodesmium-gradient.png";
 
@@ -26,8 +25,8 @@ export class Landing extends Component {
         if(this.props.onClassify) {
             return <Redirect to="/classify" />
         }
-        if(this.props.onLearn) {
-            return <Redirect to="/learn" />
+        if(this.props.onHome) {
+            return <Redirect to="/" />
         }
         if(this.props.onNotebook) {
             return <Redirect to="/notebook/" />
@@ -58,7 +57,7 @@ export class Landing extends Component {
                             <h2 className='side-heading'>You can make a difference for our oceans.</h2>
                             <p className='side-body'>Community scientists have the potential to drive marine data collection.</p>
                         </div>
-                        <img className='website-preview' src={preview} alt='A preview of the classification webpage, which includes a tutorial, buttons for picking plankton sample, images for classification, and more.'></img>
+                        <div className='website-preview'></div>
                         <div className='get-involved-section'>
                         <img src={ifcbGallery} alt="Cursor clicking plankton images to identify them" width="80" loop="infinite" className="ifcb-gallery"></img>
                             <div className='side-text'>
@@ -94,7 +93,7 @@ export class Landing extends Component {
 
 const mapStateToProps = state => ({
     onClassify: state.menu.onClassify,
-    onLearn: state.menu.onLearn,
+    onHome: state.menu.onHome,
     onNotebook: state.menu.onNotebook,
     onAnalysis: state.menu.onAnalysis,
  });

@@ -16,6 +16,8 @@ export const PREFERENCES_LOADED = "USER_LOADED";
 export const PREFERENCES_ERROR = "PREFERENCES_ERROR";
 
 // Menu
+export const HOME_PAGE = "HOME_PAGE";
+export const LEARN_PAGE = "LEARN_PAGE";
 export const CLASSIFY_PAGE = "CLASSIFY_PAGE";
 export const NOTEBOOK_PAGE = "NOTEBOOK_PAGE";
 export const ANALYSIS_PAGE = "ANALYSIS_PAGE";

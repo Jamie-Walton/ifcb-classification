@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Landing from './components/layout/Landing'
+import Landing from './components/layout/Landing';
+import Learn from './components/layout/Learn';
 import Classify from './components/annotations/Classify';
 import Notebook from './components/features/Notebook';
 import Analysis from './components/features/Analysis';
@@ -42,7 +43,8 @@ class App extends Component {
                         <PrivateRoute exact path="/analysis/search" component={Search} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
-                        <Route exact path="/" component={Landing} />
+                        <Route exact path="/" key={window.location.pathname} component={Landing} />
+                        <Route exact path="/learn" component={Learn} />
                     </Switch>
                 </BrowserRouter>
             </Provider>

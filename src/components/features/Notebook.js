@@ -172,6 +172,14 @@ class Notebook extends Component {
         return <Redirect to="/classify" />
     }
 
+    if(this.props.onHome) {
+        return <Redirect to="/" />
+    }
+
+    if(this.props.onLearn) {
+        return <Redirect to="/learn" />
+    }
+
     if(this.props.onAnalysis) {
         return <Redirect to="/analysis/" />
     }
@@ -342,6 +350,8 @@ class Notebook extends Component {
 
 const mapStateToProps = state => ({
     user: state.auth.user,
+    onHome: state.menu.onHome,
+    onLearn: state.menu.onLearn,
     onClassify: state.menu.onClassify,
     onAnalysis: state.menu.onAnalysis,
     noteChangeFlag: state.classify.noteChangeFlag

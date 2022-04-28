@@ -1,19 +1,11 @@
 import React from "react";
-import axios from "axios";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from "react-router-dom";
 import Annotations from "./Annotations";
 import PublicClassify from "./PublicClassify";
 
 
 class Classify extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {
-          
-      }
-  }
 
   static propTypes = {
     group: PropTypes.object.isRequired,

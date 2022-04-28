@@ -65,6 +65,14 @@ class Analysis extends Component {
             return <Redirect to="/classify" />
         }
 
+        if(this.props.onHome) {
+            return <Redirect to="/" />
+        }
+    
+        if(this.props.onLearn) {
+            return <Redirect to="/learn" />
+        }
+
         if(this.props.onNotebook) {
             return <Redirect to="/notebook/" />
         }
@@ -102,6 +110,8 @@ class Analysis extends Component {
 const mapStateToProps = state => ({
     user: state.auth.user,
     onClassify: state.menu.onClassify,
+    onHome: state.menu.onHome,
+    onLearn: state.menu.onLearn,
     onNotebook: state.menu.onNotebook,
     onClassDownload: state.menu.onClassDownload,
     onSearch: state.menu.onSearch,

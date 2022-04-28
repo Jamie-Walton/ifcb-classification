@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link,  Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
-import { goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
+import { goto_home, goto_learn, goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
 
 export class HomeHeader extends Component {
     static propTypes = {
@@ -97,7 +97,11 @@ export class HomeHeader extends Component {
         
         return (
             <header className='home-header'>
-                <Link to="/" id='title' className='h3'>IFCB Classification</Link>
+                <button  
+                    onClick={this.props.goto_home}
+                    className="h3">
+                        IFCB Classification
+                </button>
                 { isAuthenticated ? authLinks : guestLinks }
             </header>
         );
@@ -106,6 +110,12 @@ export class HomeHeader extends Component {
 
 const mapStateToProps = state => ({
     auth: state.auth,
+    onHome: state.menu.onHome,
+    onLearn: state.menu.onLearn,
+    onClassify: state.menu.onClassify,
+    onNotebook: state.menu.onNotebook,
+    onClassDownload: state.menu.onClassDownload,
+    onSearch: state.menu.onSearch,
 });
 
-export default connect(mapStateToProps, { logout, goto_classify, goto_notebook, goto_analysis })(HomeHeader);
+export default connect(mapStateToProps, { logout, goto_home, goto_learn, goto_classify, goto_notebook, goto_analysis })(HomeHeader);

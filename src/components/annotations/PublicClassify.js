@@ -540,6 +540,14 @@ class PublicClassify extends React.Component {
 
   render() {
     
+    if(this.props.onHome) {
+        return <Redirect to="/" />
+    }
+
+    if(this.props.onLearn) {
+        return <Redirect to="/learn" />
+    }
+    
     if(this.props.onNotebook) {
         return <Redirect to="/notebook/" />
     }
@@ -593,6 +601,8 @@ const mapStateToProps = state => ({
     isSaving: state.classify.isSaving,
     user: state.auth.user,
     scaleEntry: state.classify.scaleEntry,
+    onHome: state.menu.onHome,
+    onLearn: state.menu.onLearn,
     onNotebook: state.menu.onNotebook,
     onAnalysis: state.menu.onAnalysis,
  });
