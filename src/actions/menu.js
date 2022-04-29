@@ -5,7 +5,9 @@ import {
     CLASSDOWNLOAD_PAGE,
     SEARCH_PAGE,
     HOME_PAGE,
-    LEARN_PAGE
+    LEARN_PAGE,
+    REGISTER_PAGE,
+    LOGIN_PAGE,
 } from '../actions/types';
 
 export const goto_home = () => (dispatch) => {
@@ -17,6 +19,18 @@ export const goto_home = () => (dispatch) => {
 export const goto_learn = () => (dispatch) => {
     dispatch({
         type: LEARN_PAGE
+    });
+};
+
+export const goto_register = () => (dispatch) => {
+    dispatch({
+        type: REGISTER_PAGE
+    });
+};
+
+export const goto_login = () => (dispatch) => {
+    dispatch({
+        type: LOGIN_PAGE
     });
 };
 

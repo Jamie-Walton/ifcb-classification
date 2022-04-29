@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link,  Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
-import { goto_home, goto_learn, goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
+import { goto_home, goto_learn, goto_register, goto_login, goto_classify, goto_notebook, goto_analysis } from "../../actions/menu";
 
 export class Header extends Component {
     static propTypes = {
@@ -12,6 +12,8 @@ export class Header extends Component {
         location: PropTypes.object.isRequired,
         goto_home: PropTypes.func.isRequired,
         goto_learn: PropTypes.func.isRequired,
+        goto_register: PropTypes.func.isRequired,
+        goto_login: PropTypes.func.isRequired,
         goto_classify: PropTypes.func.isRequired,
         goto_notebook: PropTypes.func.isRequired,
         goto_analysis: PropTypes.func.isRequired,
@@ -123,10 +125,10 @@ export class Header extends Component {
         const guestLinks = (
             <ul className="navbar">
                 <li className="nav-item">
-                    <Link to="/register" className="nav-link">Register</Link>
+                    <Link to="/register" className="nav-link" onClick={this.props.goto_register}>Register</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/login" className="nav-link">Login</Link>
+                    <Link to="/login" className="nav-link" onClick={this.props.goto_login}>Login</Link>
                 </li>
             </ul>
         );
@@ -150,4 +152,4 @@ const mapStateToProps = state => ({
     onHome: state.menu.onHome,
 });
 
-export default connect(mapStateToProps, { logout, goto_home, goto_learn, goto_classify, goto_notebook, goto_analysis })(Header);
+export default connect(mapStateToProps, { logout, goto_home, goto_learn, goto_register, goto_login, goto_classify, goto_notebook, goto_analysis })(Header);

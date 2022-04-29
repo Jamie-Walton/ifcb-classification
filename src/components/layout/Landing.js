@@ -19,6 +19,8 @@ export class Landing extends Component {
         onLearn: PropTypes.bool,
         onNotebook: PropTypes.bool,
         onAnalysis: PropTypes.bool,
+        onRegister: PropTypes.bool,
+        onLogin: PropTypes.bool,
       };
 
     render() {
@@ -28,6 +30,12 @@ export class Landing extends Component {
         }
         if(this.props.onLearn) {
             return <Redirect to="/learn" />
+        }
+        if(this.props.onRegister) {
+            return <Redirect to="/register" />
+        }
+        if(this.props.onLogin) {
+            return <Redirect to="/login" />
         }
         if(this.props.onNotebook) {
             return <Redirect to="/notebook/" />
@@ -95,6 +103,8 @@ export class Landing extends Component {
 const mapStateToProps = state => ({
     onClassify: state.menu.onClassify,
     onLearn: state.menu.onLearn,
+    onRegister: state.menu.onRegister,
+    onLogin: state.menu.onLogin,
     onNotebook: state.menu.onNotebook,
     onAnalysis: state.menu.onAnalysis,
  });

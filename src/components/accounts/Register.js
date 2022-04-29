@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { PropTypes } from "prop-types";
 import { register } from "../../actions/auth";
+import { goto_home } from "../../actions/menu";
 
 export class Register extends Component {
     state = {
@@ -16,7 +17,8 @@ export class Register extends Component {
 
     static propTypes = {
         register: PropTypes.func.isRequired,
-        isAuthenticated: PropTypes.bool
+        isAuthenticated: PropTypes.bool,
+        goto_home: PropTypes.func,
     };
 
     onSubmit = e => {
@@ -35,7 +37,6 @@ export class Register extends Component {
                 email,
                 password
             }
-            console.log(newUser);
             this.props.register(newUser);
         }
     }
@@ -99,6 +100,10 @@ export class Register extends Component {
         if(this.props.isAuthenticated) {
             return <Redirect to="/classify" />;
         }
+
+        if(this.props.onHome && !this.props.onRegister) {
+            return <Redirect to="/" />
+        }
         
         const { username, email, password, password2, labcode } = this.state;
         return (
@@ -106,7 +111,11 @@ export class Register extends Component {
                 <title>IFCB | Register</title>
                 <main className="register-main">
                 <div className="header">
-                    <h3>IFCB Classification</h3>
+                    <button  
+                        onClick={this.props.goto_home}
+                        className="h3">
+                            IFCB Classification
+                    </button>
                     <ul className="navbar">
                         <li className="nav-item">
                             <Link to="/register" className="nav-link">Register</Link>
@@ -197,7 +206,9 @@ export class Register extends Component {
 }
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated 
+    isAuthenticated: state.auth.isAuthenticated,
+    onHome: state.menu.onHome,
+    onRegister: state.menu.onRegister,
  });
  
- export default connect(mapStateToProps, { register })(Register);
+ export default connect(mapStateToProps, { register, goto_home })(Register);

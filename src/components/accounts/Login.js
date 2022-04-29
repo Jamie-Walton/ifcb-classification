@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { PropTypes } from "prop-types";
 import { login } from "../../actions/auth";
+import { goto_home } from "../../actions/menu";
 
 import '../../css/auth-styles.css';
 
@@ -18,7 +19,8 @@ export class Login extends Component {
         login: PropTypes.func.isRequired,
         isAuthenticated: PropTypes.bool,
         loginFailed: PropTypes.bool,
-        location: PropTypes.string
+        location: PropTypes.string,
+        goto_home: PropTypes.func,
     };
 
     onSubmit = e => {
@@ -47,6 +49,10 @@ export class Login extends Component {
                 }
             }
         }
+
+        if(this.props.onHome) {
+            return <Redirect to="/" />
+        }
         
         const { username, password } = this.state;
         return (
@@ -54,7 +60,11 @@ export class Login extends Component {
                 <title>IFCB | Login</title>
                 <main className="login-main">
                 <div className="header">
-                    <h3>IFCB Classification</h3>
+                    <button  
+                        onClick={this.props.goto_home}
+                        className="h3">
+                            IFCB Classification
+                    </button>
                     <ul className="navbar">
                         <li className="nav-item">
                             <Link to="/register" className="nav-link">Register</Link>
@@ -107,7 +117,8 @@ export class Login extends Component {
 const mapStateToProps = state => ({
    isAuthenticated: state.auth.isAuthenticated,
    loginFailed: state.auth.loginFailed,
-   location: state.auth.location 
+   location: state.auth.location,
+   onHome: state.menu.onHome,
 });
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, goto_home })(Login);
