@@ -8,6 +8,7 @@ import {
     LEARN_PAGE,
     REGISTER_PAGE,
     LOGIN_PAGE,
+    COMMUNITYREVIEW_PAGE
 } from '../actions/types';
 
 export const goto_home = () => (dispatch) => {
@@ -63,5 +64,12 @@ export const goto_search = () => (dispatch) => {
     console.log('Going to Download');
     dispatch({
         type: SEARCH_PAGE
+    });
+};
+
+export const goto_communityreview = () => (dispatch) => {
+    console.log('Going to Community Review');
+    dispatch({
+        type: COMMUNITYREVIEW_PAGE
     });
 };

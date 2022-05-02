@@ -139,36 +139,39 @@ class PublicClassify extends React.Component {
             });
         })
         .catch((err) => console.log(err));
-    axios
-        .get('/process/public/file/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
-        .then((res) => {
-            this.setState({ 
-                bin: res.data.bin, 
-                yearOptions: res.data.options.year_options.reverse(),
-                dayOptions: res.data.options.day_options[1],
-                dateOptions: res.data.options.filled_days.map((date) => (new Date(date))),
-                fileOptions: res.data.options.file_options,
-                setOptions: res.data.options.set_options,
-                rows: res.data.options.rows,
-                filledDays: res.data.options.filled_days,
-                dayOption: res.data.bin.day,
+
+    if (file !== undefined) {
+        axios
+            .get('/process/public/file/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
+            .then((res) => {
+                this.setState({ 
+                    bin: res.data.bin, 
+                    yearOptions: res.data.options.year_options.reverse(),
+                    dayOptions: res.data.options.day_options[1],
+                    dateOptions: res.data.options.filled_days.map((date) => (new Date(date))),
+                    fileOptions: res.data.options.file_options,
+                    setOptions: res.data.options.set_options,
+                    rows: res.data.options.rows,
+                    filledDays: res.data.options.filled_days,
+                    dayOption: res.data.bin.day,
+                })
+                axios
+                    .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
+                    .then((targetResponse) => {
+                        this.setState({ 
+                            targets: targetResponse.data,
+                            targetNumbers: targetResponse.data.map(t => t.number),
+                            history: [JSON.stringify(targetResponse.data)],
+                            loading: false,
+                        });
+                });
             })
-            axios
-                .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
-                .then((targetResponse) => {
-                    this.setState({ 
-                        targets: targetResponse.data,
-                        targetNumbers: targetResponse.data.map(t => t.number),
-                        history: [JSON.stringify(targetResponse.data)],
-                        loading: false,
-                    });
+            .catch((err) => {
+                console.log(err);
+                this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
+                return;
             });
-        })
-        .catch((err) => {
-            console.log(err);
-            this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
-            return;
-        });
+    }
 
   }
 
@@ -521,13 +524,6 @@ class PublicClassify extends React.Component {
                                     scrollToIndex={scrollToIndex}
                                     width={document.documentElement.clientWidth*0.72}
                                 />
-                                <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
-                            </div>
-                        </div>
-                        <div className='navigation-container'>
-                            <div style={{'display':'flex'}}>
-                                {this.renderNavButton('previous')}
-                                {this.renderNavButton('next')}
                             </div>
                         </div>
                     </div>

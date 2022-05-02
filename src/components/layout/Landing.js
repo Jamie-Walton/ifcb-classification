@@ -8,6 +8,7 @@ import ditylum from "../../assets/ditylum-gradient.png";
 import preview from "../../assets/webpage.png";
 import chaetoceros from "../../assets/chaetoceros-gradient.png";
 import lithodesmium from "../../assets/lithodesmium-gradient.png";
+import { goto_learn, goto_classify } from "../../actions/menu";
 
 export class Landing extends Component {
     // TODO: Make hero into img and add alt text
@@ -21,6 +22,8 @@ export class Landing extends Component {
         onAnalysis: PropTypes.bool,
         onRegister: PropTypes.bool,
         onLogin: PropTypes.bool,
+        goto_learn: PropTypes.func,
+        goto_classify: PropTypes.func,
       };
 
     render() {
@@ -51,6 +54,10 @@ export class Landing extends Component {
                     <div className='landing-hero'>
                         <h2 className='landing-title'>Dive Into Phytoplankton</h2>
                         <p className='landing-subtitle'>Identify phytoplankton types photographed by a robot! Help us monitor the ever-changing marine environment.</p>
+                        <div>
+                            <button className='landing-hero-button' onClick={this.props.goto_learn}>Learn More</button>
+                            <button className='landing-hero-button' onClick={this.props.goto_classify}>Classify</button>
+                        </div>
                     </div>
                 </div>
                 <div className='landing-content'>
@@ -59,7 +66,7 @@ export class Landing extends Component {
                             <img className='hor-image' src={ditylum} alt='The community science webpage, which features a title reading "Classify Phytoplankton," a gallery of blank and white microscope images of phytoplankton, and a menu of phytoplankton classification names.'></img>
                             <div className='hor-text'>
                                 <h2 className='section-heading'>The Classification Project</h2>
-                                <p className='section-body'>A description of the project and why it’s important. Include details of the significance of manual classification data collection.</p>
+                                <p className='section-body'>Our community classification tool is expanding phytoplankton identification to everyone. It's a network of community scientists making real change in studying the ocean, tracking harmful algae blooms, and more.</p>
                             </div>
                         </div>
                         <div className='side-text'>
@@ -72,7 +79,7 @@ export class Landing extends Component {
                             <div className='side-text'>
                                 <h2 className='side-heading get-involved-heading'>Get Involved</h2>
                                 <p className='side-body'>Make an account and start classifying! No experience necessary. Explore the beautiful world of phytoplankton while making real contributions to scientific discovery and ocean conservation.</p>
-                                <button className='landing-button'>Learn More</button>
+                                <button className='landing-button' onClick={this.props.goto_classify}>Start Now</button>
                             </div>
                         </div>
                     </div>
@@ -83,7 +90,7 @@ export class Landing extends Component {
                                 <h2 className='vert-heading'>What is an IFCB?</h2>
                                 <p className='vert-body'>An IFCB is a robotic microscope that collects water and takes pictures without a human.</p>
                             </div>
-                            <button className='external-button'>Learn More</button>
+                            <button className='external-button' onClick={this.props.goto_learn}>Learn More</button>
                         </div>
                         <div className='vert-section righthand-container'>
                             <img src={lithodesmium} alt="A translucent, pillow-like phytoplankton with a dark circular middle" className="vert-image"></img>
@@ -91,7 +98,7 @@ export class Landing extends Component {
                                 <h2 className='vert-heading'>The Kudela Lab</h2>
                                 <p className='vert-body'>We use satellites, robots, and good old fashioned chemistry to understand phytoplankton.</p>
                             </div>
-                            <button className='external-button'>Learn More</button>
+                            <button className='external-button' onClick={this.props.goto_learn}>Learn More</button>
                         </div>
                     </div>
                 </div>
@@ -109,4 +116,4 @@ const mapStateToProps = state => ({
     onAnalysis: state.menu.onAnalysis,
  });
 
- export default connect(mapStateToProps)(Landing);
+ export default connect(mapStateToProps, { goto_learn, goto_classify })(Landing);

@@ -64,10 +64,10 @@ header {
 }
 
 
-/* Static Pages */
+/* Landing */
 
 .landing-hero {
-	height: 100vh;
+	height: 85vh;
 	background-image: url('../assets/landing-hero.png');
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -89,6 +89,26 @@ header {
 	color: #FFFFFF;
 	font-size: 15px;
 	width: 350px;
+}
+
+.landing-hero-button {
+	background-color: #FFFFFF;
+	border: none;
+	border-radius: 20px;
+	padding: 6px 20px;
+	margin: 40px 20px 0 0;
+	font-family: proxima-nova, sans-serif;
+	text-transform: uppercase;
+	color: #16bbd1;
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.1vw;
+	cursor: pointer;
+}
+
+.landing-hero-button:hover {
+	background-color: #1672D1;
+	color: #FFFFFF;
 }
 
 .landing-content {
@@ -243,4 +263,53 @@ header {
 
 .righthand-container {
 	margin: 0 0 0 30px;
+}
+
+
+/* Learn */
+
+.learn-hero {
+	height: 50vh;
+	background-image: url('../assets/learn-hero.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: right;
+	padding: 230px 0 0 80px;
+}
+
+.learn-title {
+	font-weight: 400;
+	font-size: 40px;
+	letter-spacing: 0.8px;
+}
+
+.learn-page {
+	background-color: #FFFFFF;
+	box-shadow: 0px 6px 30px #00000029;
+	width: 95vw;
+	margin: auto;
+	padding: 6vw;
+	min-height: 70vh;
+}
+
+.learn-heading {
+	color: #4E4E4E;
+	font-weight: 600;
+	font-size: 17px;
+	margin: 0 0 0 0;
+	padding: 0;
+	display: auto;
+}
+
+.learn-body {
+	color: #4E4E4E;
+	font-size: 13px;
+	margin: 20px 0 40px 0;
+	padding: 0;
+	display: auto;
+	width: 600px;
+}
+
+br {
+	padding: 10px 0 0 0;
 }

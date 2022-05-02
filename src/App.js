@@ -9,6 +9,7 @@ import Notebook from './components/features/Notebook';
 import Analysis from './components/features/Analysis';
 import ClassDownload from './components/features/ClassDownload';
 import Search from './components/features/Search';
+import CommunityReview from './components/features/CommunityReview';
 import Login from './components/accounts/Login';
 import Register from './components/accounts/Register';
 import PrivateRoute from './components/common/PrivateRoute';
@@ -41,6 +42,7 @@ class App extends Component {
                         <PrivateRoute exact path="/analysis" component={Analysis} />
                         <PrivateRoute exact path="/analysis/classdownload" component={ClassDownload} />
                         <PrivateRoute exact path="/analysis/search" component={Search} />
+                        <PrivateRoute exact path="/analysis/communityreview" component={CommunityReview} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/" key={window.location.pathname} component={Landing} />

@@ -25,6 +25,7 @@ export const NOTEBOOK_PAGE = "NOTEBOOK_PAGE";
 export const ANALYSIS_PAGE = "ANALYSIS_PAGE";
 export const CLASSDOWNLOAD_PAGE = "CLASSDOWNLOAD_PAGE";
 export const SEARCH_PAGE = "SEARCH_PAGE";
+export const COMMUNITYREVIEW_PAGE = "COMMUNITYREVIEW_PAGE";
 
 // Classification
 export const SAVE_SUCCESS = "SAVE_SUCCESS";

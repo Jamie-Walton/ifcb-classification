@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import Header from '../layout/Header';
-import { goto_classdownload, goto_search } from "../../actions/menu";
+import { goto_classdownload, goto_search, goto_communityreview } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
@@ -27,6 +27,7 @@ class Analysis extends Component {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help of classification filtering, file look-up, and more."},
                 {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."},
+                {heading: 'Analyze Community Data', description: "Review community scientist classifications and download their datasets."},
             ],
             bin: '',
             target: '',
@@ -49,6 +50,8 @@ class Analysis extends Component {
             handleClick = this.props.goto_search;
         } else if (option.heading === 'Download by Class') {
             handleClick = this.props.goto_classdownload;
+        } else if (option.heading === 'Analyze Community Data') {
+            handleClick = this.props.goto_communityreview;
         }
         return (
             <AnalysisOption
@@ -85,6 +88,10 @@ class Analysis extends Component {
             return <Redirect to="/analysis/search" />
         }
 
+        if(this.props.onCommunityReview) {
+            return <Redirect to="/analysis/communityreview" />
+        }
+
         return(
             <div>
                 <Header />
@@ -115,6 +122,7 @@ const mapStateToProps = state => ({
     onNotebook: state.menu.onNotebook,
     onClassDownload: state.menu.onClassDownload,
     onSearch: state.menu.onSearch,
+    onCommunityReview: state.menu.onCommunityReview,
  });
 
-export default connect(mapStateToProps, { goto_classdownload, goto_search })(Analysis);
+export default connect(mapStateToProps, { goto_classdownload, goto_search, goto_communityreview })(Analysis);

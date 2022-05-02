@@ -134,7 +134,7 @@ export class Header extends Component {
         );
         
         return (
-            <header className={pathname === '/' ? 'home-header' : 'general-header'}>
+            <header className={(pathname === '/' || pathname === '/learn') ? 'home-header' : 'general-header'}>
                 <button  
                     onClick={this.props.goto_home}
                     className="h3">
