@@ -350,61 +350,6 @@ class PublicClassify extends React.Component {
       />;
   }
 
-  renderNavButton(direction) {
-    var dir;
-    var text;
-    var className;
-    (direction === 'next') ? (dir = 1) : (dir = -1);
-    (direction === 'next') ? (className = 'next-button') : (className='previous-button');
-
-    const currentFile = (element) => 
-        'D' + this.state.bin.year + this.state.bin.day.slice(0,2) + this.state.bin.day.slice(3,5) + 
-        element.slice(0,3) + element.slice(4,6) + element.slice(7,9) === this.state.bin.file;
-    const fileNumber = this.state.fileOptions.findIndex(currentFile);
-    if ((fileNumber === this.state.fileOptions.length-1 && dir === 1) || (fileNumber === 0 && dir === -1)) {
-        const currentDay = (element) => element === this.state.bin.day;
-        const dayNumber = this.state.filledDays.findIndex(currentDay);
-        if ((dayNumber === this.state.filledDays.length-1 && dir === 1) || (dayNumber === 0 && dir === -1)) {
-            const currentYear = (element) => element === Number(this.state.bin.year);
-            const yearOptions = this.state.yearOptions.slice().reverse()
-            const yearNumber = yearOptions.findIndex(currentYear);
-            if ((yearNumber === yearOptions.length-1 && dir === 1)) {
-                return <NavButton
-                    text={'Up to Date'}
-                    className={'up-to-date-button'}
-                />;
-            } else if (yearNumber === 0 && dir === -1) {
-                return <NavButton
-                    text={'No Previous Data'}
-                    className={'up-to-date-button'}
-                />;
-            } else {
-                text = (direction === 'next') ? ('Next Year   >') : ('<   Previous Year');
-                return <NavButton
-                    text={text}
-                    onClick={() => this.getNewYear(yearOptions[yearNumber + dir])}
-                    className={className}
-                />
-            }
-        } else {
-            text = (direction === 'next') ? ('Next Day   >') : ('<   Previous Day');
-            return <NavButton
-                text={text}
-                onClick={() => this.handleNewDay(this.state.filledDays[dayNumber + dir])}
-                className={className}
-            />
-        }
-    } else {
-        text = (direction === 'next') ? ('Next File   >') : ('<   Previous File');
-        return <NavButton
-            text={text}
-            onClick={() => this.handleNewFile(this.state.fileOptions[fileNumber + dir])}
-            className={className}
-        />
-    }
-    
-  }
-
   renderLoader() {
     return <img src={loader} alt="Loading targets..." width="80" loop="infinite" style={{'margin':'0 0 3vw 0'}}></img>
   }

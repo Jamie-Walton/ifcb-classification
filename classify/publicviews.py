@@ -65,9 +65,14 @@ def edit_target(request, timeseries, file, number, user):
         t = PublicTarget.objects.get(bin=b, number=0)
     else:
         t = t[0]
-    serializer = PublicTargetSerializer(t, data=request.data,context={'request': request})
+    target_id = t.id
+    data = request.data
+    data.pop('id')
+    data['id'] = target_id
+    serializer = PublicTargetSerializer(t, data=data,context={'request': request})
     if serializer.is_valid():
         serializer.save()
+        classifier.targets.add(PublicTarget.objects.get(id=target_id))
         return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -89,7 +94,7 @@ def undo(request, timeseries, file, set):
 
 
 @api_view(('GET',))
-def new_rows(request, timeseries, file, sort, scale, phytoguide):
+def new_rows(request, timeseries, file, sort, scale, phytoguide, user=None):
     
     b = PublicBin.objects.get(timeseries=timeseries, file=file)
     rows = get_rows(b, sort, scale, phytoguide)
@@ -159,7 +164,7 @@ def new_file(request, timeseries, file, user):
 
     b = PublicBin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, 'AZ', 560, True, 'Public')
+    rows = get_rows(b, 'AZ', 560, True, 'Public', user)
     
     bin = {
         'timeseries': timeseries, 

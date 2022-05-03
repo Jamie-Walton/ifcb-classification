@@ -185,23 +185,21 @@ def get_filled_days(timeline):
     return days
 
 
-def get_rows(b, sort, scale, phytoguide, status='Lab'):
+def get_rows(b, sort, scale, phytoguide, status='Lab', user=None):
 
     if status == 'Public':
-        model = PublicTarget
+        targets = PublicTarget.objects.filter(bin=b).filter(classifier__user=user).order_by('class_name', '-height')
         class_name = 'class_name'
     else:
-        model = Target
         class_name = 'class_name'
-
-    if sort == 'AZ':
-        targets = model.objects.filter(bin=b).order_by(class_name, '-height')
-    elif sort == 'ZA':
-        targets = model.objects.filter(bin=b).order_by(-class_name, '-height')
-    elif sort == 'LS':
-        targets = model.objects.filter(bin=b).order_by('-height')
-    elif sort == 'SL':
-        targets = model.objects.filter(bin=b).order_by('height')
+        if sort == 'AZ':
+            targets = Target.objects.filter(bin=b).order_by(class_name, '-height')
+        elif sort == 'ZA':
+            targets = Target.objects.filter(bin=b).order_by(-class_name, '-height')
+        elif sort == 'LS':
+            targets = Target.objects.filter(bin=b).order_by('-height')
+        elif sort == 'SL':
+            targets = Target.objects.filter(bin=b).order_by('height')
 
     rows = [[]]
     space = 70
