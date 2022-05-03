@@ -332,7 +332,7 @@ class PublicClassify extends React.Component {
         container.style.backgroundColor = '#16609F';
         text.style.color = '#FFFFFF';
 
-        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user);
+        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
   }
 

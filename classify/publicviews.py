@@ -56,13 +56,15 @@ def edit_target(request, timeseries, file, number, user):
     b = PublicBin.objects.get(timeseries=timeseries, file=file)
     t = PublicTarget.objects.filter(bin=b, number=number, classifier__user=user).exclude(classifier__user='Auto Classifier')
     if not t.exists():
-        autotarget = PublicTarget.objects.get(bin=b, number=number)
+        autotarget = PublicTarget.objects.get(bin=b, number=number, classifier__user=user)
         classifier = Classifier.objects.get(user=user)
         classifier.targets.remove(autotarget)
-        b.target_set.create(number=0, width=0, height=0, \
-            class_name='', class_abbr='', class_id='', \
+        b.publictarget_set.create(number=0, width=0, height=0, \
+            class_name='', class_abbr='', class_id=0, \
             date=datetime.date.today())
         t = PublicTarget.objects.get(bin=b, number=0)
+    else:
+        t = t[0]
     serializer = PublicTargetSerializer(t, data=request.data,context={'request': request})
     if serializer.is_valid():
         serializer.save()
@@ -139,14 +141,15 @@ def new_file(request, timeseries, file, user):
     day = file[5:7] + '-' + file[7:9]
     filled_days = get_filled_days(timeline)
     file_bin = PublicBin.objects.filter(file=file)
+    classifier = Classifier.objects.get(user=user)
     if not file_bin:
         ifcb = create_public_targets(timeseries, year, day, file)
         file_bin = PublicBin.objects.filter(file=file)
     editor_bin = Classifier.objects.filter(user=user, bins=file_bin[0])
     if not editor_bin:
-        user = Classifier.objects.get(user=user)
         targets = PublicTarget.objects.filter(bin=file_bin[0])
-        user.targets.add(*targets)    
+        classifier.bins.add(file_bin[0])
+        classifier.targets.add(*targets)
     
     file_options = get_files(volume, date=year+'-'+day)
     
