@@ -1,4 +1,5 @@
 import React from "react";
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react-dom";
 import akashiwo from "../../assets/akashiwo-character.png";
 import "../../css/classify-styles.css";
 
@@ -8,22 +9,18 @@ class Tutorial extends React.Component {
         this.state = {
             toc: [
                 {id: 0, title: "Welcome!", text: "Let's get started classifying phytoplankton.", buttons: null},
-                {id: 1, title: "Select a sample", text: "Each IFCB collects samples throughout the day full of phytoplankton images it captured. Load a sample by using the menu on the left to select a day and an IFCB location.", buttons: null},
-                {id: 2, title: "The AutoClassifier", text: "Each sample is run through an auto-clasification algorithm. Take a look at the first image. It has a code under it, like 'AKA' or 'UNCL.' This stands for the species name that the Auto Classifier assigned it. UNCL stands for 'unclassified' and it means that the classifier couldn't place it.", buttons: null},
-                {id: 3, title: "Does your image match?", text: "Your job is to check whether the classifier is right and classify the plankton it couldn't. Click on the classification name in the menu on the left that matches the code on the first image. Does the classification match your image?", buttons: [{text: 'Yes', track: 0}, {text: 'No', track: 1}, {text: 'Unsure', track: 2}]},
-                {id: 4, title: "Fantastic!", text: "You don't need to do anything with this image because it is already correct.", buttons: null},
-                {id: 5, title: "Good catch!", text: "Use your mouse to hover over the different names in the menu until you find one that looks like your image. There are a lot of options– you may find that you need to scroll.", buttons: null},
-                {id: 6, title: "Good call!", text: "It's always a good idea to be cautious if you're unsure. Use your mouse to hover over the different names in the menu and see if any match better. If you're still not sure, just skip this image– someone else may be able to get it.", buttons: null},
-                {id: 7, title: "What if it didn't match?", text: "If the autoclassification ever doesn't match the real classification, it's time to look for the right one. Use your mouse to hover over the different names in the menu until you find one that looks like your image.", buttons: null},
-                {id: 8, title: "What if it did match?", text: "If the autoclassification ever matches the real classification, your work is done. Just move on to the next image without changing anything because it's already correct.", buttons: null},
-                {id: 9, title: "How about if you're unsure?", text: "If you're ever not sure what classification to give an image after checking the different categories, skip it. It's better to leave it autoclassified or unclassified than guessing.", buttons: null},
-                {id: 10, title: "What if it didn't match?", text: "If the autoclassification ever doesn't match the real classification, it's time to look for the right one. Use your mouse to hover over the different names in the menu until you find one that looks like your image.", buttons: null},
-                {id: 11, title: 'Congrats!', text: "You're ready to classify. Dive in!", buttons: null},
+                {id: 1, title: "Select a sample", text: "Each IFCB collects samples throughout the day full of phytoplankton images it captured. Right now, you’re seeing the latest sample. If you would like to load a new one, use the menu on the left to select a day and an IFCB location.", buttons: null},
+                {id: 2, title: "The AutoClassifier", text: "Each sample is run through an auto-clasification algorithm, which identifies each phytoplankton image. But the algorithm isn’t always right: that’s where you come in!", buttons: null},
+                {id: 3, title: "Start categorizing", text: "Your first task is to find the images that the AutoClassifier misidentified. Use the menu on the left to navigate to the classifications. In each one, click on the images that don’t belong, using the guide to determine what qualifies and what doesn’t.", buttons: null},
+                {id: 4, title: "What if you're unsure?", text: "If you’re ever torn on whether an image belongs or not, just leave it in its original category. But also remember that our scientists check over your classifications before using them, so you will never ruin data if you misidentify an image.", buttons: null},
+                {id: 5, title: "Switch modes", text: "If you’re up for a challenge, switch over to identify mode using the toggle bar above the images. Now you’ll see all the images that you marked as misidentified or that the AutoClassifier couldn’t figure out in the first place.", buttons: null},
+                {id: 6, title: "Start identifying", text: "Select a classification in the left menu, then click on all the images that match it.", buttons: null},
+                {id: 7, title: "Try another method", text: "You can also work the other way: choose an image, then hover over the classifications in the left menu until you find the one that matches it. Select on the classification, then click on the image to classify it. Either method is a good way to identify phytoplankton: find which one works best for you!", buttons: null},
+                {id: 8, title: "What if you're unsure?", text: "Again, if you’re not sure where an image belongs, just leave it unclassified. If you’re finding that identify mode is too challenging, you can always stick to just categorizing.", buttons: null},
+                {id: 9, title: 'Congrats!', text: "You’re ready to dive in. When you finish a sample, load up a new one! You can always revisit this tutorial if you need any help.", buttons: null},
             ],
             tracks: [
-                [0, 1, 2, 3, 4, 7, 9, 11],
-                [0, 1, 2, 3, 5, 8, 9, 11],
-                [0, 1, 2, 3, 6, 8, 10, 11],
+                [0, 1, 2, 3, 4, 7, 8, 9],
             ],
             slide: 0,
             track: 0,

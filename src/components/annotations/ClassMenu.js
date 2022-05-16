@@ -20,8 +20,8 @@ class ClassMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            indexSelected: 0,
-            indexHovered: 0,
+            indexSelected: this.props.initial,
+            indexHovered: this.props.initial,
         }
     }
     
@@ -40,6 +40,15 @@ class ClassMenu extends React.Component {
     handleMouseOut() {
         this.setState({ indexHovered: this.state.indexSelected });
     }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.initial !== prevProps.initial) {
+            this.setState({ 
+                indexSelected: this.props.initial,
+                indexHovered: this.props.initial,
+             });
+        }
+      }
   
     render() {
       const options = this.props.classes.map((x, i) => 

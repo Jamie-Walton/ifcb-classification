@@ -64,7 +64,11 @@ class Plankton extends React.Component {
       
       return(
             <div>
-              <div className="plankton-button" id="plankton-button" onClick={() => this.props.onClick(this.props.targetNum)}>
+              <div className="plankton-button" 
+                id="plankton-button" 
+                onClick={this.props.categorizeMode ? 
+                  () => this.props.onCheck(this.props.targetNum) : 
+                  () => this.props.onClick(this.props.targetNum)}>
                   <div className="plankton">
                       {this.renderImage()}
                       <div className={this.props.public ? "hide" : "info"} onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
@@ -85,8 +89,11 @@ class Plankton extends React.Component {
                           <div></div>
                           }
                       </div>
-                      <div className='id' id={this.props.targetNum}>
+                      <div className={this.props.categorizeMode ? 'id public-id' : 'id'} id={this.props.targetNum}>
+                        {this.props.categorizeMode ?  
+                          <div className='plankton-check' id={this.props.targetNum + '-check'}></div> :
                           <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
+                        }
                       </div>
                   </div>
               </div>

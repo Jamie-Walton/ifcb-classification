@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import HttpResponse, FileResponse
 from .serializers import PublicBinSerializer, PublicTargetSerializer, FrontEndPackageSerializer
 from .models import PublicBin, PublicTarget, PublicClassification, FrontEndPackage, Classifier
-from .services import create_public_targets, get_files, get_days, get_rows, get_filled_days
+from .services import create_public_targets, get_files, get_filled_days
 import requests
 import math
 import pandas as pd
@@ -94,16 +94,33 @@ def undo(request, timeseries, file, set):
 
 
 @api_view(('GET',))
-def new_rows(request, timeseries, file, sort, scale, phytoguide, user=None):
-    
+def new_rows(request, timeseries, file, classification, user):
+
     b = PublicBin.objects.get(timeseries=timeseries, file=file)
-    rows = get_rows(b, sort, scale, phytoguide)
+    targets = PublicTarget.objects.filter(bin=b).filter(classifier__user=user, class_abbr=classification).order_by('class_name', '-height')
+    scale = 560
 
-    options = {
-        'rows': rows
-    }
+    rows = [[]]
+    space = 55
+    initial_space = 55
+    row = 0
 
-    package = FrontEndPackage(bin={}, options=options)
+    for i in range(0,len(targets)):
+        target = targets[i]
+        if (space - (target.width*(scale/10000)) - 1) < 0:
+            rows.append([])
+            row += 1
+            if target.width*(scale/10000) > initial_space:
+                space = initial_space
+            else:
+                space = initial_space - (target.width*(scale/10000))
+        else:
+            space -= ((target.width*(scale/10000)) + 1)
+        rows[row].append(i)
+        #if target.width*(scale/10000) > initial_space:
+        #row +=1
+
+    package = FrontEndPackage(bin={}, options={'rows': rows})
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
@@ -160,11 +177,9 @@ def new_file(request, timeseries, file, user):
     
     num_targets = len(PublicTarget.objects.filter(bin=PublicBin.objects.get(timeseries=timeseries, file=file)))
     num_sets = math.ceil((num_targets)/500)
-    set_options = ['All'] + list(range(1, num_sets+1))
 
     b = PublicBin.objects.get(file=file)
     ifcb = b.ifcb
-    rows = get_rows(b, 'AZ', 560, True, 'Public', user)
     
     bin = {
         'timeseries': timeseries, 
@@ -178,8 +193,6 @@ def new_file(request, timeseries, file, user):
         'year_options': year_options,
         'day_options': [[], []],
         'file_options': file_options,
-        'set_options': set_options,
-        'rows': rows,
         'filled_days': filled_days,
     }
 

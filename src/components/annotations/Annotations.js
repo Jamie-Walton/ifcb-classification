@@ -774,6 +774,7 @@ class Annotations extends React.Component {
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
                                 public={false}
+                                categorizeMode={false}
                             />
                         )}
                     </div>

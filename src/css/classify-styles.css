@@ -899,6 +899,38 @@ li {
 	width: 1.75vw;
 }
 
+/* Mode Menu */
+
+.mode-toggle {
+	display: flex;
+}
+
+.mode-left {
+	margin: 5vw 0 0 3vw;
+	height: fit-content;
+	background-color: #e0e0e0;
+	padding: 0.5vw 2vw;
+	border-radius: 2vw 0 0 2vw;
+	cursor: pointer;
+}
+
+.mode-right {
+	margin: 5vw 0 5vw 0;
+	height: fit-content;
+	background-color: #e0e0e0;
+	padding: 0.5vw 2vw;
+	border-radius: 0 2vw 2vw 0;
+	cursor: pointer;
+}
+
+.mode-selected {
+	background-color:#0d79a3;
+}
+
+.mode-text-selected {
+	color: #FFFFFF;
+}
+
 
 /* Rows */
 
@@ -1002,7 +1034,7 @@ li {
   box-shadow: 0 0.5vw 1.2vw #00000012;
   border: 0.0001vw solid #D5D3D3;
   border-radius: 0 0 1vw 1vw;
-  overflow: auto;
+  overflow: hide;
 }
 
 .id-text {
@@ -1031,7 +1063,7 @@ li {
 	display: inline-block;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	margin: 5vw 0vw 3vw 2vw;
+	margin: 0vw 0vw 3vw 2vw;
 	padding: 0;
 }
 
@@ -1049,6 +1081,22 @@ li {
     letter-spacing: 0.33px;
     color: #FFFFFF;
     margin: 0.3vw 1vw 0.5vw;
+}
+
+.plankton-check {
+	background-size: contain;
+	background-position: center;
+    background-repeat: no-repeat;
+	height: 1.8vw;
+	margin: 0.2vw;
+}
+
+.checked {
+	background-image: url("../icons/red-x.png");
+}
+
+.public-id {
+	height: 2.5vw;
 }
 
 

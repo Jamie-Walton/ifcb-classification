@@ -42,7 +42,9 @@ class PublicClassify extends React.Component {
           classNonexamples: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
+          initialClassIndex: 0,
           planktonClickEnabled: true,
+          categorizeMode: true,
           infoShowing: [],
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
@@ -51,9 +53,9 @@ class PublicClassify extends React.Component {
           dayOptions: [],
           dateOptions: [],
           fileOptions: [],
-          setOptions: [],
           filledDays: [],
           targets: [],
+          targetSet: [],
           targetNumbers: [],
           history: [],
           rows: [],
@@ -150,20 +152,29 @@ class PublicClassify extends React.Component {
                     dayOptions: res.data.options.day_options[1],
                     dateOptions: res.data.options.filled_days.map((date) => (new Date(date))),
                     fileOptions: res.data.options.file_options,
-                    setOptions: res.data.options.set_options,
-                    rows: res.data.options.rows,
                     filledDays: res.data.options.filled_days,
                     dayOption: res.data.bin.day,
                 })
                 axios
                     .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
                     .then((targetResponse) => {
+                        const initialClass = targetResponse.data[0].class_name;
+                        const initialAbbr = targetResponse.data[0].class_abbr;
                         this.setState({ 
                             targets: targetResponse.data,
+                            targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
                             targetNumbers: targetResponse.data.map(t => t.number),
+                            classPicker: initialClass,
+                            classMark: initialAbbr,
+                            initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
                             history: [JSON.stringify(targetResponse.data)],
                             loading: false,
                         });
+                        axios
+                            .get('/process/public/rows/' + timeseries + '/' + file + '/' + initialAbbr + '/' + this.props.user.username + '/')
+                            .then((rowResponse) => {
+                                this.setState({ rows: rowResponse.data.options.rows });
+                            });
                 });
             })
             .catch((err) => {
@@ -264,32 +275,24 @@ class PublicClassify extends React.Component {
       prevMenu.addEventListener('mouseover', this.handleMouseOver(prevMenu));
       prevMenu.addEventListener('mouseout', this.handleMouseOut(prevMenu));
 
-      const ids = document.getElementsByClassName('id');
-      const idTexts = document.getElementsByClassName('id-text');
-      for (let i=0; i<ids.length; i++) {
-          if (ids[i].style.backgroundColor !== '#FFFFFF') {
-            ids[i].style.backgroundColor = '#FFFFFF';
-            idTexts[i].style.color = '#4E4E4E';
-        }
-      }
-
       const nameAbbr = (element) => element === name;
+      const classMark = this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)]
       this.setState({ 
           classPicker: name,
-          classMark: this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)],
+          classMark: classMark,
         });
+      if (this.state.categorizeMode) {
+        this.setState({ targetSet: this.state.targets.filter(t => t.class_name === name) });
+      }
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
       menu.style.backgroundColor = '#16609F';
       
-      for (const target of this.state.targets) {
-          if (target.class_name === name) {
-              const container = document.getElementById(target.number);
-              const text = document.getElementById(target.number+'-text');
-              container.style.backgroundColor = '#16609F';
-              text.style.color = '#FFFFFF';
-          }
-      }
+      axios
+        .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classMark + '/' + this.props.user.username + '/')
+        .then((rowResponse) => {
+            this.setState({ rows: rowResponse.data.options.rows });
+        });
   }
 
   handleUndoClick() {
@@ -314,7 +317,19 @@ class PublicClassify extends React.Component {
     histogram.scrollTop = histogram.scrollHeight;
   }
 
+  handleModeToggle() {
+      if (this.state.categorizeMode) {
+          this.setState({ targetSet: this.state.targets.filter(t => t.class_name==='Unclassified') });
+      }
+      this.setState({ mode: !this.state.mode });
+      document.getElementById('mode-left').classList.toggle('mode-selected');
+      document.getElementById('mode-right').classList.toggle('mode-selected');
+      document.getElementById('mode-left-text').classList.toggle('mode-text-selected');
+      document.getElementById('mode-right-text').classList.toggle('mode-text-selected');
+  }
+
   handlePlanktonClick(i) {
+      // Convert back to old version
     if (this.state.planktonClickEnabled) {
         var targets = this.state.targets;
         const k = targets.findIndex(target => target.number === i);
@@ -327,10 +342,33 @@ class PublicClassify extends React.Component {
             history: history.concat([JSON.stringify(targets)]),
             targets: targets,
         });
-        const container = document.getElementById(targets[k].number);
-        const text = document.getElementById(targets[k].number+'-text');
-        container.style.backgroundColor = '#16609F';
-        text.style.color = '#FFFFFF';
+        const check = document.getElementById(targets[k].number+'-check');
+        check.classList.toggle('checked');
+
+        this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
+    }
+  }
+
+  handlePlanktonCheck(i) {
+    if (this.state.planktonClickEnabled) {
+        var targets = this.state.targets;
+        const k = targets.findIndex(target => target.number === i);
+        const classAbbr = (element) => element === this.state.classPicker;
+        if (targets[k].class_name === this.state.classPicker) {
+            targets[k].class_name = 'Unclassified';
+            targets[k].class_abbr = 'UNC';
+        } else {
+            targets[k].class_name = this.state.classPicker;
+            targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
+        }
+        targets[k].editor = this.props.user.username;
+        const history = this.state.history;
+        this.setState({
+            history: history.concat([JSON.stringify(targets)]),
+            targets: targets,
+        });
+        const check = document.getElementById(targets[k].number+'-check');
+        check.classList.toggle('checked');
 
         this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
@@ -342,6 +380,7 @@ class PublicClassify extends React.Component {
           descriptions={this.state.classDescriptions}
           examples={this.state.classExamples}
           nonexamples={this.state.classNonexamples}
+          initial={this.state.initialClassIndex}
           onClick={(name) => this.handleMenuClick(name)}
           handleSelectAllClick={() => this.handleSelectAllClick()}
           handleUndoClick={() => this.handleUndoClick()}
@@ -405,19 +444,21 @@ class PublicClassify extends React.Component {
                                 file={this.state.bin.file}
                                 timestamp={this.state.bin.file}
                                 id={i}
-                                targetNum={this.state.targets[i].number}
-                                class_name={this.state.targets[i].class_name}
-                                class_abbr={this.state.targets[i].class_abbr}
-                                height={this.state.targets[i].height}
-                                width={this.state.targets[i].width}
+                                targetNum={this.state.targetSet[i].number}
+                                class_name={this.state.targetSet[i].class_name}
+                                class_abbr={this.state.targetSet[i].class_abbr}
+                                height={this.state.targetSet[i].height}
+                                width={this.state.targetSet[i].width}
                                 scale={this.props.scaleEntry / 10}
                                 ifcb={this.state.bin.ifcb}
                                 editor={'jamiewalton'}
-                                date={this.state.targets[i].date}
+                                date={this.state.targetSet[i].date}
                                 onClick={(i) => this.handlePlanktonClick(i)}
+                                onClick={(i) => this.handlePlanktonCheck(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
                                 public={true}
+                                categorizeMode={this.state.categorizeMode}
                             />
                         )}
                     </div>
@@ -456,19 +497,29 @@ class PublicClassify extends React.Component {
                         </div>
                         <div className="annotations">
                             {this.renderClassMenu()}
-                            <div className="image-grid" id="image-grid">
-                                {
-                                (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
-                                }
-                                <List
-                                    height={800} // fix later
-                                    rowCount={this.state.rows.length}
-                                    rowHeight={cache.rowHeight}
-                                    rowRenderer={rowRenderer}
-                                    scrollToAlignment="start"
-                                    scrollToIndex={scrollToIndex}
-                                    width={document.documentElement.clientWidth*0.72}
-                                />
+                            <div>
+                                <div className="mode-toggle">
+                                    <div className="mode-left mode-selected" id="mode-left" onClick={() => this.handleModeToggle()}>
+                                        <p className="mode-text mode-text-selected" id="mode-left-text">Categorize</p>
+                                    </div>
+                                    <div className="mode-right" id="mode-right" onClick={() => this.handleModeToggle()}>
+                                        <p className="mode-text" id="mode-right-text">Identify</p>
+                                    </div>
+                                </div>
+                                <div className="image-grid" id="image-grid">
+                                    {
+                                    (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
+                                    }
+                                    <List
+                                        height={800} // fix later
+                                        rowCount={this.state.rows.length}
+                                        rowHeight={cache.rowHeight}
+                                        rowRenderer={rowRenderer}
+                                        scrollToAlignment="start"
+                                        scrollToIndex={scrollToIndex}
+                                        width={document.documentElement.clientWidth*0.72}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
