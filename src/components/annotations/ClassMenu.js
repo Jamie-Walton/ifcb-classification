@@ -51,7 +51,8 @@ class ClassMenu extends React.Component {
       }
   
     render() {
-      const options = this.props.classes.map((x, i) => 
+      const classes = this.props.categorizeMode ? this.props.categories : this.props.classes
+      const options = classes.map((x, i) => 
       <li key={x}><button id={x} 
             onClick={() => this.handleMenuClick(x, i)} 
             onMouseEnter={() => this.handleMouseOver(i)} 
@@ -74,7 +75,7 @@ class ClassMenu extends React.Component {
             </div>
             {this.props.showPhytoGuide ? 
                     <div className="phyto-guide">
-                        <p className="phyto-guide-heading">{this.props.classes[this.state.indexHovered]}</p>
+                        <p className="phyto-guide-heading">{classes[this.state.indexHovered]}</p>
                         <p className="phyto-guide-description">{this.props.descriptions[this.state.indexHovered]}</p>
                         <div className="yes-examples">
                             { (this.props.examples.length > 0) ?
@@ -82,7 +83,7 @@ class ClassMenu extends React.Component {
                                     <div>
                                         <img src={correctIcon} className='phyto-guide-icon'></img>
                                         <img src={image} className="image" 
-                                            alt={this.props.classes[this.state.indexHovered] + ' example'}
+                                            alt={classes[this.state.indexHovered] + ' example'}
                                             className="phyto-guide-image"
                                             >
                                         </img>
@@ -97,7 +98,7 @@ class ClassMenu extends React.Component {
                                     <div>
                                         <img src={incorrectIcon} className='phyto-guide-icon'></img>
                                         <img src={image} className="image" 
-                                            alt={this.props.classes[this.state.indexHovered] + ' non-example'}
+                                            alt={classes[this.state.indexHovered] + ' non-example'}
                                             className="phyto-guide-image"
                                             >
                                         </img>

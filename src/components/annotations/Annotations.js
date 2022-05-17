@@ -602,6 +602,7 @@ class Annotations extends React.Component {
           handleUndoClick={() => this.handleUndoClick()}
           scale={this.state.scale}
           showPhytoGuide={this.props.preferences.phytoguide}
+          categorizeMode={false}
       />;
   }
 

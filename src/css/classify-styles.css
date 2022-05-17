@@ -931,6 +931,13 @@ li {
 	color: #FFFFFF;
 }
 
+.empty-categories-text {
+	margin: 0 0 0 1vw;
+	font-size: 1vw;
+	color: #0d79a3;
+	font-weight: 500;
+}
+
 
 /* Rows */
 
@@ -1063,7 +1070,7 @@ li {
 	display: inline-block;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	margin: 0vw 0vw 3vw 2vw;
+	margin: 5vw 0vw 3vw 2vw;
 	padding: 0;
 }
 

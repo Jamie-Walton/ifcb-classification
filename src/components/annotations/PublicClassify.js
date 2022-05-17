@@ -40,11 +40,13 @@ class PublicClassify extends React.Component {
           classDescriptions: [],
           classExamples: [],
           classNonexamples: [],
+          categories: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
           initialClassIndex: 0,
           planktonClickEnabled: true,
           categorizeMode: true,
+          emptyCategories: false,
           infoShowing: [],
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
@@ -160,6 +162,7 @@ class PublicClassify extends React.Component {
                     .then((targetResponse) => {
                         const initialClass = targetResponse.data[0].class_name;
                         const initialAbbr = targetResponse.data[0].class_abbr;
+                        const categories = targetResponse.data.map(t => t.class_name);
                         this.setState({ 
                             targets: targetResponse.data,
                             targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
@@ -168,12 +171,19 @@ class PublicClassify extends React.Component {
                             classMark: initialAbbr,
                             initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
                             history: [JSON.stringify(targetResponse.data)],
+                            categories: [...new Set(targetResponse.data.map(t => t.class_name))],
                             loading: false,
                         });
+                        if (initialClass === 'Unclassified') {
+                            this.setState({ emptyCategories: true });
+                        }
                         axios
                             .get('/process/public/rows/' + timeseries + '/' + file + '/' + initialAbbr + '/' + this.props.user.username + '/')
                             .then((rowResponse) => {
-                                this.setState({ rows: rowResponse.data.options.rows });
+                                this.setState({ 
+                                    rows: rowResponse.data.options.rows, 
+                                    initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
+                                });
                             });
                 });
             })
@@ -282,17 +292,19 @@ class PublicClassify extends React.Component {
           classMark: classMark,
         });
       if (this.state.categorizeMode) {
-        this.setState({ targetSet: this.state.targets.filter(t => t.class_name === name) });
+        this.setState({ 
+            rows: [],
+            targetSet: this.state.targets.filter(t => t.class_name === name) 
+        });
+        axios
+            .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classMark + '/' + this.props.user.username + '/')
+            .then((rowResponse) => {
+                this.setState({ rows: rowResponse.data.options.rows });
+            });
       }
       const menu = document.getElementById(name);
       menu.removeEventListener('mouseout', this.handleMouseOut(menu));
       menu.style.backgroundColor = '#16609F';
-      
-      axios
-        .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classMark + '/' + this.props.user.username + '/')
-        .then((rowResponse) => {
-            this.setState({ rows: rowResponse.data.options.rows });
-        });
   }
 
   handleUndoClick() {
@@ -318,18 +330,48 @@ class PublicClassify extends React.Component {
   }
 
   handleModeToggle() {
-      if (this.state.categorizeMode) {
-          this.setState({ targetSet: this.state.targets.filter(t => t.class_name==='Unclassified') });
-      }
-      this.setState({ mode: !this.state.mode });
-      document.getElementById('mode-left').classList.toggle('mode-selected');
-      document.getElementById('mode-right').classList.toggle('mode-selected');
-      document.getElementById('mode-left-text').classList.toggle('mode-text-selected');
-      document.getElementById('mode-right-text').classList.toggle('mode-text-selected');
+    this.setState({ loading: true, rows: [] });
+    document.getElementById('mode-left').classList.toggle('mode-selected');
+    document.getElementById('mode-right').classList.toggle('mode-selected');
+    document.getElementById('mode-left-text').classList.toggle('mode-text-selected');
+    document.getElementById('mode-right-text').classList.toggle('mode-text-selected');
+    axios
+        .get('/process/public/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/')
+        .then((targetResponse) => {
+            const initialClass = targetResponse.data[0].class_name;
+            const initialAbbr = targetResponse.data[0].class_abbr;
+            var classAbbr;
+            var classPicker;
+            var classMark; 
+            this.state.categorizeMode ? classAbbr = 'UNCL' : classAbbr = initialAbbr;
+            this.state.categorizeMode ? classPicker = this.state.classes[0]: classPicker = initialClass;
+            this.state.categorizeMode ? classMark = this.state.classAbbrs[0]: classMark = initialAbbr;
+            this.setState({ 
+                targets: targetResponse.data,
+                targetSet: targetResponse.data.filter(t => t.class_abbr === classAbbr),
+                targetNumbers: targetResponse.data.map(t => t.number),
+                classPicker: classPicker,
+                classMark: classMark,
+                history: [JSON.stringify(targetResponse.data)],
+                categories: [...new Set(targetResponse.data.map(t => t.class_name))],
+                categorizeMode: !this.state.categorizeMode,
+            });
+            if (initialClass === 'Unclassified') {
+                this.setState({ emptyCategories: true });
+            } // add catch for no UNCL
+            axios
+                .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classAbbr + '/' + this.props.user.username + '/')
+                .then((rowResponse) => {
+                    this.setState({ 
+                        rows: rowResponse.data.options.rows,
+                        // initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
+                        loading: false,
+                     });
+                });
+    });
   }
 
   handlePlanktonClick(i) {
-      // Convert back to old version
     if (this.state.planktonClickEnabled) {
         var targets = this.state.targets;
         const k = targets.findIndex(target => target.number === i);
@@ -342,8 +384,10 @@ class PublicClassify extends React.Component {
             history: history.concat([JSON.stringify(targets)]),
             targets: targets,
         });
-        const check = document.getElementById(targets[k].number+'-check');
-        check.classList.toggle('checked');
+        const container = document.getElementById(targets[k].number);
+        const text = document.getElementById(targets[k].number+'-text');
+        container.style.backgroundColor = '#16609F';
+        text.style.color = '#FFFFFF';
 
         this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
@@ -356,7 +400,7 @@ class PublicClassify extends React.Component {
         const classAbbr = (element) => element === this.state.classPicker;
         if (targets[k].class_name === this.state.classPicker) {
             targets[k].class_name = 'Unclassified';
-            targets[k].class_abbr = 'UNC';
+            targets[k].class_abbr = 'UNCL';
         } else {
             targets[k].class_name = this.state.classPicker;
             targets[k].class_abbr = this.state.classAbbrs[this.state.classes.findIndex(classAbbr)];
@@ -370,6 +414,8 @@ class PublicClassify extends React.Component {
         const check = document.getElementById(targets[k].number+'-check');
         check.classList.toggle('checked');
 
+        console.log(targets[k]);
+
         this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
   }
@@ -377,6 +423,7 @@ class PublicClassify extends React.Component {
   renderClassMenu() {
     return <ClassMenu 
           classes={this.state.classes}
+          categories={this.state.categories}
           descriptions={this.state.classDescriptions}
           examples={this.state.classExamples}
           nonexamples={this.state.classNonexamples}
@@ -386,6 +433,7 @@ class PublicClassify extends React.Component {
           handleUndoClick={() => this.handleUndoClick()}
           scale={this.state.scale}
           showPhytoGuide={this.props.preferences.phytoguide}
+          categorizeMode={this.state.categorizeMode}
       />;
   }
 
@@ -454,7 +502,7 @@ class PublicClassify extends React.Component {
                                 editor={'jamiewalton'}
                                 date={this.state.targetSet[i].date}
                                 onClick={(i) => this.handlePlanktonClick(i)}
-                                onClick={(i) => this.handlePlanktonCheck(i)}
+                                onCheck={(i) => this.handlePlanktonCheck(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
                                 public={true}
@@ -510,15 +558,18 @@ class PublicClassify extends React.Component {
                                     {
                                     (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
                                     }
-                                    <List
-                                        height={800} // fix later
-                                        rowCount={this.state.rows.length}
-                                        rowHeight={cache.rowHeight}
-                                        rowRenderer={rowRenderer}
-                                        scrollToAlignment="start"
-                                        scrollToIndex={scrollToIndex}
-                                        width={document.documentElement.clientWidth*0.72}
-                                    />
+                                    {
+                                    (this.state.emptyCategories && this.state.categorizeMode) ? <p className="empty-categories-text">Nothing to categorize! Switch over to Identify mode to start classifying.</p> :
+                                        <List
+                                            height={800} // fix later
+                                            rowCount={this.state.rows.length}
+                                            rowHeight={cache.rowHeight}
+                                            rowRenderer={rowRenderer}
+                                            scrollToAlignment="start"
+                                            scrollToIndex={scrollToIndex}
+                                            width={document.documentElement.clientWidth*0.72}
+                                        />
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -531,7 +582,7 @@ class PublicClassify extends React.Component {
   }
 
   render() {
-    
+
     if(this.props.onHome) {
         return <Redirect to="/" />
     }

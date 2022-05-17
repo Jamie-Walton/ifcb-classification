@@ -55,9 +55,9 @@ def edit_target(request, timeseries, file, number, user):
     ]
     b = PublicBin.objects.get(timeseries=timeseries, file=file)
     t = PublicTarget.objects.filter(bin=b, number=number, classifier__user=user).exclude(classifier__user='Auto Classifier')
+    classifier = Classifier.objects.get(user=user)
     if not t.exists():
         autotarget = PublicTarget.objects.get(bin=b, number=number, classifier__user=user)
-        classifier = Classifier.objects.get(user=user)
         classifier.targets.remove(autotarget)
         b.publictarget_set.create(number=0, width=0, height=0, \
             class_name='', class_abbr='', class_id=0, \
