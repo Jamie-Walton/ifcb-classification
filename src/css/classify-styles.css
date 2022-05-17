@@ -838,7 +838,7 @@ li {
 	cursor: pointer;
 }
 
-.class-menu button:hover {
+button:hover {
   background-color: #16609F;
 }
 
@@ -847,7 +847,7 @@ li {
 }
 
 .select-menu {
-	background-color: #16609F;
+	background-color: #16609F !important;
   }
 
 .class-menu-options {

@@ -16,7 +16,6 @@ import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
-import toTop from "../../icons/to-top.png";
 
 class NavButton extends React.Component {
     render() {
@@ -281,9 +280,9 @@ class PublicClassify extends React.Component {
 
   handleMenuClick(name) {
       const prevMenu = document.getElementById(this.state.classPicker);
-      prevMenu.style.backgroundColor = '#079CCC';
-      prevMenu.addEventListener('mouseover', this.handleMouseOver(prevMenu));
-      prevMenu.addEventListener('mouseout', this.handleMouseOut(prevMenu));
+      if (prevMenu.classList.contains('select-menu')) {
+        prevMenu.classList.remove('select-menu');
+      }
 
       const nameAbbr = (element) => element === name;
       const classMark = this.state.classAbbrs[this.state.classes.findIndex(nameAbbr)]
@@ -303,8 +302,7 @@ class PublicClassify extends React.Component {
             });
       }
       const menu = document.getElementById(name);
-      menu.removeEventListener('mouseout', this.handleMouseOut(menu));
-      menu.style.backgroundColor = '#16609F';
+      menu.classList.add('select-menu');
   }
 
   handleUndoClick() {
