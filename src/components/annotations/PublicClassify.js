@@ -520,7 +520,6 @@ class PublicClassify extends React.Component {
             <div className="content">
                     <div className="inner-content">
                         <h1>Classify Phytoplankton</h1>
-                        <p className='subtitle'>Match each phytoplankton with their species! Select a sample by choosing a date and an IFCB location.</p>
                         <div style={{'display':'flex'}}>
                             <div style={{'display':'flex'}}>
                                 <div className="public-time-controls">
@@ -534,6 +533,7 @@ class PublicClassify extends React.Component {
                                         inline
                                     />
                                     <div className="timeseries-box">
+                                        <p className="tutorial-title sample-title">Sample</p>
                                         {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 
                                             <li key={i} className="tutorial-button" onClick={option => this.getNewTimeSeries(option)}>{option}</li>)}
                                     </div>

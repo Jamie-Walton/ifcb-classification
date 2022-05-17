@@ -579,6 +579,10 @@ li {
 	width: fit-content;
 }
 
+.sample-title {
+	margin-left: 1vw !important;
+}
+
 .akashiwo-character {
 	height: 9vw;
 	margin: 7vw 2vw 0 0;
@@ -741,7 +745,7 @@ li {
 /* Tutorial */
 
 .visible-tutorial-text {
-	padding: 3vw 1vw 1vw 0vw;
+	padding: 2vw 1vw 1vw 0vw;
 }
 
 .tutorial-title {
