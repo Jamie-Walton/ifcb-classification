@@ -1106,6 +1106,9 @@ li {
 	height: 2.5vw;
 }
 
+.remove-top-margin {
+	margin-top: 0;
+}
 
 /* Micrometer */
 

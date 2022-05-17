@@ -554,7 +554,7 @@ class PublicClassify extends React.Component {
                                         <p className="mode-text" id="mode-right-text">Identify</p>
                                     </div>
                                 </div>
-                                <div className="image-grid" id="image-grid">
+                                <div className="image-grid remove-top-margin" id="image-grid">
                                     {
                                     (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
                                     }
