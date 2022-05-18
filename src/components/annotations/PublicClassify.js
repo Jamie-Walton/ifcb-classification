@@ -95,7 +95,7 @@ class PublicClassify extends React.Component {
   getNewTimeSeries(option) {
     this.setState({ loading: true });
 
-    var k = this.state.timeSeriesOptions.findIndex(timeseries => timeseries === option);
+    var k = this.state.timeSeriesOptions.findIndex(t => t === String(option));
     const timeseries = this.state.timeSeriesNames[k];
 
     axios
@@ -119,7 +119,7 @@ class PublicClassify extends React.Component {
                 timeSeriesNames: res.data.map((c) => (c.name)),
                 });
             if(urlInfo.length<3) {
-                this.getNewTimeSeries('Santa Cuz Wharf');
+                this.getNewTimeSeries('Santa Cruz Wharf');
             }
             })
         .catch((err) => console.log(err));
@@ -442,6 +442,15 @@ class PublicClassify extends React.Component {
             </div>
         </div>
       );
+  }
+
+  renderDoneButton(mode) {
+    return(
+        <div className="done-button">
+            <div className='done-check'></div>
+            <p className="done-text">{"Done " + mode}</p>
+        </div>
+      )
   }
 
   renderLoader() {
