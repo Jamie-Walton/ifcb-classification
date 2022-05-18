@@ -66,7 +66,6 @@ class ClassOption(models.Model):
 
 class FrontEndPackage(models.Model):
     bin = models.JSONField()
-    set = models.JSONField()
     options = models.JSONField()
 
 
@@ -112,3 +111,7 @@ class PublicClassification(models.Model):
     class_abbr = models.CharField(max_length=10)
     class_id = models.IntegerField()
     date = models.DateField(auto_now=True)
+
+class CommunityFilePackage(models.Model):
+    bin = models.JSONField()
+    classifier = models.CharField(max_length=100)

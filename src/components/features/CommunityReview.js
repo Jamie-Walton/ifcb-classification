@@ -1,91 +1,50 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
+import axios from "axios";
 
 import Header from '../layout/Header';
-import { searchTargets, getBins } from "../../actions/classify";
+import { Grid, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import { goto_communityfile } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 import '../../css/notebook-styles.css';
 import '../../css/classify-styles.css';
 import loader from "../annotations/loader.GIF";
 
-class Target extends Component {
-    
-    showMore() {
-        document.getElementById(this.props.target.id + '-info').style.display = 'block';
-        document.getElementById(this.props.target.id + '-preview').style.display = 'none';
+
+class CommunityFilePreview extends Component {
+    getDate(file) {
+        const timestamp = file.slice(1,5) + '-' + file.slice(5,7) + '-' + file.slice(7,12) + ':' + 
+            file.slice(12,14) + ':' + file.slice(14,16);
+        const date = new Date(timestamp);
+        const dateString = date.toDateString().slice(4,10) + ',' + date.toDateString().slice(10,);
         
-        const initialWidth = Number(this.props.target.height);
-        const idWidth = document.getElementById(this.props.target.id + '-info').style.width;
-        const scale = idWidth / initialWidth;
-        const style = {height: String(Number(this.props.target.height)*0.056*scale)+'vw'}
-        document.getElementById(this.props.target.id + '-image').style = style;
-
+        return dateString
     }
 
-    showLess() {
-        document.getElementById(this.props.target.id + '-info').style.display = 'none';
-        document.getElementById(this.props.target.id + '-preview').style.display = 'flex';
-        const style = String(Number(this.props.target.height)*0.056)+'vw'
-        document.getElementById(this.props.target.id + '-image').style.height = style;
+    handleDownload() {
+        document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/mat/' + this.props.ifcb + '/' + this.props.file + '/'
     }
-    
+
     render() {
-        if (this.props.bins !== []) {
-            
-            const desiredBin = (element) => element.id === this.props.target.bin;
-            const binIndex = this.props.bins.findIndex(desiredBin);
-            const bin = this.props.bins[binIndex];
-            const url = 'http://akashiwo.oceandatacenter.ucsc.edu:8000/data/' + bin.file + '_' + bin.ifcb + '_' + this.props.target.number + '.jpg'
-            
-            return(
-                <div className="search-result">
-                    <img src={url} className="image searh-result-image"
-                        alt={this.props.target.class_name}
-                        id={this.props.target.id + '-image'}
-                        style={{height: String(Number(this.props.target.height)*0.056)+'vw'}}>
-                    </img>
-                    <div className='id' id={this.props.target.id + '-preview'}>
-                        <div className='search-result-plus' id={this.props.target.id + '-plus'} onClick={() => this.showMore()}><p className="plus">+</p></div>
-                    </div>
-                    <div className='id description' style={{display: 'none'}} id={this.props.target.id + '-info'}>
-                        <div className='search-result-plus exit' onClick={() => this.showLess()}>
-                            <p className="plus x">X</p>
-                        </div>
-                        <p className="description-heading">{this.props.target.class_name}</p>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'File: '}</p>
-                            <p>{bin.file}</p>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'Time Series: '}</p>
-                            <p>{bin.timeseries}</p>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'IFCB: '}</p>
-                            <p>{bin.ifcb}</p>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'Target: '}</p>
-                            <p>{this.props.target.number}</p>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'Classifer: '}</p>
-                            <p>{this.props.target.editor}</p>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <p className="description-label">{'Date: '}</p>
-                            <p>{this.props.target.date}</p>
-                        </div>
-                        <div className='search-redirect-button' onClick={() => this.props.redirectToFile(bin.timeseries, bin.file, this.props.target.number)}>Go to File</div>
-                    </div>
+        return (
+            <div className="community-file-preview-container">
+                <div>
+                    <p className="community-file-date">{this.getDate(this.props.file)}</p>
+                    <p className="community-file-file">{this.props.file}</p>
+                    <p className="community-file-classifier">{this.props.classifier}</p>
                 </div>
-            );
-        }
-        else {
-            return <div/>
-        }
+                <div className="community-file-preview-buttons">
+                    <div className="round-button download community-download" onClick={() => this.handleDownload()}>
+                        <div style={{display: 'none'}}>
+                        <iframe id="download-src" />
+                        </div>
+                    </div>
+                    <div className="round-button right-arrow community-download" onClick={() => this.props.onClick(this.props.timeseries, this.props.file, this.props.classifier)}></div>
+                </div>
+            </div>
+        );
     }
 }
 
@@ -93,12 +52,10 @@ class CommunityReview extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            targets: [[]],
-            bins: [[]],
-            basicSearch: '',
-            loading: false,
-            renderable: false,
-            redirectInfo: ''
+            files: [],
+            selectedTimeseries: '',
+            selectedFile: '',
+            selectedUser: '',
         }
     }
 
@@ -107,61 +64,26 @@ class CommunityReview extends Component {
         onClassify: PropTypes.bool,
         onNotebook: PropTypes.bool,
         onAnalysis: PropTypes.bool,
-        searchTargets: PropTypes.func,
-        targetSearchResults: PropTypes.array,
-        binsSearchResults: PropTypes.array,
+        onCommunityFile: PropTypes.bool,
+        goto_communityfile: PropTypes.func,
     }
 
-    onChange = e => this.setState({ basicSearch: e.target.value })
+    componentDidMount() {
+        axios
+            .get('/communityfiles/')
+            .then((res) => {
+                this.setState({ files: res.data.reverse() })
+            })
+            .catch((err) => console.log(err));
+    }
 
-    onSubmit = e => {
-        e.preventDefault();
-        this.setState({ renderable: false });
-        document.getElementById("no-results").style.display = 'none';
-        this.props.searchTargets(this.state.basicSearch);
+    handleFileClick(timeseries, file, user) {
         this.setState({ 
-            targets: this.props.targetSearchResults
-        });
-        if (this.props.targetSearchResults === [[]]) {
-            document.getElementById("no-results").style.display = 'flex';
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.targetSearchResults !== this.props.targetSearchResults) {
-            var targets;
-            if (this.props.targetSearchResults[0].length !== undefined) {
-                targets = this.props.targetSearchResults[0];
-            } else {
-                targets = this.props.targetSearchResults;
-            }
-            this.props.getBins(targets.map(target => target.bin));
-        }
-
-        if (prevProps.binsSearchResults !== this.props.binsSearchResults) {
-            this.setState({
-                renderable: true,
-            });
-        }
-    }
-
-    redirectToFile(timeseries, file, target) {
-        this.setState({ redirectInfo: {timeseries: timeseries, file: file, target: target} });
-    }
-
-    renderTarget(target) {
-        return( 
-            <Target
-                target={target}
-                bins={this.props.binsSearchResults[0]}
-                key={target.id}
-                redirectToFile={(timeseries, file, target) => this.redirectToFile(timeseries, file, target)}
-            />
-        );
-    }
-
-    renderLoader() {
-        return <img src={loader} alt="Loading targets..." width="80" loop="infinite"></img>
+            selectedTimeseries: timeseries,
+            selectedFile: file,
+            selectedUser: user
+         });
+         this.props.goto_communityfile();
     }
 
     render() {
@@ -185,18 +107,45 @@ class CommunityReview extends Component {
             return <Redirect to="/analysis" />
         }
 
-        if(this.state.redirectInfo !== '') {
-            const timeseries = this.state.redirectInfo.timeseries;
-            const file = this.state.redirectInfo.file;
-            const target = this.state.redirectInfo.target;
-            return <Redirect to={"/classify/" + timeseries + "/" + file + "/" + target} />
+        if(this.props.onCommunityFile) {
+            return <Redirect to={"/analysis/communityreview/" + this.state.selectedTimeseries + "/" + this.state.selectedFile + "/" + this.state.selectedUser} />
         }
 
-        var targets;
-        var resultsDisplay;
-        ((typeof this.props.targetSearchResults[0].length !== "undefined")) 
-           ? (targets = this.props.targetSearchResults[0]) : (targets = this.props.targetSearchResults);
-        (targets.length === 0) ? (resultsDisplay = {display: 'flex'}) : (resultsDisplay = {display: 'none'})
+        const cache = new CellMeasurerCache({
+            defaultHeight: 10,
+            minHeight: 10,
+            fixedWidth: true
+          });
+
+        const files = this.state.files;
+
+        const cellRenderer = ({columnIndex, key, rowIndex, parent, style}) => ( 
+
+            <CellMeasurer
+                cache={cache}
+                key={key}
+                parent={parent}
+                rowIndex={rowIndex}
+                columnIndex={columnIndex}
+            >
+            {({ measure, registerChild }) => (
+            
+                <div ref={registerChild} key={key} style={style}>
+                    <div onLoad={measure}>
+                        {files[(rowIndex*4)+columnIndex] ?
+                            <CommunityFilePreview
+                                timeseries={files[(rowIndex*4)+columnIndex].bin.timeseries}
+                                file={files[(rowIndex*4)+columnIndex].bin.file}
+                                ifcb={files[(rowIndex*4)+columnIndex].bin.ifcb}
+                                classifier={files[(rowIndex*4)+columnIndex].classifier}
+                                onClick={() => this.handleFileClick(files[(rowIndex*4)+columnIndex].bin.timeseries, files[(rowIndex*4)+columnIndex].bin.file, files[(rowIndex*4)+columnIndex].classifier)}
+                            /> : 
+                            <div/> }
+                        </div>
+                </div>
+            )}
+            </CellMeasurer>
+        )
         
            return(
             <div>
@@ -208,9 +157,22 @@ class CommunityReview extends Component {
                             <div className="notebook-heading">
                                 <h1 className="notebook-header">Analysis</h1>
                             </div>
-                            <h2 className="analysis-option-heading page-heading">Community Review</h2>
+                            <h2 className="analysis-option-heading page-heading community-review-heading">Community Review</h2>
                             <div>
-
+                                {this.state.files.length > 1 ?
+                                    <Grid
+                                        width={document.documentElement.clientWidth*0.8}
+                                        height={800}
+                                        columnWidth={document.documentElement.clientWidth*0.8/4}
+                                        rowHeight={document.documentElement.clientWidth*0.1}
+                                        rowCount={Math.floor(this.state.files.length/4)+1}
+                                        columnCount={4}
+                                        cellRenderer={cellRenderer}
+                                        scrollToAlignment="start"
+                                        className="community-review-grid"
+                                    /> :
+                                    <div/>
+                                }
                             </div>
                         </div>
                     </div>
@@ -228,8 +190,7 @@ const mapStateToProps = state => ({
     onClassify: state.menu.onClassify,
     onNotebook: state.menu.onClassify,
     onAnalysis: state.menu.onAnalysis,
-    targetSearchResults: state.classify.targetSearchResults,
-    binsSearchResults: state.classify.binsSearchResults,
+    onCommunityFile: state.menu.onCommunityFile,
  });
 
-export default connect(mapStateToProps, { searchTargets, getBins })(CommunityReview);
+export default connect(mapStateToProps, { goto_communityfile })(CommunityReview);

@@ -78,7 +78,7 @@ class Plankton extends React.Component {
                           <p className="classification-info">{this.props.class_name}</p>
                           <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
                           <p className="editor-info">{'Classified by ' + this.props.editor + ',\n' + this.props.date}</p>
-                          {(this.props.infoShowing.includes(this.props.targetNum)) ? 
+                          {(this.props.infoShowing.includes(this.props.targetNum) && this.props.noteOption) ? 
                           <BinNote
                               timeseries={this.props.timeseries}
                               ifcb={this.props.ifcb}

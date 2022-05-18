@@ -10,6 +10,7 @@ import Analysis from './components/features/Analysis';
 import ClassDownload from './components/features/ClassDownload';
 import Search from './components/features/Search';
 import CommunityReview from './components/features/CommunityReview';
+import CommunityFile from './components/features/CommunityFile';
 import Login from './components/accounts/Login';
 import Register from './components/accounts/Register';
 import PrivateRoute from './components/common/PrivateRoute';
@@ -43,6 +44,10 @@ class App extends Component {
                         <PrivateRoute exact path="/analysis/classdownload" component={ClassDownload} />
                         <PrivateRoute exact path="/analysis/search" component={Search} />
                         <PrivateRoute exact path="/analysis/communityreview" component={CommunityReview} />
+                        <PrivateRoute 
+                            exact path="/analysis/communityreview/:timeseries/:file/:user" 
+                            key={window.location.pathname}
+                            component={withRouter(CommunityFile)} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/" key={window.location.pathname} component={Landing} />

@@ -42,6 +42,8 @@ urlpatterns = [
     path('classdownload/<str:classname>/<str:include>/<str:exclude>/<str:number>/', views.download_class),
     path('classdownload/classifiers/', views.get_target_classifiers),
     path('searchtargets/', views.basic_search_targets),
+    path('communityfiles/', views.get_community_files),
+    path('process/rows/community/<str:timeseries>/<str:file>/<str:user>/', views.new_community_rows),
     path('lastedit/<str:user>/', views.get_last_edit),
     path('bins/', views.retrieve_bins),
 

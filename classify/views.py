@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.http import HttpResponse, FileResponse
-from .serializers import ClassOptionSerializer, FrontEndPackageSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
-from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note
+from .serializers import ClassOptionSerializer, CommunityFilePackageSerializer, FrontEndPackageSerializer, PublicBinSerializer, TargetSerializer, TimeSeriesOptionSerializer, BinSerializer, NoteSerializer
+from .models import ClassOption, FrontEndPackage, TimeSeriesOption, Bin, Target, Note, CommunityFilePackage, PublicBin
 from .services import create_targets, get_files, get_days, get_rows, saveClassifications, sync_autoclass, filter_notes, create_class_zip, search_targets
 import requests
 import math
@@ -338,6 +338,34 @@ def edit_target(request, timeseries, file, number):
         serializer.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(('GET',))
+def get_community_files(request):
+
+    package = []
+    for b in PublicBin.objects.all():
+        for c in b.classifier_set.all():
+            if c.user != 'Auto Classifier':
+                package.append(CommunityFilePackage(bin={'timeseries': b.timeseries, 'file': b.file,'ifcb': b.ifcb}, classifier=c.user))
+    
+    serializer = CommunityFilePackageSerializer(package, many=True)
+    
+    return Response(serializer.data)
+
+@api_view(('GET',))
+def new_community_rows(request, timeseries, file, user):
+    b = PublicBin.objects.get(timeseries=timeseries, file=file)
+    rows = get_rows(b, 'AZ', 560, False, status='Public', user=user)
+
+    options = {
+        'rows': rows
+    }
+
+    package = FrontEndPackage(bin={}, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+    
+    return Response(front_end_package.data)
 
 
 ####### TIME NAVIGATION #######

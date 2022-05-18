@@ -971,7 +971,7 @@ button:hover {
 	align-items: flex-start;
 	overflow: visible;
 	max-width: 70vw;
-	overflow: scroll;
+	overflow: auto;
 }
 
 

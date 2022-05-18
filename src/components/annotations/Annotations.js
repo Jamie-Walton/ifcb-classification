@@ -603,6 +603,7 @@ class Annotations extends React.Component {
           scale={this.state.scale}
           showPhytoGuide={this.props.preferences.phytoguide}
           categorizeMode={false}
+          initial={0}
       />;
   }
 
@@ -776,6 +777,7 @@ class Annotations extends React.Component {
                                 infoShowing={this.state.infoShowing}
                                 public={false}
                                 categorizeMode={false}
+                                noteOption={true}
                             />
                         )}
                     </div>

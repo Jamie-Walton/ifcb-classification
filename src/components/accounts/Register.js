@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { PropTypes } from "prop-types";
@@ -13,6 +14,7 @@ export class Register extends Component {
         password: '',
         password2: '',
         labcode: '',
+        correctLabCode: '',
     }
 
     static propTypes = {
@@ -21,6 +23,12 @@ export class Register extends Component {
         goto_home: PropTypes.func,
     };
 
+    componentDidMount() {
+        axios
+            .get('/labcode/')
+            .then((res) => this.setState({ correctLabCode: res.data.code }))
+    }
+
     onSubmit = e => {
         e.preventDefault();
         const { groups, username, email, password, password2, labcode } = this.state;
@@ -28,7 +36,7 @@ export class Register extends Component {
             console.log('Passwords do not match.') // change to UI message
         } else if(this.state.group === '') {
             console.log('No role selected.') // change to UI message
-        } else if(this.state.group === 'Lab User' && labcode!=='5142') {
+        } else if(this.state.group === 'Lab User' && labcode!==this.state.correctLabCode) {
             console.log('Incorrect lab labcode.') // change to UI message
         } else {
             const newUser = {

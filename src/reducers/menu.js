@@ -8,7 +8,8 @@ import {
     LEARN_PAGE,
     REGISTER_PAGE,
     LOGIN_PAGE,
-    COMMUNITYREVIEW_PAGE
+    COMMUNITYREVIEW_PAGE,
+    COMMUNITYFILE_PAGE
 } from '../actions/types';
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
     onClassDownload: false,
     onSearch: false,
     onCommunityReview: false,
+    onCommunityFile: false,
 }
 
 export default function(state = initialState, action) {
@@ -39,6 +41,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         case LEARN_PAGE:
             return {
@@ -53,6 +56,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         case REGISTER_PAGE:
             return {
@@ -67,6 +71,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         case LOGIN_PAGE:
             return {
@@ -81,6 +86,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         case CLASSIFY_PAGE:
             return {
@@ -95,6 +101,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         case NOTEBOOK_PAGE:
             return {
@@ -109,6 +116,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
         
         case ANALYSIS_PAGE:
@@ -124,6 +132,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
 
         case CLASSDOWNLOAD_PAGE:
@@ -139,6 +148,7 @@ export default function(state = initialState, action) {
                 onClassDownload: true,
                 onSearch: false,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
 
         case SEARCH_PAGE:
@@ -154,6 +164,7 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: true,
                 onCommunityReview: false,
+                onCommunityFile: false,
             }
 
         case COMMUNITYREVIEW_PAGE:
@@ -169,6 +180,23 @@ export default function(state = initialState, action) {
                 onClassDownload: false,
                 onSearch: false,
                 onCommunityReview: true,
+                onCommunityFile: false,
+            }
+
+        case COMMUNITYFILE_PAGE:
+            return {
+                ...state,
+                onHome: false,
+                onLearn: false,
+                onRegister: false,
+                onLogin: false,
+                onClassify: false,
+                onNotebook: false,
+                onAnalysis: false,
+                onClassDownload: false,
+                onSearch: false,
+                onCommunityReview: false,
+                onCommunityFile: true,
             }
             
         default:

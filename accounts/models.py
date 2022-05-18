@@ -15,3 +15,6 @@ class Preferences(models.Model):
         ...
         permissions = (("is_lab_user", "Can access lab classifying"), \
                         ("is_public_user", "Can access public classifying"))
+
+class LabCode(models.Model):
+    code = models.CharField(max_length=100)

@@ -1,7 +1,7 @@
 from wsgiref import validate
 from rest_framework import serializers
-from django.contrib.auth.models import User, Group
-from .models import Preferences
+from django.contrib.auth.models import User
+from .models import Preferences, LabCode
 from django.contrib.auth import authenticate
 
 # User Serializer
@@ -32,6 +32,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
+class LabCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LabCode
+        fields = ('id', 'code')
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):

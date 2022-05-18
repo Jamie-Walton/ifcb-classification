@@ -250,3 +250,64 @@
 .download-button:hover {
     background-color: #16609F;
 }
+
+/* Community Review */
+
+.community-review-heading {
+    margin: 0 0 3vw 0;
+}
+
+.community-file-preview-container {
+    display: flex;
+    box-shadow: 0px 3px 10px #00000012;
+	border: 1px solid #DEDDDD;
+	border-radius: 1.4vw;
+	padding: 2vw;
+    width: fit-content;
+}
+
+.community-file-date {
+    font-size: 1vw;
+	font-weight: 600;
+}
+
+.community-file-file {
+    color: #707070;
+    margin: 0 0 0.5vw 0;
+}
+
+.community-file-classifier {
+    font-style: italic;
+    width: 9vw;
+    overflow: hidden;
+}
+
+.community-file-preview-buttons {
+    margin: 0 0 0 3vw;
+}
+
+.community-download {
+    width: 1.75vw;
+    margin: 0 0 0 1vw;
+}
+
+.right-arrow {
+	background-image: url('../icons/right-arrow-gray.png');
+}
+
+.right-arrow:hover {
+	background-image: url('../icons/right-arrow-green.png');
+}
+
+.flip-right-arrow {
+    transform: rotateY(180deg);
+}
+
+.community-file-info {
+    margin: 0 0 3vw 0;
+    padding: 2vw 4vw;
+}
+
+.community-file-heading {
+    font-size: 1.2vw;
+}

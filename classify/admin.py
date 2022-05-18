@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note, PublicTarget, PublicBin, PublicClassification, Classifier
+from .models import Target, ClassOption, TimeSeriesOption, Bin, Target, Note, PublicTarget, PublicBin, Classifier
 
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('author', 'date', 'entry', 'parent', 'timeseries', 'ifcb', 'file', 'image', 'flag')
@@ -27,9 +27,6 @@ class BinAdmin(admin.ModelAdmin):
 class PublicBinAdmin(admin.ModelAdmin):
     list_display = ('timeseries', 'ifcb', 'year', 'day', 'file',)
 
-class PublicClassificationAdmin(admin.ModelAdmin):
-    list_display = ('target', 'editor', 'class_name', 'class_abbr', 'class_id', 'date',)
-
 class ClassifierAdmin(admin.ModelAdmin):
     list_display = ('user',)
 
@@ -40,5 +37,4 @@ admin.site.register(ClassOption, ClassOptionAdmin)
 admin.site.register(TimeSeriesOption, TimeSeriesOptionAdmin)
 admin.site.register(Bin, BinAdmin)
 admin.site.register(PublicBin, PublicBinAdmin)
-admin.site.register(PublicClassification, PublicClassificationAdmin)
 admin.site.register(Classifier, ClassifierAdmin)

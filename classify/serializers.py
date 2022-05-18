@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Bin, FrontEndPackage, Note, Target, ClassOption, TimeSeriesOption
-from .models import PublicBin, PublicTarget, PublicClassification
+from .models import PublicBin, PublicTarget, PublicClassification, CommunityFilePackage
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,3 +52,8 @@ class PublicClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicClassification
         fields = ('id', 'target', 'editor', 'class_name', 'class_abbr', 'class_id', 'date')
+
+class CommunityFilePackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityFilePackage
+        fields = ('id', 'bin', 'classifier') 

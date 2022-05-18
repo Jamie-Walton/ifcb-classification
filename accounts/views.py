@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .serializers import PreferencesSerializer
+from .serializers import PreferencesSerializer, LabCodeSerializer
 from django.contrib.auth.models import User
-from .models import Preferences
+from .models import Preferences, LabCode
 
 @api_view(('GET',))
 def get_preferences(request, username):
@@ -51,3 +51,11 @@ def set_phytoguide(request, username):
     preferences.save()
 
     return Response(status=status.HTTP_201_CREATED)
+
+@api_view(('GET',))
+def get_labcode(request):
+    labcodes = LabCode.objects.all()
+    labcode = labcodes[len(labcodes)-1]
+    serializer = LabCodeSerializer(labcode)
+
+    return Response(serializer.data)

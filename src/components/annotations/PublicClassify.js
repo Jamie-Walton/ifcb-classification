@@ -92,13 +92,11 @@ class PublicClassify extends React.Component {
     onAnalysis: PropTypes.bool,
   };
 
-  getNewTimeSeries(option, timeseries) {
+  getNewTimeSeries(option) {
     this.setState({ loading: true });
 
-    if (timeseries === undefined) {
-        var k = this.state.timeSeriesOptions.findIndex(timeseries => timeseries === option);
-        timeseries = this.state.timeSeriesNames[k];
-    }
+    var k = this.state.timeSeriesOptions.findIndex(timeseries => timeseries === option);
+    const timeseries = this.state.timeSeriesNames[k];
 
     axios
         .get('/process/public/timeseries/' + timeseries + '/')
@@ -121,7 +119,7 @@ class PublicClassify extends React.Component {
                 timeSeriesNames: res.data.map((c) => (c.name)),
                 });
             if(urlInfo.length<3) {
-                this.getNewTimeSeries('Santa Cuz Wharf', 'SCW');
+                this.getNewTimeSeries('Santa Cuz Wharf');
             }
             })
         .catch((err) => console.log(err));
@@ -412,8 +410,6 @@ class PublicClassify extends React.Component {
         const check = document.getElementById(targets[k].number+'-check');
         check.classList.toggle('checked');
 
-        console.log(targets[k]);
-
         this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
   }
@@ -433,6 +429,19 @@ class PublicClassify extends React.Component {
           showPhytoGuide={this.props.preferences.phytoguide}
           categorizeMode={this.state.categorizeMode}
       />;
+  }
+
+  renderModeToggle() {
+      return( 
+        <div className="mode-toggle">
+            <div className="mode-left mode-selected" id="mode-left" onClick={() => this.handleModeToggle()}>
+                <p className="mode-text mode-text-selected" id="mode-left-text">Categorize</p>
+            </div>
+            <div className="mode-right" id="mode-right" onClick={() => this.handleModeToggle()}>
+                <p className="mode-text" id="mode-right-text">Identify</p>
+            </div>
+        </div>
+      );
   }
 
   renderLoader() {
@@ -535,7 +544,7 @@ class PublicClassify extends React.Component {
                                     <div className="timeseries-box">
                                         <p className="tutorial-title sample-title">Sample</p>
                                         {this.state.timeSeriesOptions.filter(n => n!=='').map((option, i) => 
-                                            <li key={i} className="tutorial-button" onClick={option => this.getNewTimeSeries(option)}>{option}</li>)}
+                                            <li key={i} className="tutorial-button" onClick={() => this.getNewTimeSeries(option)}>{option}</li>)}
                                     </div>
                                 </div>
                             </div>
@@ -544,14 +553,7 @@ class PublicClassify extends React.Component {
                         <div className="annotations">
                             {this.renderClassMenu()}
                             <div>
-                                <div className="mode-toggle">
-                                    <div className="mode-left mode-selected" id="mode-left" onClick={() => this.handleModeToggle()}>
-                                        <p className="mode-text mode-text-selected" id="mode-left-text">Categorize</p>
-                                    </div>
-                                    <div className="mode-right" id="mode-right" onClick={() => this.handleModeToggle()}>
-                                        <p className="mode-text" id="mode-right-text">Identify</p>
-                                    </div>
-                                </div>
+                                {this.renderModeToggle()}
                                 <div className="image-grid remove-top-margin" id="image-grid">
                                     {
                                     (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
