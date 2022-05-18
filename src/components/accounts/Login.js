@@ -38,6 +38,9 @@ export class Login extends Component {
         if(document.getElementById('error')) {
             const error = document.getElementById('error').classList;
             if(this.props.isAuthenticated) {
+                if(this.props.location === '/login' || this.props.location === '/login/') {
+                    return <Redirect push to={'/classify/'} />
+                }
                 return <Redirect push to={this.props.location} />
             } else if(this.props.loginFailed && this.state.attempted) {
                 if (!error.contains('show')) {
