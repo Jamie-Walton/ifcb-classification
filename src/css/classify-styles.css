@@ -1145,12 +1145,12 @@ li {
 	background-size: contain;
 	background-position: center;
     background-repeat: no-repeat;
-	height: 1.8vw;
-	margin: 0.2vw;
+	height: 1.5vw;
+	margin: 0.4vw;
 }
 
 .checked {
-	background-image: url("../icons/red-x.png");
+	background-image: url("../icons/red-x-borderless.png");
 }
 
 .public-id {

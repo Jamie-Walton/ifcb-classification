@@ -160,7 +160,7 @@ class PublicClassify extends React.Component {
                     .then((targetResponse) => {
                         const initialClass = targetResponse.data[0].class_name;
                         const initialAbbr = targetResponse.data[0].class_abbr;
-                        const categories = [...new Set(targetResponse.data.map(t => t.class_name))];
+                        var categories = [...new Set(targetResponse.data.map(t => t.class_name))].filter(n => n!=='Unclassified');
                         this.setState({ 
                             targets: targetResponse.data,
                             targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
@@ -350,6 +350,7 @@ class PublicClassify extends React.Component {
         .then((targetResponse) => {
             const initialClass = targetResponse.data[0].class_name;
             const initialAbbr = targetResponse.data[0].class_abbr;
+            var categories = [...new Set(targetResponse.data.map(t => t.class_name))].filter(n => n!=='Unclassified');
             var classAbbr;
             var classPicker;
             var classMark; 
@@ -363,7 +364,8 @@ class PublicClassify extends React.Component {
                 classPicker: classPicker,
                 classMark: classMark,
                 history: [JSON.stringify(targetResponse.data)],
-                categories: [...new Set(targetResponse.data.map(t => t.class_name))],
+                categories: categories,
+                categoryIndices: this.state.classes.map((n,i) => (i)).filter((i) => categories.includes(this.state.classes[i])),
                 categorizeMode: !this.state.categorizeMode,
             });
             if (initialClass === 'Unclassified') {
