@@ -347,7 +347,13 @@ def get_community_files(request):
     for b in PublicBin.objects.all():
         for c in b.classifier_set.all():
             if c.user != 'Auto Classifier':
-                package.append(CommunityFilePackage(bin={'timeseries': b.timeseries, 'file': b.file,'ifcb': b.ifcb}, classifier=c.user))
+                cat_status = False
+                id_status = False
+                if c.bins_categorized.filter(timeseries=b.timeseries, file=b.file):
+                    cat_status = True
+                if c.bins_identified.filter(timeseries=b.timeseries, file=b.file):
+                    id_status = True
+                package.append(CommunityFilePackage(bin={'timeseries': b.timeseries, 'file': b.file,'ifcb': b.ifcb,'categorized': cat_status,'identified': id_status}, classifier=c.user))
     
     serializer = CommunityFilePackageSerializer(package, many=True)
     

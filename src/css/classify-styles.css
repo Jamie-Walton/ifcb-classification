@@ -903,14 +903,19 @@ li {
 	width: 1.75vw;
 }
 
-/* Mode Menu */
+/* Status Buttons */
+
+.status-buttons {
+	display: flex;
+	margin: 5vw 0 0 0;
+}
 
 .mode-toggle {
 	display: flex;
 }
 
 .mode-left {
-	margin: 5vw 0 0 3vw;
+	margin: 0vw 0 0 3vw;
 	height: fit-content;
 	background-color: #e0e0e0;
 	padding: 0.5vw 2vw;
@@ -919,7 +924,7 @@ li {
 }
 
 .mode-right {
-	margin: 5vw 0 5vw 0;
+	margin: 0vw 0 5vw 0;
 	height: fit-content;
 	background-color: #e0e0e0;
 	padding: 0.5vw 2vw;
@@ -940,6 +945,48 @@ li {
 	font-size: 1vw;
 	color: #0d79a3;
 	font-weight: 500;
+}
+
+.done-button {
+	margin: 0 0 0 2vw;
+	display: flex;
+	padding: 0.5vw 1.5vw 0.5vw 1vw;
+	height: fit-content;
+	width: fit-content;
+	border-radius: 2vw;
+	cursor: pointer;
+}
+
+.incomplete-done-button {
+	background-color: #70B730;
+}
+
+.incomplete-done-button:hover {
+	background-color: #5d8108;
+}
+
+.complete-done-button {
+	background-color: #0d79a3;
+}
+
+.complete-done-button:hover {
+	background-color: #16609F;
+}
+
+.done-check {
+	background-image: url("../icons/white-check.png");
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 0.75vw;
+	height: 0.75vw;
+	margin: 0.25vw 1vw 0 0;
+}
+
+.done-text {
+	color: #FFFFFF;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1vw;
 }
 
 

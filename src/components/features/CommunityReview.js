@@ -28,8 +28,14 @@ class CommunityFilePreview extends Component {
     }
 
     render() {
+        var appearance = ''
+        if(this.props.categorized) {
+            appearance = 'community-file-preview-categorized';
+        } else if(this.props.identified) {
+            appearance = 'community-file-preview-identified';
+        }
         return (
-            <div className="community-file-preview-container">
+            <div className={"community-file-preview-container " + appearance}>
                 <div>
                     <p className="community-file-date">{this.getDate(this.props.file)}</p>
                     <p className="community-file-file">{this.props.file}</p>
@@ -86,6 +92,25 @@ class CommunityReview extends Component {
          this.props.goto_communityfile();
     }
 
+    renderLegend() {
+        return(
+            <div className='community-review-legend'>
+                <div className='legend-entry'>
+                    <div className='legend-bubble identified-bubble' />
+                    <p className='legend-text'>Identification Complete</p>
+                </div>
+                <div className='legend-entry'>
+                    <div className='legend-bubble categorized-bubble' />
+                    <p className='legend-text'>Categorization Complete</p>
+                </div>
+                <div className='legend-entry'>
+                    <div className='legend-bubble incomplete-bubble' />
+                    <p className='legend-text'>Incomplete</p>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         if(this.props.onClassify) {
             return <Redirect to="/classify" />
@@ -138,6 +163,8 @@ class CommunityReview extends Component {
                                 file={files[(rowIndex*4)+columnIndex].bin.file}
                                 ifcb={files[(rowIndex*4)+columnIndex].bin.ifcb}
                                 classifier={files[(rowIndex*4)+columnIndex].classifier}
+                                categorized={files[(rowIndex*4)+columnIndex].bin.categorized}
+                                identified={files[(rowIndex*4)+columnIndex].bin.identified}
                                 onClick={() => this.handleFileClick(files[(rowIndex*4)+columnIndex].bin.timeseries, files[(rowIndex*4)+columnIndex].bin.file, files[(rowIndex*4)+columnIndex].classifier)}
                             /> : 
                             <div/> }
@@ -158,13 +185,14 @@ class CommunityReview extends Component {
                                 <h1 className="notebook-header">Analysis</h1>
                             </div>
                             <h2 className="analysis-option-heading page-heading community-review-heading">Community Review</h2>
+                            {this.renderLegend()}
                             <div>
                                 {this.state.files.length > 1 ?
                                     <Grid
                                         width={document.documentElement.clientWidth*0.8}
                                         height={800}
                                         columnWidth={document.documentElement.clientWidth*0.8/4}
-                                        rowHeight={document.documentElement.clientWidth*0.1}
+                                        rowHeight={document.documentElement.clientWidth*0.11}
                                         rowCount={Math.floor(this.state.files.length/4)+1}
                                         columnCount={4}
                                         cellRenderer={cellRenderer}

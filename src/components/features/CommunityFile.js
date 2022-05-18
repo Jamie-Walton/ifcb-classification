@@ -28,20 +28,34 @@ class CommunityFilePreview extends Component {
     }
 
     render() {
+        var appearance = ''
+        var status = 'This file is incomplete.'
+        if(this.props.categorized) {
+            appearance = 'community-file-preview-categorized';
+            status = 'This file is fully categorized, but not fully identified.';
+        } else if(this.props.identified) {
+            appearance = 'community-file-preview-identified';
+            status = 'This file is fully categorized and identified.';
+        }
         return (
-            <div className="community-file-preview-container community-file-info">
-                <div>
-                    <p className="community-file-date community-file-heading">{this.getDate(this.props.file)}</p>
-                    <p className="community-file-file">{this.props.file}</p>
-                    <p className="community-file-classifier">{this.props.classifier}</p>
-                </div>
-                <div className="community-file-preview-buttons">
-                    <div className="round-button download community-download" onClick={() => this.handleDownload()}>
-                        <div style={{display: 'none'}}>
-                        <iframe id="download-src" />
-                        </div>
+            <div className="community-file-info-container">
+                <div className={"community-file-preview-container community-file-info " + appearance}>
+                    <div>
+                        <p className="community-file-date community-file-heading">{this.getDate(this.props.file)}</p>
+                        <p className="community-file-file">{this.props.file}</p>
+                        <p className="community-file-classifier">{this.props.classifier}</p>
                     </div>
-                    <div className="round-button right-arrow community-download flip-right-arrow" onClick={() => this.props.onClick()}></div>
+                    <div className="community-file-preview-buttons">
+                        <div className="round-button download community-download" onClick={() => this.handleDownload()}>
+                            <div style={{display: 'none'}}>
+                            <iframe id="download-src" />
+                            </div>
+                        </div>
+                        <div className="round-button right-arrow community-download flip-right-arrow" onClick={() => this.props.onClick()}></div>
+                    </div>
+                </div>
+                <div className="community-file-status-container">
+                    <p className={"community-file-status " + appearance + '-text'}>{status}</p>
                 </div>
             </div>
         );
@@ -69,6 +83,8 @@ class CommunityFile extends React.Component {
           lastEditBin: '',
           lastEditTarget: '',
           lastScroll: 0,
+          categorized: false,
+          identified: false,
       }
   }
 
@@ -146,6 +162,14 @@ class CommunityFile extends React.Component {
                 this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
                 return;
             });
+        axios
+            .get('/complete/public/status/' + timeseries + '/' + file + '/' + user + '/')
+            .then((completionStatusResponse) => {
+                this.setState({
+                    categorized: completionStatusResponse.data.options.categorized,
+                    identified: completionStatusResponse.data.options.identified,
+                });
+            })
     }
 
   }
@@ -266,6 +290,8 @@ class CommunityFile extends React.Component {
                                 file={this.state.bin.file}
                                 ifcb={this.state.bin.ifcb}
                                 classifier={this.state.user}
+                                categorized={this.state.categorized}
+                                identified={this.state.identified}
                                 onClick={() => this.props.goto_communityreview()}
                             /> : <div/>}
                         <div className="annotations">

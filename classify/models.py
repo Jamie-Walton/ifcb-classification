@@ -99,6 +99,8 @@ class Classifier(models.Model):
     user_model = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     targets = models.ManyToManyField(PublicTarget, blank=True)
     bins = models.ManyToManyField(PublicBin, blank=True)
+    bins_categorized = models.ManyToManyField(PublicBin, blank=True, related_name='category_classifiers')
+    bins_identified = models.ManyToManyField(PublicBin, blank=True, related_name='identification_classifiers')
 
     def _str_(self):
         return self.user

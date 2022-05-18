@@ -1,3 +1,4 @@
+from time import time
 from django.http.response import JsonResponse
 from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
@@ -162,7 +163,7 @@ def new_file(request, timeseries, file, user):
     year = file[1:5]
     day = file[5:7] + '-' + file[7:9]
     filled_days = get_filled_days(timeline)
-    file_bin = PublicBin.objects.filter(file=file)
+    file_bin = PublicBin.objects.filter(timeseries=timeseries, file=file)
     classifier = Classifier.objects.get(user=user)
     if not file_bin:
         ifcb = create_public_targets(timeseries, year, day, file)
@@ -243,3 +244,49 @@ def new_year(request, timeseries, year):
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
+
+
+####### BIN COMPLETION #######
+
+@api_view(('GET',))
+def get_completion_status(request, timeseries, file, user):
+    b = PublicBin.objects.get(timeseries=timeseries, file=file)
+    classifier = Classifier.objects.get(user=user) 
+    if classifier.bins_categorized.filter(timeseries=timeseries, file=file):
+        categorized = True
+    else:
+        categorized = False
+    if classifier.bins_identified.filter(timeseries=timeseries, file=file):
+        identified = True
+    else:
+        identified = False
+
+    options = {'categorized': categorized, 'identified': identified}
+    package = FrontEndPackage(bin={}, options=options)
+    front_end_package = FrontEndPackageSerializer(package)
+    
+    return Response(front_end_package.data)
+
+
+@api_view(('GET',))
+def complete_categorization(request, timeseries, file, user):
+    b = PublicBin.objects.get(timeseries=timeseries, file=file)
+    classifier = Classifier.objects.get(user=user)
+
+    if classifier.bins_categorized.filter(timeseries=timeseries, file=file):
+        classifier.bins_categorized.remove(b)
+    else:
+        classifier.bins_categorized.add(b)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(('GET',))
+def complete_identification(request, timeseries, file, user):
+    b = PublicBin.objects.get(timeseries=timeseries, file=file)
+    classifier = Classifier.objects.get(user=user)
+
+    if classifier.bins_identified.filter(timeseries=timeseries, file=file):
+        classifier.bins_identified.remove(b)
+    else:
+        classifier.bins_identified.add(b)
+    return Response(status=status.HTTP_204_NO_CONTENT)

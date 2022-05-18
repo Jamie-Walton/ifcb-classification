@@ -69,8 +69,8 @@ class PublicClassify extends React.Component {
           scale: 0.056,
           lastScroll: 0,
           dayOption: '',
-          previous: 'Previous',
-          next: 'Next',
+          categorizationComplete: false,
+          identificationComplete: false,
       }
   }
 
@@ -187,6 +187,18 @@ class PublicClassify extends React.Component {
             .catch((err) => {
                 console.log(err);
                 this.setState({ bin: {timeseries:'', ifcb:'', year:'', day:'', file:'Not Found'} });
+                return;
+            });
+        axios
+            .get('/complete/public/status/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
+            .then((completionStatusResponse) => {
+                this.setState({
+                    categorizationComplete: completionStatusResponse.data.options.categorized,
+                    identificationComplete: completionStatusResponse.data.options.identified,
+                });
+            })
+            .catch((err) => {
+                console.log(err);
                 return;
             });
     }
@@ -414,6 +426,19 @@ class PublicClassify extends React.Component {
     }
   }
 
+  handleDoneClick() {
+    var url
+    if(this.state.categorizeMode) {
+        url = '/complete/public/categorization/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/';
+        this.setState({ categorizationComplete: !this.state.categorizationComplete });
+    } else {
+        url = '/complete/public/identification/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/';
+        this.setState({ identfiicationComplete: !this.state.identfiicationComplete });
+    }
+    axios.get(url).catch((err) => console.log(err));
+
+  }
+
   renderClassMenu() {
     return <ClassMenu 
           classes={this.state.classes}
@@ -444,11 +469,32 @@ class PublicClassify extends React.Component {
       );
   }
 
-  renderDoneButton(mode) {
+  renderDoneButton() {
+    var message
+    var appearance
+
+    if(this.state.categorizeMode) {
+        if(this.state.categorizationComplete) {
+            message = 'Categorization Complete';
+            appearance = 'complete-done-button';
+        } else {
+            message = 'Finished Categorizing?';
+            appearance = 'incomplete-done-button';
+        }
+    } else {
+        if(this.state.identificationComplete) {
+            message = 'Identification Complete';
+            appearance = 'complete-done-button';
+        } else {
+            message = 'Finished Identifying?';
+            appearance = 'incomplete-done-button';
+        }
+    }
+    
     return(
-        <div className="done-button">
-            <div className='done-check'></div>
-            <p className="done-text">{"Done " + mode}</p>
+        <div className={"done-button " + appearance} onClick={() => this.handleDoneClick()}>
+            <div className={"done-check"}></div>
+            <p className="done-text">{message}</p>
         </div>
       )
   }
@@ -562,7 +608,10 @@ class PublicClassify extends React.Component {
                         <div className="annotations">
                             {this.renderClassMenu()}
                             <div>
-                                {this.renderModeToggle()}
+                                <div className="status-buttons">
+                                    {this.renderModeToggle()}
+                                    {this.renderDoneButton()}
+                                </div>
                                 <div className="image-grid remove-top-margin" id="image-grid">
                                     {
                                     (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
