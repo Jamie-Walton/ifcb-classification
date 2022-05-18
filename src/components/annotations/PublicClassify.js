@@ -376,7 +376,7 @@ class PublicClassify extends React.Component {
                 .then((rowResponse) => {
                     this.setState({ 
                         rows: rowResponse.data.options.rows,
-                        // initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
+                        initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
                         loading: false,
                      });
                 });
