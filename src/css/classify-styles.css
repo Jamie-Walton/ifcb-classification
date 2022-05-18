@@ -827,7 +827,7 @@ li {
 	height: 92vh;
 }
 
-.class-menu button {
+.class-menu .classmenu-button {
 	background-color: #079CCC;
 	border: none;
 	font-family: proxima-nova, sans-serif;
@@ -842,7 +842,7 @@ li {
 	cursor: pointer;
 }
 
-button:hover {
+.classmenu-button:hover {
   background-color: #16609F;
 }
 

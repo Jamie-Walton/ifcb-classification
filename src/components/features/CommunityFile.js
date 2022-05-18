@@ -8,9 +8,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { classifyPublicTarget, classifyRow, classifyAll, save, sync } from "../../actions/classify";
 import { goto_communityreview } from "../../actions/menu";
-import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
 import loader from "../annotations/loader.GIF";

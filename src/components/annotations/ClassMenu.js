@@ -53,7 +53,7 @@ class ClassMenu extends React.Component {
     render() {
       const classes = this.props.categorizeMode ? this.props.categories : this.props.classes
       const options = classes.map((x, i) => 
-      <li key={x}><button id={x} 
+      <li key={x}><button id={x} className="classmenu-button"
             onClick={() => this.handleMenuClick(x, i)} 
             onMouseEnter={() => this.handleMouseOver(i)} 
             onMouseLeave={() => this.handleMouseOut(i)}>{x}</button></li>);
