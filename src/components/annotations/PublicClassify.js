@@ -40,6 +40,7 @@ class PublicClassify extends React.Component {
           classExamples: [],
           classNonexamples: [],
           categories: [],
+          categoryIndices: [],
           classPicker: 'Unclassified',
           classMark: 'UNC',
           initialClassIndex: 0,
@@ -159,7 +160,7 @@ class PublicClassify extends React.Component {
                     .then((targetResponse) => {
                         const initialClass = targetResponse.data[0].class_name;
                         const initialAbbr = targetResponse.data[0].class_abbr;
-                        const categories = targetResponse.data.map(t => t.class_name);
+                        const categories = [...new Set(targetResponse.data.map(t => t.class_name))];
                         this.setState({ 
                             targets: targetResponse.data,
                             targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
@@ -168,7 +169,8 @@ class PublicClassify extends React.Component {
                             classMark: initialAbbr,
                             initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
                             history: [JSON.stringify(targetResponse.data)],
-                            categories: [...new Set(targetResponse.data.map(t => t.class_name))],
+                            categories: categories,
+                            categoryIndices: this.state.classes.map((n,i) => (i)).filter((i) => categories.includes(this.state.classes[i])),
                             loading: false,
                         });
                         if (initialClass === 'Unclassified') {
@@ -453,6 +455,7 @@ class PublicClassify extends React.Component {
           scale={this.state.scale}
           showPhytoGuide={this.props.preferences.phytoguide}
           categorizeMode={this.state.categorizeMode}
+          categoryIndices={this.state.categoryIndices}
       />;
   }
 

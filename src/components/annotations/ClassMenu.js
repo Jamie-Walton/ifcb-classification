@@ -52,6 +52,10 @@ class ClassMenu extends React.Component {
   
     render() {
       const classes = this.props.categorizeMode ? this.props.categories : this.props.classes
+      const descriptions = this.props.categorizeMode ? this.props.descriptions.filter((n,i) => this.props.categoryIndices.includes(i)) : this.props.descriptions
+      const examples = this.props.categorizeMode ? this.props.examples.filter((n,i) => this.props.categoryIndices.includes(i)) : this.props.examples
+      const nonexamples = this.props.categorizeMode ? this.props.nonexamples.filter((n,i) => this.props.categoryIndices.includes(i)) : this.props.nonexamples
+      
       const options = classes.map((x, i) => 
       <li key={x}><button id={x} className="classmenu-button"
             onClick={() => this.handleMenuClick(x, i)} 
@@ -76,10 +80,10 @@ class ClassMenu extends React.Component {
             {this.props.showPhytoGuide ? 
                     <div className="phyto-guide">
                         <p className="phyto-guide-heading">{classes[this.state.indexHovered]}</p>
-                        <p className="phyto-guide-description">{this.props.descriptions[this.state.indexHovered]}</p>
+                        <p className="phyto-guide-description">{descriptions[this.state.indexHovered]}</p>
                         <div className="yes-examples">
-                            { (this.props.examples.length > 0) ?
-                                this.props.examples[this.state.indexHovered].map((image) => (
+                            { (examples.length > 0) ?
+                                examples[this.state.indexHovered].map((image) => (
                                     <div>
                                         <img src={correctIcon} className='phyto-guide-icon'></img>
                                         <img src={image} className="image" 
@@ -92,9 +96,9 @@ class ClassMenu extends React.Component {
                             }
                         </div>
                         <div className="no-examples">
-                            { (this.props.nonexamples.length) > 0 ? ((this.props.nonexamples[this.state.indexHovered].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
-                            { (this.props.nonexamples.length) > 0 ? 
-                                this.props.nonexamples[this.state.indexHovered].map((image) => (
+                            { (nonexamples.length) > 0 ? ((nonexamples[this.state.indexHovered].length) ? <p className="phyto-guide-nonexample-heading">Don't confuse with:</p> : <div></div>) : <div></div> }
+                            { (nonexamples.length) > 0 ? 
+                                nonexamples[this.state.indexHovered].map((image) => (
                                     <div>
                                         <img src={incorrectIcon} className='phyto-guide-icon'></img>
                                         <img src={image} className="image" 
