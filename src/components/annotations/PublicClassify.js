@@ -179,10 +179,12 @@ class PublicClassify extends React.Component {
                         axios
                             .get('/process/public/rows/' + timeseries + '/' + file + '/' + initialAbbr + '/' + this.props.user.username + '/')
                             .then((rowResponse) => {
-                                this.setState({ 
-                                    rows: rowResponse.data.options.rows, 
-                                    initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
-                                });
+                                this.setState({ rows: rowResponse.data.options.rows });
+                                if (categories.length < 1) {
+                                    this.setState({ initialClassIndex: 0 });
+                                } else {
+                                    this.setState({ initialClassIndex: this.state.categories.findIndex(c => c === initialClass) });
+                                }
                             });
                 });
             })
@@ -375,10 +377,14 @@ class PublicClassify extends React.Component {
                 .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classAbbr + '/' + this.props.user.username + '/')
                 .then((rowResponse) => {
                     this.setState({ 
-                        rows: rowResponse.data.options.rows,
-                        initialClassIndex: this.state.categories.findIndex(c => c === initialClass), 
+                        rows: rowResponse.data.options.rows, 
                         loading: false,
                      });
+                     if (categories.length < 1) {
+                        this.setState({ initialClassIndex: 0 });
+                    } else {
+                        this.setState({ initialClassIndex: this.state.categories.findIndex(c => c === initialClass) });
+                    }
                 });
     });
   }
