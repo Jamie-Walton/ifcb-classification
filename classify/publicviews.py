@@ -219,7 +219,7 @@ def new_day(request, timeseries, date):
     options = {}
     bin = {'file': recent_file}
 
-    package = FrontEndPackage(bin=bin, set=1, options=options)
+    package = FrontEndPackage(bin=bin, options=options)
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
