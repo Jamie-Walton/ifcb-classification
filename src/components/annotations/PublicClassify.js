@@ -5,6 +5,7 @@ import Plankton from './Plankton';
 import Tutorial from './Tutorial';
 import ClassMenu from './ClassMenu';
 import DatePicker from "react-datepicker";
+import confetti from 'canvas-confetti';
 import '../../css/datepicker.css';
 
 import PropTypes from 'prop-types';
@@ -16,16 +17,6 @@ import { changeScale } from "../../actions/preferences";
 
 import '../../css/classify-styles.css';
 import loader from "./loader.GIF";
-
-class NavButton extends React.Component {
-    render() {
-        return(
-            <div className={this.props.className} onClick={() => this.props.onClick()}>
-                <p>{this.props.text}</p>
-            </div>
-        )
-    }
-}
 
 class PublicClassify extends React.Component {
   constructor(props) {
@@ -438,10 +429,27 @@ class PublicClassify extends React.Component {
 
   handleDoneClick() {
     var url
+    var colors = ['#1DC3D7', '#6FB530'];
     if(this.state.categorizeMode) {
+        if(!this.state.categorizationComplete) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: colors
+              });
+        }
         url = '/complete/public/categorization/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/';
         this.setState({ categorizationComplete: !this.state.categorizationComplete });
     } else {
+        if(!this.state.identificationComplete) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: colors
+              });
+        }
         url = '/complete/public/identification/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/';
         this.setState({ identfiicationComplete: !this.state.identfiicationComplete });
     }
@@ -651,7 +659,7 @@ class PublicClassify extends React.Component {
   }
 
   render() {
-
+    
     if(this.props.onHome) {
         return <Redirect to="/" />
     }

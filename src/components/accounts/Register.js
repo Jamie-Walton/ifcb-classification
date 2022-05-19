@@ -15,12 +15,15 @@ export class Register extends Component {
         password2: '',
         labcode: '',
         correctLabCode: '',
+        attempted: false,
     }
 
     static propTypes = {
         register: PropTypes.func.isRequired,
         isAuthenticated: PropTypes.bool,
         goto_home: PropTypes.func,
+        registerFailed: PropTypes.bool,
+        onRegister: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -31,6 +34,7 @@ export class Register extends Component {
 
     onSubmit = e => {
         e.preventDefault();
+        this.setState({ attempted: true });
         const { groups, username, email, password, password2, labcode } = this.state;
         if(password !== password2) {
             console.log('Passwords do not match.') // change to UI message
@@ -49,7 +53,7 @@ export class Register extends Component {
         }
     }
 
-    onChange = e => this.setState({ [e.target.name]: e.target.value })
+    onChange = e => this.setState({ [e.target.name]: e.target.value, attempted: false })
 
     handleCommunityRole() {
         if (this.state.groups === 'Lab User') {
@@ -105,12 +109,24 @@ export class Register extends Component {
     }
     
     render() {
-        if(this.props.isAuthenticated) {
-            return <Redirect to="/classify" />;
-        }
 
         if(this.props.onHome && !this.props.onRegister) {
             return <Redirect to="/" />
+        }
+
+        if(document.getElementById('error')) {
+            const error = document.getElementById('error').classList;
+            if(this.props.isAuthenticated) {
+                return <Redirect to="/classify" />;
+            } else if(this.props.registerFailed && this.state.attempted) {
+                if (!error.contains('show')) {
+                    error.add('show');
+                }
+            } else {
+                if (error.contains('show')) {
+                    error.remove('show');
+                }
+            }
         }
         
         const { username, email, password, password2, labcode } = this.state;
@@ -189,6 +205,8 @@ export class Register extends Component {
                             value={password2}
                             placeholder="Confirm Password"
                         />
+                        </div>
+                        <div className="form-group">
                         <input
                             type="text"
                             id="labcode"
@@ -200,6 +218,7 @@ export class Register extends Component {
                         />
                         </div>
                         <div className="form-group">
+                        <p className="error-message" id="error">Incorrect username or password.</p>
                         <button type="submit" className="register-submit">
                             Create Account
                         </button>
@@ -217,6 +236,7 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
     onHome: state.menu.onHome,
     onRegister: state.menu.onRegister,
+    registerFailed: state.auth.registerFailed,
  });
  
  export default connect(mapStateToProps, { register, goto_home })(Register);

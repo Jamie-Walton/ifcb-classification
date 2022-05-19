@@ -9,6 +9,7 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOGOUT_SUCCESS,
+    REGISTER_ATTEMPT,
     REGISTER_SUCCESS,
     REGISTER_FAIL
 } from '../actions/types';
@@ -84,6 +85,10 @@ export const login = (username, password) => dispatch => {
 
 // REGISTER USER
 export const register = ({ groups, username, password, email }) => dispatch => {
+    
+    dispatch({
+        type: REGISTER_ATTEMPT
+    });
     
     // Headers
     const config = {
