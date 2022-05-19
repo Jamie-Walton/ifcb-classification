@@ -8,6 +8,7 @@ import ditylum from "../../assets/ditylum-gradient.png";
 import preview from "../../assets/webpage.png";
 import chaetoceros from "../../assets/chaetoceros-gradient.png";
 import lithodesmium from "../../assets/lithodesmium-gradient.png";
+import centric from "../../assets/centric-gradient.png";
 import { goto_learn, goto_classify } from "../../actions/menu";
 
 export class Landing extends Component {
@@ -85,9 +86,17 @@ export class Landing extends Component {
                     </div>
                     <div className='external-container'>
                         <div className='vert-section'>
-                            <img src={chaetoceros} alt="A long, ribbon-like phytoplankton with lots of tendrils" className="vert-image"></img>
+                            <img src={centric} alt="A circular phytoplankton with a bubblewrap-like texture" className="vert-image"></img>
                             <div className='vert-text'>
-                                <h2 className='vert-heading'>What is an IFCB?</h2>
+                                <h2 className='vert-heading'>Phytoplankton</h2>
+                                <p className='vert-body'>Phytoplankton are microscopic organisms that drive the ocean food chain.</p>
+                            </div>
+                            <button className='external-button' onClick={this.props.goto_learn}>Learn More</button>
+                        </div>
+                        <div className='vert-section righthand-container'>
+                            <img src={chaetoceros} alt="A translucent, pillow-like phytoplankton with a dark circular middle" className="vert-image"></img>
+                            <div className='vert-text'>
+                                <h2 className='vert-heading'>The IFCB</h2>
                                 <p className='vert-body'>An IFCB is a robotic microscope that collects water and takes pictures without a human.</p>
                             </div>
                             <button className='external-button' onClick={this.props.goto_learn}>Learn More</button>

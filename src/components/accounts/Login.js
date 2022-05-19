@@ -21,6 +21,7 @@ export class Login extends Component {
         loginFailed: PropTypes.bool,
         location: PropTypes.string,
         goto_home: PropTypes.func,
+        onLogin: PropTypes.bool,
     };
 
     onSubmit = e => {
@@ -38,7 +39,7 @@ export class Login extends Component {
         if(document.getElementById('error')) {
             const error = document.getElementById('error').classList;
             if(this.props.isAuthenticated) {
-                if(this.props.location === '/login' || this.props.location === '/login/') {
+                if(this.props.onLogin) {
                     return <Redirect push to={'/classify'} />
                 }
                 return <Redirect push to={this.props.location} />
@@ -122,6 +123,7 @@ const mapStateToProps = state => ({
    loginFailed: state.auth.loginFailed,
    location: state.auth.location,
    onHome: state.menu.onHome,
+   onLogin: state.menu.onLogin,
 });
 
 export default connect(mapStateToProps, { login, goto_home })(Login);

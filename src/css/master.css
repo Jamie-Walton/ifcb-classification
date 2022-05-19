@@ -220,11 +220,11 @@ header {
 .vert-section {
 	box-shadow: 0px 3px 10px #00000012;
 	background-color: #FFFFFF;
-	width: 300px;
+	width: 255px;
 }
 
 .vert-image {
-	width: 300px;
+	width: 255px;
 }
 
 .vert-text {
@@ -262,19 +262,19 @@ header {
 }
 
 .righthand-container {
-	margin: 0 0 0 30px;
+	margin: 0 0 0 20px;
 }
 
 
 /* Learn */
 
 .learn-hero {
-	height: 50vh;
+	height: 33vh;
 	background-image: url('../assets/learn-hero.png');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: right;
-	padding: 230px 0 0 80px;
+	padding: 150px 0 0 80px;
 }
 
 .learn-title {

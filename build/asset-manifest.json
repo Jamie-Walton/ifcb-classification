@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.6e707f28.chunk.css",
-    "main.js": "/static/js/main.5d4344e1.chunk.js",
-    "main.js.map": "/static/js/main.5d4344e1.chunk.js.map",
+    "main.css": "/static/css/main.2e35edf9.chunk.css",
+    "main.js": "/static/js/main.508083a1.chunk.js",
+    "main.js.map": "/static/js/main.508083a1.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.9b796520.js",
     "runtime-main.js.map": "/static/js/runtime-main.9b796520.js.map",
     "static/js/2.1ee81438.chunk.js": "/static/js/2.1ee81438.chunk.js",
@@ -10,22 +10,23 @@
     "static/js/3.206b115e.chunk.js": "/static/js/3.206b115e.chunk.js",
     "static/js/3.206b115e.chunk.js.map": "/static/js/3.206b115e.chunk.js.map",
     "index.html": "/index.html",
-    "static/css/main.6e707f28.chunk.css.map": "/static/css/main.6e707f28.chunk.css.map",
+    "static/css/main.2e35edf9.chunk.css.map": "/static/css/main.2e35edf9.chunk.css.map",
     "static/js/2.1ee81438.chunk.js.LICENSE.txt": "/static/js/2.1ee81438.chunk.js.LICENSE.txt",
     "static/media/akashiwo-character.18a198bc.png": "/static/media/akashiwo-character.18a198bc.png",
+    "static/media/centric-gradient.2d5ff084.png": "/static/media/centric-gradient.2d5ff084.png",
     "static/media/ceratium.6cb5ebc2.jpg": "/static/media/ceratium.6cb5ebc2.jpg",
     "static/media/chaetoceros-gradient.f5286ef9.png": "/static/media/chaetoceros-gradient.f5286ef9.png",
-    "static/media/master.css": "/static/media/learn-hero.a4e52790.png",
+    "static/media/master.css": "/static/media/learn-hero.8b15f5ea.png",
     "static/media/ifcb-gallery.095b81b2.png": "/static/media/ifcb-gallery.095b81b2.png",
     "static/media/lithodesmium-gradient.4b062529.png": "/static/media/lithodesmium-gradient.4b062529.png",
     "static/media/loader.a069fadb.GIF": "/static/media/loader.a069fadb.GIF",
     "static/media/auth-styles.css": "/static/media/register-plankton.a724b76b.png",
-    "static/media/webpage.e2242b84.png": "/static/media/webpage.e2242b84.png"
+    "static/media/webpage.33266271.png": "/static/media/webpage.33266271.png"
   },
   "entrypoints": [
     "static/js/runtime-main.9b796520.js",
     "static/js/2.1ee81438.chunk.js",
-    "static/css/main.6e707f28.chunk.css",
-    "static/js/main.5d4344e1.chunk.js"
+    "static/css/main.2e35edf9.chunk.css",
+    "static/js/main.508083a1.chunk.js"
   ]
 }
