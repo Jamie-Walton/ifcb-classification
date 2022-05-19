@@ -48,6 +48,7 @@ class Annotations extends React.Component {
           classMark: 'UNC',
           planktonClickEnabled: true,
           infoShowing: [],
+          infoButtonStatus: '',
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
           yearOptions: [],
@@ -491,10 +492,7 @@ class Annotations extends React.Component {
   hideInfo() {
     const showButton = document.getElementById("hide-info-button");
     (showButton.innerHTML === "Hide Info") ? showButton.innerHTML = "Show Info" : showButton.innerHTML = "Hide Info";
-    const infoButtons = document.getElementsByClassName('info');
-      for (let i = 0; i < infoButtons.length; i++) {
-          infoButtons[i].classList.toggle('hide');
-      }
+    (this.state.infoButtonStatus === '') ? this.setState({ infoButtonStatus: 'hide' }) : this.setState({ infoButtonStatus: '' });
   }
 
   handleScale(dir) {
@@ -775,6 +773,7 @@ class Annotations extends React.Component {
                                 onClick={(i) => this.handlePlanktonClick(i)}
                                 infoChange={(targetNum, bool, infoShowing) => this.disablePlanktonClick(targetNum, bool, infoShowing)}
                                 infoShowing={this.state.infoShowing}
+                                infoButtonStatus={this.state.infoButtonStatus}
                                 public={false}
                                 categorizeMode={false}
                                 noteOption={true}

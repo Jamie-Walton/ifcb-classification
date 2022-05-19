@@ -8,7 +8,7 @@ class PlanktonImage extends React.Component {
     render() {
     const url = this.props.nameSpace + this.props.timestamp + '_' + this.props.ifcb + '_' + this.props.targetNum + '.jpg';
         return(
-            <img src={url} className="image" 
+            <img src={url} className={"image " + this.props.status} 
             alt={this.props.classification} 
             id={this.props.targetNum + '-image'}
             style={{height: String(Number(this.props.height)*this.props.scale)+'vw'}}></img>
@@ -18,6 +18,16 @@ class PlanktonImage extends React.Component {
 
 class Plankton extends React.Component {
   
+    constructor(props) {
+      super(props);
+      this.state = {
+        checkStatus: '',
+        infoStatus: '',
+        imageStatus: '',
+        infoButtonStatus: '',
+      }
+    }
+
     renderImage() {  
       return (
           <PlanktonImage 
@@ -29,6 +39,7 @@ class Plankton extends React.Component {
               classification={this.props.class_name}
               height={this.props.height}
               scale={this.props.scale}
+              status={this.state.imageStatus}
           />
         );
     }
@@ -51,9 +62,13 @@ class Plankton extends React.Component {
   
     handleInfoClick() {
       this.props.infoChange(this.props.targetNum, false, true);
-      document.getElementById(this.props.targetNum + '-info').classList.toggle('show-info');
-      document.getElementById(this.props.targetNum + '-image').classList.toggle('hide');
-      document.getElementById(this.props.targetNum).classList.toggle('hide');
+      (this.state.infoStatus === '') ? this.setState({ infoStatus: 'show-info' }) : this.setState({ infoStatus: '' });
+      (this.state.imageStatus === '') ? this.setState({ imageStatus: 'hide' }) : this.setState({ imageStatus: '' });
+    }
+
+    onCheck(targetNum) {
+      (this.state.checkStatus === '') ? this.setState({ checkStatus: 'checked' }) : this.setState({ checkStatus: '' });
+      this.props.onCheck(targetNum);
     }
   
     render() {
@@ -67,14 +82,14 @@ class Plankton extends React.Component {
               <div className="plankton-button" 
                 id="plankton-button" 
                 onClick={this.props.categorizeMode ? 
-                  () => this.props.onCheck(this.props.targetNum) : 
+                  () => this.onCheck(this.props.targetNum) : 
                   () => this.props.onClick(this.props.targetNum)}>
                   <div className="plankton">
                       {this.renderImage()}
-                      <div className={this.props.public ? "hide" : "info"} onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
+                      <div className={this.props.public ? "hide" : "info " + this.props.infoButtonStatus} onMouseEnter={() => this.props.infoChange(this.props.targetNum, false, false)} 
                           onMouseLeave={() => this.props.infoChange(this.props.targetNum, true, false)}
                           onClick={() => this.handleInfoClick()}></div>
-                      <div className="info-div" id={this.props.targetNum + '-info'} style={infoStyle}>
+                      <div className={"info-div " + this.state.infoStatus} id={this.props.targetNum + '-info'} style={infoStyle}>
                           <p className="classification-info">{this.props.class_name}</p>
                           <p className="target-num-info">{'Target ' + this.props.targetNum}</p>
                           <p className="editor-info">{'Classified by ' + this.props.editor + ',\n' + this.props.date}</p>
@@ -89,9 +104,9 @@ class Plankton extends React.Component {
                           <div></div>
                           }
                       </div>
-                      <div className={this.props.categorizeMode ? 'id public-id' : 'id'} id={this.props.targetNum}>
+                      <div className={this.props.categorizeMode ? 'id public-id' : 'id ' + this.state.imageStatus} id={this.props.targetNum}>
                         {this.props.categorizeMode ?  
-                          <div className='plankton-check' id={this.props.targetNum + '-check'}></div> :
+                          <div className={'plankton-check ' + this.state.checkStatus} id={this.props.targetNum + '-check'}></div> :
                           <p className='id-text' id={this.props.targetNum + '-text'}>{this.props.class_abbr}</p>
                         }
                       </div>

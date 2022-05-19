@@ -420,8 +420,6 @@ class PublicClassify extends React.Component {
             history: history.concat([JSON.stringify(targets)]),
             targets: targets,
         });
-        const check = document.getElementById(targets[k].number+'-check');
-        check.classList.toggle('checked');
 
         this.props.classifyPublicTarget(targets[k], this.state.bin.timeseries, this.state.bin.file, targets[k].number, this.props.user.username);
     }
