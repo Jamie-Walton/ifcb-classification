@@ -44,7 +44,7 @@ class LabFilePreview extends Component {
                         <iframe id="download-src" />
                         </div>
                     </div>
-                    <div className="round-button right-arrow community-download" onClick={() => this.props.onClick(this.props.timeseries, this.props.file, this.props.classifier)}></div>
+                    <div className="round-button right-arrow community-download" onClick={() => this.props.onClick(this.props.timeseries, this.props.file)}></div>
                 </div>
             </div>
         );
@@ -58,7 +58,6 @@ class LabReview extends Component {
             files: [],
             selectedTimeseries: '',
             selectedFile: '',
-            selectedUser: '',
         }
     }
 
@@ -80,13 +79,11 @@ class LabReview extends Component {
             .catch((err) => console.log(err));
     }
 
-    handleFileClick(timeseries, file, user) {
+    handleFileClick(timeseries, file) {
         this.setState({ 
             selectedTimeseries: timeseries,
             selectedFile: file,
-            selectedUser: user
-         });
-         this.props.goto_communityfile();
+        });
     }
 
     renderLegend() {
@@ -129,6 +126,10 @@ class LabReview extends Component {
             return <Redirect push to={"/analysis/communityreview/" + this.state.selectedTimeseries + "/" + this.state.selectedFile + "/" + this.state.selectedUser} />
         }
 
+        if(this.state.selectedTimeseries !== '') {
+            return <Redirect push to={"/classify/" + this.state.selectedTimeseries + '/' + this.state.selectedFile + '/'} />
+        }
+
         const cache = new CellMeasurerCache({
             defaultHeight: 10,
             minHeight: 10,
@@ -156,7 +157,7 @@ class LabReview extends Component {
                                 file={files[(rowIndex*4)+columnIndex].file}
                                 ifcb={files[(rowIndex*4)+columnIndex].ifcb}
                                 complete={files[(rowIndex*4)+columnIndex].complete}
-                                onClick={() => this.handleFileClick(files[(rowIndex*4)+columnIndex].timeseries, files[(rowIndex*4)+columnIndex].bin.file, files[(rowIndex*4)+columnIndex].classifier)}
+                                onClick={() => this.handleFileClick(files[(rowIndex*4)+columnIndex].timeseries, files[(rowIndex*4)+columnIndex].file)}
                             /> : 
                             <div/> }
                         </div>
