@@ -435,6 +435,7 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
         'year': year, 
         'day': day, 
         'file': file,
+        'complete': b.complete,
     }
     
     options = {
@@ -493,3 +494,13 @@ def new_year(request, timeseries, year):
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
+
+
+####### BIN COMPLETION #######
+
+@api_view(('GET',))
+def complete(request, timeseries, file):
+    b = Bin.objects.get(timeseries=timeseries, file=file)
+    b.complete = not b.complete
+    b.save()
+    return Response(status=status.HTTP_204_NO_CONTENT)

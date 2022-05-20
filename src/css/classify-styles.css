@@ -957,6 +957,10 @@ li {
 	cursor: pointer;
 }
 
+.lab-complete-button {
+	margin: 0 0 3vw 0;
+}
+
 .incomplete-done-button {
 	background-color: #70B730;
 }

@@ -31,7 +31,7 @@ class TimeSeriesOptionSerializer(serializers.ModelSerializer):
 class BinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bin
-        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file')
+        fields = ('id', 'timeseries', 'ifcb', 'year', 'day', 'file', 'complete')
 
 class FrontEndPackageSerializer(serializers.ModelSerializer):
     class Meta:

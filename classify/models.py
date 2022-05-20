@@ -29,6 +29,7 @@ class Bin(models.Model):
     day = models.CharField(max_length=5)
     file = models.CharField(max_length=17)
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, null=True)
+    complete = models.BooleanField(default=False)
 
     def _str_(self):
         return self.file

@@ -72,6 +72,7 @@ class Annotations extends React.Component {
           dayOption: '',
           previous: 'Previous',
           next: 'Next',
+          complete: false,
       }
       this.onTargetJumpChange = this.onTargetJumpChange.bind(this);
       this.onTargetJumpSubmit = this.onTargetJumpSubmit.bind(this);
@@ -164,6 +165,7 @@ class Annotations extends React.Component {
                     rows: res.data.options.rows,
                     filledDays: res.data.options.filled_days,
                     dayOption: res.data.bin.day,
+                    complete: res.data.bin.complete,
                 })
                 axios
                     .get('/process/targets/' + timeseries + '/' + file + '/' + this.props.preferences.sort + '/')
@@ -517,6 +519,14 @@ class Annotations extends React.Component {
     document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/mat/' + this.state.bin.ifcb + '/' + this.state.bin.file + '/'
   }
 
+  handleCompleteClick() {
+    this.setState({ complete: !this.state.complete });
+    axios
+        .get('/complete/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
+        .catch((err) => console.log(err));
+
+  }
+
   openPreferences() {
     document.getElementById("overlay").style.display = "block";
     document.getElementById('preferences').classList.toggle('show-pref');
@@ -587,6 +597,31 @@ class Annotations extends React.Component {
             </div>
         </div>
       );
+  }
+
+  renderDoneButton() {
+    var message
+    var appearance
+    var visibility
+
+    if(this.state.complete) {
+        message = 'Finished';
+        appearance = 'complete-done-button';
+    } else {
+        message = 'Mark as Complete';
+        appearance = 'incomplete-done-button';
+    }
+
+    if(this.state.loading) {
+        visibility = 'hide';
+    }
+    
+    return(
+        <div className={"done-button lab-complete-button " + appearance + ' ' + visibility} onClick={() => this.handleCompleteClick()}>
+            <div className={"done-check"}></div>
+            <p className="done-text">{message}</p>
+        </div>
+      )
   }
 
   renderClassMenu() {
@@ -862,15 +897,18 @@ class Annotations extends React.Component {
                                 {
                                 (this.state.loading || this.props.isSaving) ? this.renderLoader() : console.log()
                                 }
-                                <List
-                                    height={800} // fix later
-                                    rowCount={this.state.rows.length}
-                                    rowHeight={cache.rowHeight}
-                                    rowRenderer={rowRenderer}
-                                    scrollToAlignment="start"
-                                    scrollToIndex={scrollToIndex}
-                                    width={document.documentElement.clientWidth*0.72}
-                                />
+                                <div>
+                                    {this.renderDoneButton()}
+                                    <List
+                                        height={800} // fix later
+                                        rowCount={this.state.rows.length}
+                                        rowHeight={cache.rowHeight}
+                                        rowRenderer={rowRenderer}
+                                        scrollToAlignment="start"
+                                        scrollToIndex={scrollToIndex}
+                                        width={document.documentElement.clientWidth*0.72}
+                                    />
+                                </div>
                                 <img src={toTop} alt="Back to Top" className="to-top" id="to-top" onClick={() => this.backToTop()}></img>
                             </div>
                         </div>

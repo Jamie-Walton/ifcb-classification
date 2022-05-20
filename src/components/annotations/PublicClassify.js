@@ -449,7 +449,7 @@ class PublicClassify extends React.Component {
               });
         }
         url = '/complete/public/identification/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/';
-        this.setState({ identfiicationComplete: !this.state.identfiicationComplete });
+        this.setState({ identficationComplete: !this.state.identficationComplete });
     }
     axios.get(url).catch((err) => console.log(err));
 

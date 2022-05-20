@@ -22,7 +22,7 @@ class TimeSeriesOptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'ifcb')
 
 class BinAdmin(admin.ModelAdmin):
-    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file', 'notes')
+    list_display = ('timeseries', 'ifcb', 'year', 'day', 'file', 'notes', 'complete')
 
 class PublicBinAdmin(admin.ModelAdmin):
     list_display = ('timeseries', 'ifcb', 'year', 'day', 'file',)
