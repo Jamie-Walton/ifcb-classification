@@ -39,6 +39,7 @@ urlpatterns = [
     path('notebook/filters/', views.get_notebook_filters),
     path('notebook/applyfilters/', views.filter_notebook),
     path('mat/<str:ifcb>/<str:file>/', views.saveMAT),
+    path('public/mat/<str:ifcb>/<str:file>/', views.saveCommunityMAT),
     path('classdownload/<str:classname>/<str:include>/<str:exclude>/<str:number>/', views.download_class),
     path('classdownload/classifiers/', views.get_target_classifiers),
     path('searchtargets/', views.basic_search_targets),

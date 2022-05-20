@@ -187,6 +187,19 @@ def saveMAT(request, ifcb, file):
         })
     return response
 
+@api_view(('GET',))
+def saveCommunityMAT(request, ifcb, file, user):
+    b = PublicBin.objects.get(ifcb=ifcb, file=file)
+    saveClassifications(b, ifcb, file, user)
+    file_name = file + '_' + ifcb + '.mat'
+    path = os.path.join(MEDIA_ROOT, file_name)
+    file = open(path, 'rb')
+    response = HttpResponse(file, headers = {
+        'Content-Type': 'application/x-matlab-data',
+        'Content-Disposition': 'attachment; filename="' + file_name + '"',
+        })
+    return response
+
 
 @api_view(('GET',))
 def get_last_edit(request, user):

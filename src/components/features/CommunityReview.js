@@ -24,7 +24,7 @@ class CommunityFilePreview extends Component {
     }
 
     handleDownload() {
-        document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/mat/' + this.props.ifcb + '/' + this.props.file + '/'
+        document.getElementById('download-src').src = 'http://odontella.oceandatacenter.ucsc.edu:8000/public/mat/' + this.props.ifcb + '/' + this.props.file + '/' + this.props.classifier + '/'
     }
 
     render() {

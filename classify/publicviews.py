@@ -175,9 +175,6 @@ def new_file(request, timeseries, file, user):
         classifier.targets.add(*targets)
     
     file_options = get_files(volume, date=year+'-'+day)
-    
-    num_targets = len(PublicTarget.objects.filter(bin=PublicBin.objects.get(timeseries=timeseries, file=file)))
-    num_sets = math.ceil((num_targets)/500)
 
     b = PublicBin.objects.get(file=file)
     ifcb = b.ifcb

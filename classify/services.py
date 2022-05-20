@@ -1,6 +1,6 @@
 from django.db.models.query_utils import Q
 from .models import Bin, ClassOption, TimeSeriesOption, Target, Note, PublicBin, PublicTarget, Classifier
-from .serializers import TargetSerializer
+from .serializers import TargetSerializer, PublicTargetSerializer
 import pandas as pd
 import numpy as np
 from PIL import Image
@@ -273,6 +273,33 @@ def saveClassifications(b, ifcb, file):
     classes = pd.Series([names[i] for i in list(range(0,len(names))) if i in indices])
 
     file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '.mat'
+    path = os.path.join(MEDIA_ROOT, file_name)
+    content = {
+        'class2use_auto': [],
+        'class2use_manual': np.array(classes),
+        'classlist': np.array(df),
+        'default_class_original': ['unclassified'],
+        'list_titles': ['roi number', 'manual', 'auto']
+    }
+    savemat(path, content)
+
+
+def saveCommunityClassifications(b, ifcb, file, user):
+    targets = Target.objects.filter(bin=b)
+    targets = PublicTarget.objects.filter(bin=b).filter(classifier__user=user)
+    serializer = PublicTargetSerializer(targets, many=True)
+    drop_categories = ['id', 'bin', 'height', 'width', 'class_abbr', 'class_name', 'date']
+    df = pd.DataFrame(serializer.data).drop(drop_categories, axis=1)
+    df.number = df.number.astype('double', copy=False)
+    df.class_id = df.class_id.astype('double', copy=False)
+    df['auto'] = np.NaN
+
+    displays = ClassOption.objects.values_list('display_name', flat=True).order_by('class_id', 'id')
+    names = ClassOption.objects.values_list('autoclass_name', flat=True).order_by('class_id', 'id')
+    indices = pd.Series(displays).drop_duplicates().index
+    classes = pd.Series([names[i] for i in list(range(0,len(names))) if i in indices])
+
+    file_name = MEDIA_ROOT + '/' + file + '_' + ifcb + '_' + user + '.mat'
     path = os.path.join(MEDIA_ROOT, file_name)
     content = {
         'class2use_auto': [],
