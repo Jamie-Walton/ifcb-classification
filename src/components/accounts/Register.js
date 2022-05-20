@@ -16,6 +16,7 @@ export class Register extends Component {
         labcode: '',
         correctLabCode: '',
         attempted: false,
+        errorMessage: '',
     }
 
     static propTypes = {
@@ -37,11 +38,11 @@ export class Register extends Component {
         this.setState({ attempted: true });
         const { groups, username, email, password, password2, labcode } = this.state;
         if(password !== password2) {
-            console.log('Passwords do not match.') // change to UI message
-        } else if(this.state.group === '') {
-            console.log('No role selected.') // change to UI message
-        } else if(this.state.group === 'Lab User' && labcode!==this.state.correctLabCode) {
-            console.log('Incorrect lab labcode.') // change to UI message
+            this.setState({ errorMessage: 'Passwords do not match.' });
+        } else if(this.state.groups === '') {
+            this.setState({ errorMessage: 'No role selected.' });
+        } else if(this.state.groups === 'Lab User' && labcode!==this.state.correctLabCode) {
+            this.setState({ errorMessage: 'Incorrect lab code.' });
         } else {
             const newUser = {
                 groups,
@@ -75,6 +76,9 @@ export class Register extends Component {
         form.classList.add('show-form');
         text.classList.add('hide');
         labcode.classList.add('hide');
+        if(labcode.classList.contains('show-form')) {
+            labcode.classList.remove('show-form');
+        }
     }
 
     handleLabRole() {
@@ -218,7 +222,7 @@ export class Register extends Component {
                         />
                         </div>
                         <div className="form-group">
-                        <p className="error-message" id="error">Incorrect username or password.</p>
+                        <p className="error-message" id="error">{this.state.errorMessage}</p>
                         <button type="submit" className="register-submit">
                             Create Account
                         </button>
