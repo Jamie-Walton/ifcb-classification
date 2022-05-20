@@ -36,16 +36,21 @@ def get_classes(request, timeseries):
     return Response(serializer.data)
 
 
-@api_view(('POST',))
+@api_view(('GET', 'POST',))
 def retrieve_bins(request):
-    bins = np.unique(np.array(request.data))
-    queryset = Bin.objects.filter(id__in=bins)
-    if type(queryset) != Bin:
-        serializer = BinSerializer(queryset, many=True)
-    else:
-        serializer = BinSerializer(queryset, many=False)
-    
-    return Response(serializer.data)
+    if request.method == 'GET':
+        bins = Bin.objects.all()
+        serializer = BinSerializer(bins, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        bins = np.unique(np.array(request.data))
+        queryset = Bin.objects.filter(id__in=bins)
+        if type(queryset) != Bin:
+            serializer = BinSerializer(queryset, many=True)
+        else:
+            serializer = BinSerializer(queryset, many=False)
+        
+        return Response(serializer.data)
 
 
 ####### NOTEBOOK #######

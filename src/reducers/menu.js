@@ -9,7 +9,8 @@ import {
     REGISTER_PAGE,
     LOGIN_PAGE,
     COMMUNITYREVIEW_PAGE,
-    COMMUNITYFILE_PAGE
+    COMMUNITYFILE_PAGE,
+    LABREVIEW_PAGE,
 } from '../actions/types';
 
 const initialState = {
@@ -24,6 +25,7 @@ const initialState = {
     onSearch: false,
     onCommunityReview: false,
     onCommunityFile: false,
+    onLabReview: false,
 }
 
 export default function(state = initialState, action) {
@@ -42,6 +44,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         case LEARN_PAGE:
             return {
@@ -57,6 +60,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         case REGISTER_PAGE:
             return {
@@ -72,6 +76,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         case LOGIN_PAGE:
             return {
@@ -87,6 +92,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         case CLASSIFY_PAGE:
             return {
@@ -102,6 +108,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         case NOTEBOOK_PAGE:
             return {
@@ -117,6 +124,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
         
         case ANALYSIS_PAGE:
@@ -133,6 +141,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
 
         case CLASSDOWNLOAD_PAGE:
@@ -149,6 +158,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
 
         case SEARCH_PAGE:
@@ -165,6 +175,7 @@ export default function(state = initialState, action) {
                 onSearch: true,
                 onCommunityReview: false,
                 onCommunityFile: false,
+                onLabReview: false,
             }
 
         case COMMUNITYREVIEW_PAGE:
@@ -181,6 +192,7 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: true,
                 onCommunityFile: false,
+                onLabReview: false,
             }
 
         case COMMUNITYFILE_PAGE:
@@ -197,6 +209,24 @@ export default function(state = initialState, action) {
                 onSearch: false,
                 onCommunityReview: false,
                 onCommunityFile: true,
+                onLabReview: false,
+            }
+
+        case LABREVIEW_PAGE:
+            return {
+                ...state,
+                onHome: false,
+                onLearn: false,
+                onRegister: false,
+                onLogin: false,
+                onClassify: false,
+                onNotebook: false,
+                onAnalysis: false,
+                onClassDownload: false,
+                onSearch: false,
+                onCommunityReview: false,
+                onCommunityFile: false,
+                onLabReview: true,
             }
             
         default:

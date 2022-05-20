@@ -9,7 +9,8 @@ import {
     REGISTER_PAGE,
     LOGIN_PAGE,
     COMMUNITYREVIEW_PAGE,
-    COMMUNITYFILE_PAGE
+    COMMUNITYFILE_PAGE,
+    LABREVIEW_PAGE
 } from '../actions/types';
 
 export const goto_home = () => (dispatch) => {
@@ -77,5 +78,11 @@ export const goto_communityreview = () => (dispatch) => {
 export const goto_communityfile = () => (dispatch) => {
     dispatch({
         type: COMMUNITYFILE_PAGE
+    });
+};
+
+export const goto_labreview = () => (dispatch) => {
+    dispatch({
+        type: LABREVIEW_PAGE
     });
 };

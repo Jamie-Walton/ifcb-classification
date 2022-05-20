@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import Header from '../layout/Header';
-import { goto_classdownload, goto_search, goto_communityreview } from "../../actions/menu";
+import { goto_classdownload, goto_search, goto_communityreview, goto_labreview } from "../../actions/menu";
 import '../../css/analysis-styles.css';
 
 class AnalysisOption extends Component {
@@ -27,7 +27,8 @@ class Analysis extends Component {
             analysisOptions: [
                 {heading: 'Search', description: "Find any image or collection of images with the help of classification filtering, file look-up, and more."},
                 {heading: 'Download by Class', description: "Download a ZIP file containing all, or a desired subset of, images classified as a particular species."},
-                {heading: 'Analyze Community Data', description: "Review community scientist classifications and download their datasets."},
+                {heading: 'Analyze Community Data', description: "Check over community scientist classifications, review completion statuses, and download their datasets."},
+                {heading: 'Analyze Lab Data', description: "Review lab classification files and download the datasets."},
             ],
             bin: '',
             target: '',
@@ -40,6 +41,8 @@ class Analysis extends Component {
         onNotebook: PropTypes.bool,
         onClassDownload: PropTypes.bool,
         onSearch: PropTypes.bool,
+        onCommunityReview: PropTypes.bool,
+        onLabReview: PropTypes.bool,
         goto_classdownload: PropTypes.func,
         goto_search: PropTypes.func,
     }
@@ -52,6 +55,8 @@ class Analysis extends Component {
             handleClick = this.props.goto_classdownload;
         } else if (option.heading === 'Analyze Community Data') {
             handleClick = this.props.goto_communityreview;
+        } else if (option.heading === 'Analyze Lab Data') {
+            handleClick = this.props.goto_labreview;
         }
         return (
             <AnalysisOption
@@ -92,6 +97,10 @@ class Analysis extends Component {
             return <Redirect push to="/analysis/communityreview" />
         }
 
+        if(this.props.onLabReview) {
+            return <Redirect push to="/analysis/labreview" />
+        }
+
         return(
             <div>
                 <Header />
@@ -123,6 +132,7 @@ const mapStateToProps = state => ({
     onClassDownload: state.menu.onClassDownload,
     onSearch: state.menu.onSearch,
     onCommunityReview: state.menu.onCommunityReview,
+    onLabReview: state.menu.onLabReview,
  });
 
-export default connect(mapStateToProps, { goto_classdownload, goto_search, goto_communityreview })(Analysis);
+export default connect(mapStateToProps, { goto_classdownload, goto_search, goto_communityreview, goto_labreview })(Analysis);
