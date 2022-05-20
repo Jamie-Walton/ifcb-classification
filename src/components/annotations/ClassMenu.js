@@ -67,7 +67,7 @@ class ClassMenu extends React.Component {
       <div className="sidebar">
       <div style={{'display':'flex'}}>
             <div className={this.props.showPhytoGuide ? "class-menu with-guide" : "class-menu"}>
-                <div className="control-box">
+                <div className={"control-box" + (this.props.public ? ' hide' : '')}>
                     <div className="annotation-control" onClick={() =>  this.props.handleSelectAllClick()}>
                         <p className="control-text">Select All</p>
                     </div>
@@ -75,7 +75,7 @@ class ClassMenu extends React.Component {
                         <p className="control-text">Undo</p>
                     </div>
                 </div>
-                <ul className="class-menu-options">{options}</ul>
+                <ul className={"class-menu-options" + (this.props.public ? " public-class-menu-options" : '')}>{options}</ul>
             </div>
             {this.props.showPhytoGuide ? 
                     <div className="phyto-guide">

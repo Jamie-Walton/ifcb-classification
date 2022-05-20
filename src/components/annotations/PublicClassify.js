@@ -38,6 +38,7 @@ class PublicClassify extends React.Component {
           planktonClickEnabled: true,
           categorizeMode: true,
           emptyCategories: false,
+          emptyIdentifications: false,
           infoShowing: [],
           bin: {timeseries:'', ifcb:'', year:'', day:'', file:''},
           timeSeriesOptions: [],
@@ -363,7 +364,12 @@ class PublicClassify extends React.Component {
             });
             if (initialClass === 'Unclassified') {
                 this.setState({ emptyCategories: true });
-            } // add catch for no UNCL
+            }
+
+            if (!this.state.categorizeMode && this.state.targetSet.length < 1) {
+                this.setState({ emptyIdentifications: true });
+            }
+
             axios
                 .get('/process/public/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + classAbbr + '/' + this.props.user.username + '/')
                 .then((rowResponse) => {
@@ -470,6 +476,7 @@ class PublicClassify extends React.Component {
           showPhytoGuide={this.props.preferences.phytoguide}
           categorizeMode={this.state.categorizeMode}
           categoryIndices={this.state.categoryIndices}
+          public={true}
       />;
   }
 
@@ -635,6 +642,7 @@ class PublicClassify extends React.Component {
                                     }
                                     {
                                     (this.state.emptyCategories && this.state.categorizeMode) ? <p className="empty-categories-text">Nothing to categorize! Switch over to Identify mode to start classifying.</p> :
+                                    (this.state.emptyIdentifications && !this.state.categorizeMode) ? <p className="empty-categories-text">Nothing to identify! You're finished with this file.</p> :
                                         <List
                                             height={800} // fix later
                                             rowCount={this.state.rows.length}

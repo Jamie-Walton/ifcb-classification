@@ -859,6 +859,10 @@ li {
 	overflow-y: scroll;
 }
 
+.public-class-menu-options {
+	height: 97%;
+}
+
 .phyto-guide {
 	background: #F0F0F0 0% 0% no-repeat padding-box;
 	border-radius: 0px 4vw 4vw 0px;
