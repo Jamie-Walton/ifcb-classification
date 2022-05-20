@@ -1,5 +1,4 @@
 import React from "react";
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react-dom";
 import akashiwo from "../../assets/akashiwo-character.png";
 import "../../css/classify-styles.css";
 
@@ -9,15 +8,15 @@ class Tutorial extends React.Component {
         this.state = {
             toc: [
                 {id: 0, title: "Welcome!", text: "Let's get started classifying phytoplankton.", buttons: null},
-                {id: 1, title: "Select a sample", text: "Each IFCB collects samples throughout the day full of phytoplankton images it captured. Right now, you’re seeing the latest sample. If you would like to load a new one, use the menu on the left to select a day and an IFCB location.", buttons: null},
-                {id: 2, title: "The AutoClassifier", text: "Each sample is run through an auto-clasification algorithm, which identifies each phytoplankton image. But the algorithm isn’t always right: that’s where you come in!", buttons: null},
-                {id: 3, title: "Start categorizing", text: "Your first task is to find the images that the AutoClassifier misidentified. Use the menu on the left to navigate to the classifications. In each one, click on the images that don’t belong, using the guide to determine what qualifies and what doesn’t.", buttons: null},
-                {id: 4, title: "What if you're unsure?", text: "If you’re ever torn on whether an image belongs or not, just leave it in its original category. But also remember that our scientists check over your classifications before using them, so you will never ruin data if you misidentify an image.", buttons: null},
-                {id: 5, title: "Switch modes", text: "When you finish all the categories, hit the 'Finished Categorizing' button so we know the file is complete. If you’re up for a challenge, switch over to identify mode using the toggle bar above the images.", buttons: null},
-                {id: 6, title: "Start identifying", text: "Now you’ll see all the images that you marked as misidentified or that the AutoClassifier couldn’t figure out in the first place. Select a classification in the left menu, then click on all the images that match it. Make sure to hit the finish button when you're done!", buttons: null},
-                {id: 7, title: "Try another method", text: "You can also work the other way: choose an image, then hover over the classifications in the left menu until you find the one that matches it. Select on the classification, then click on the image to classify it. Either method is a good way to identify phytoplankton: find which one works best for you!", buttons: null},
-                {id: 8, title: "What if you're unsure?", text: "Again, if you’re not sure where an image belongs, just leave it unclassified. If you’re finding that identify mode is too challenging, you can always stick to just categorizing.", buttons: null},
-                {id: 9, title: 'Congrats!', text: "You’re ready to dive in. When you finish a sample, load up a new one! You can always revisit this tutorial if you need any help.", buttons: null},
+                {id: 1, title: "Start categorizing", text: "Your first task is to find the images that the AutoClassification algorithm misidentified. Use the left menu to select a species, then click on all the phytoplankton that DON’T belong.", buttons: null},
+                {id: 2, title: "What if you're unsure?", text: "If you’re torn on whether an image belongs or not, leave it in its original category (don’t click). But don’t worry too much— our scientists always check over your data before using it, so it’s okay if you sometimes make a mistake.", buttons: null},
+                {id: 3, title: "Keep going!", text: "When you finish with all the plankton on the screen, click on another species from the sample and categorize. When you’ve gone through all the species, hit the finish button so we know the file is complete.", buttons: null},
+                {id: 4, title: "Switch modes", text: "If you’re up for a challenge, switch over to identify mode using the toggle bar above the images.", buttons: null},
+                {id: 5, title: "Start identifying", text: "Now you’ll see all the images that you marked as misidentified or that the AutoClassification algorithm couldn’t figure out. Select a classification in the left menu, then click on all the images that match it.", buttons: null},
+                {id: 6, title: "Try another method", text: "You can also work the other way: choose an image, then hover over the classifications in the left menu until you find the one that matches it. Select the classification, then click on the image to classify it.", buttons: null},
+                {id: 7, title: "What if you're unsure?", text: "Again, if you’re not sure where an image belongs, just leave it unclassified. If you’re finding that identify mode is too challenging, you can always stick to just categorizing.", buttons: null},
+                {id: 8, title: "Finish strong", text: "When you’re done identifying, click the finish the button. Load up a new sample by selecting a day and an IFCB location in the sample menu and keep classifying!", buttons: null},
+                {id: 9, title: 'Congrats!', text: "You’re ready to dive in. You can always revisit this tutorial if you need any help.", buttons: null},
             ],
             tracks: [
                 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],

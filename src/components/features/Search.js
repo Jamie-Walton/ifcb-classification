@@ -166,30 +166,30 @@ class Search extends Component {
 
     render() {
         if(this.props.onClassify) {
-            return <Redirect to="/classify" />
+            return <Redirect push to="/classify" />
         }
 
         if(this.props.onHome) {
-            return <Redirect to="/" />
+            return <Redirect push to="/" />
         }
     
         if(this.props.onLearn) {
-            return <Redirect to="/learn" />
+            return <Redirect push to="/learn" />
         }
 
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook/" />
+            return <Redirect push to="/notebook/" />
         }
 
         if(this.props.onAnalysis) {
-            return <Redirect to="/analysis" />
+            return <Redirect push to="/analysis" />
         }
 
         if(this.state.redirectInfo !== '') {
             const timeseries = this.state.redirectInfo.timeseries;
             const file = this.state.redirectInfo.file;
             const target = this.state.redirectInfo.target;
-            return <Redirect to={"/classify/" + timeseries + "/" + file + "/" + target} />
+            return <Redirect push to={"/classify/" + timeseries + "/" + file + "/" + target} />
         }
 
         var targets;

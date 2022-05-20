@@ -25,13 +25,13 @@ export class Header extends Component {
         {this.props.location ? pathname = this.props.location.pathname : pathname = null}
 
         if(this.props.onClassify) {
-            return <Redirect to="/classify" />
+            return <Redirect push to="/classify" />
         } else if(this.props.onNotebook) {
-            return <Redirect to="/notebook/" />
+            return <Redirect push to="/notebook/" />
         } else if(this.props.onAnalysis) {
-            return <Redirect to="/analysis" />
+            return <Redirect push to="/analysis" />
         } else if(this.props.onLearn) {
-            return <Redirect to="/learn" />
+            return <Redirect push to="/learn" />
         }
         var authLinks = (
             <ul className="logoutbar">

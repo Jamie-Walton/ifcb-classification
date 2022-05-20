@@ -65,31 +65,31 @@ class Analysis extends Component {
 
     render() {
         if(this.props.onClassify) {
-            return <Redirect to="/classify" />
+            return <Redirect push to="/classify" />
         }
 
         if(this.props.onHome) {
-            return <Redirect to="/" />
+            return <Redirect push to="/" />
         }
     
         if(this.props.onLearn) {
-            return <Redirect to="/learn" />
+            return <Redirect push to="/learn" />
         }
 
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook/" />
+            return <Redirect push to="/notebook/" />
         }
 
         if(this.props.onClassDownload) {
-            return <Redirect to="/analysis/classdownload" />
+            return <Redirect push to="/analysis/classdownload" />
         }
 
         if(this.props.onSearch) {
-            return <Redirect to="/analysis/search" />
+            return <Redirect push to="/analysis/search" />
         }
 
         if(this.props.onCommunityReview) {
-            return <Redirect to="/analysis/communityreview" />
+            return <Redirect push to="/analysis/communityreview" />
         }
 
         return(

@@ -30,22 +30,22 @@ export class Landing extends Component {
     render() {
 
         if(this.props.onClassify) {
-            return <Redirect to="/classify" />
+            return <Redirect push to="/classify" />
         }
         if(this.props.onLearn) {
-            return <Redirect to="/learn" />
+            return <Redirect push to="/learn" />
         }
         if(this.props.onRegister) {
-            return <Redirect to="/register" />
+            return <Redirect push to="/register" />
         }
         if(this.props.onLogin) {
-            return <Redirect to="/login" />
+            return <Redirect push to="/login" />
         }
         if(this.props.onNotebook) {
-            return <Redirect to="/notebook/" />
+            return <Redirect push to="/notebook/" />
         }
         if(this.props.onAnalysis) {
-            return <Redirect to="/analysis/" />
+            return <Redirect push to="/analysis/" />
         }
 
         return (
@@ -97,7 +97,7 @@ export class Landing extends Component {
                             <img src={chaetoceros} alt="A translucent, pillow-like phytoplankton with a dark circular middle" className="vert-image"></img>
                             <div className='vert-text'>
                                 <h2 className='vert-heading'>The IFCB</h2>
-                                <p className='vert-body'>An IFCB is a robotic microscope that collects water and takes pictures without a human.</p>
+                                <p className='vert-body'>IFCBs are robotic microscopes that collect water and take pictures without a human.</p>
                             </div>
                             <button className='external-button' onClick={this.props.goto_learn}>Learn More</button>
                         </div>
