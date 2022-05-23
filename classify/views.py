@@ -498,9 +498,9 @@ def new_year(request, timeseries, year):
     volume = volume_response.json()
 
     if year == datetime.date.today().strftime('%Y'):
-        recent_file = volume[0]['pid'][35:51]
+        recent_file = volume[0]['pid'].split('/')[4][0:16]
     else:
-        recent_file = volume[len(volume)-1]['pid'][35:51]
+        recent_file = volume[len(volume)-1]['pid'].split('/')[4][0:16]
 
     options = {}
     bin = {'file': recent_file}
