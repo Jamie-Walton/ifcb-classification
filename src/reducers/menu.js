@@ -11,6 +11,7 @@ import {
     COMMUNITYREVIEW_PAGE,
     COMMUNITYFILE_PAGE,
     LABREVIEW_PAGE,
+    LOGOUT_SUCCESS,
 } from '../actions/types';
 
 const initialState = {
@@ -227,6 +228,23 @@ export default function(state = initialState, action) {
                 onCommunityReview: false,
                 onCommunityFile: false,
                 onLabReview: true,
+            }
+
+        case LOGOUT_SUCCESS:
+            return {
+                ...state,
+                onHome: true,
+                onLearn: false,
+                onRegister: false,
+                onLogin: false,
+                onClassify: false,
+                onNotebook: false,
+                onAnalysis: false,
+                onClassDownload: false,
+                onSearch: false,
+                onCommunityReview: false,
+                onCommunityFile: false,
+                onLabReview: false,
             }
             
         default:
