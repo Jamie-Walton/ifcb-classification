@@ -263,9 +263,9 @@ def edit_all(request, timeseries, file, sort, className, classAbbr):
 
 
 @api_view(('PUT',))
-def undo(request, timeseries, file, set):
+def undo(request, timeseries, file):
     b = Bin.objects.get(timeseries=timeseries, file=file)
-    targets = Target.objects.filter(bin=b, set=set)
+    targets = Target.objects.filter(bin=b)
     for i in range(len(targets)):
         target = targets[i]
         t = Target.objects.get(bin=b, number=target.number)
@@ -440,8 +440,6 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
     file_options = get_files(volume, date=year+'-'+day)
     
     num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
-    num_sets = math.ceil((num_targets)/500)
-    set_options = ['All'] + list(range(1, num_sets+1))
 
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb
@@ -460,7 +458,6 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
         'year_options': year_options,
         'day_options': day_options,
         'file_options': file_options,
-        'set_options': set_options,
         'rows': rows,
         'filled_days': filled_days,
     }
@@ -487,7 +484,7 @@ def new_day(request, timeseries, year, day):
     options = {}
     bin = {'file': recent_file}
 
-    package = FrontEndPackage(bin=bin, set=1, options=options)
+    package = FrontEndPackage(bin=bin, options=options)
     front_end_package = FrontEndPackageSerializer(package)
     
     return Response(front_end_package.data)
