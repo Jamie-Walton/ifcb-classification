@@ -479,7 +479,7 @@ def new_day(request, timeseries, year, day):
 
     df = pd.DataFrame(volume)
     index = int(df[df['date'].str.contains(day)].index.values[0])
-    recent_file = volume[index]['pid'][54:70]
+    recent_file = volume[index]['pid'].split('/')[4][0:16]
     
     options = {}
     bin = {'file': recent_file}
