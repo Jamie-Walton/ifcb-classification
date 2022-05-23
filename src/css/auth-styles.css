@@ -20,6 +20,17 @@
     border-radius: 2vw;
 }
 
+.fixed-navbar {
+	display: flex;
+	float: right;
+	margin: 5vw 5vw;
+    background-color: #16609F;
+    padding: 1vw;
+    border-radius: 2vw;
+	position: fixed;
+	left: 75vw;
+}
+
 .login-navbar {
 	display: flex;
 	margin: 0;

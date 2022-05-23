@@ -123,7 +123,7 @@ export class Header extends Component {
         }
 
         const guestLinks = (
-            <ul className="navbar">
+            <ul className={(pathname === '/' || pathname === '/learn') ? 'fixed-navbar' : 'navbar'}>
                 <li className="nav-item">
                     <Link to="/register" className="nav-link" onClick={this.props.goto_register}>Register</Link>
                 </li>
