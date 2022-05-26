@@ -78,7 +78,7 @@ def create_targets(timeseries, year, day, file):
     return ifcb
 
 
-def create_public_targets(timeseries, year, day, file):
+def create_public_targets(timeseries, year, day, file, bin_exists=False, user=None):
     
     ifcb = TimeSeriesOption.objects.get(name=timeseries).ifcb
     try:
@@ -100,8 +100,11 @@ def create_public_targets(timeseries, year, day, file):
     targets = json.loads(target_bin['coordinates'])
     targets = sorted(targets, key = lambda i: i['pid'])
     
-    nearest_bin = PublicBin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file)
-    nearest_bin.save()
+    if bin_exists:
+        nearest_bin = PublicBin.objects.get(timeseries=timeseries, file=file)
+    else:
+        nearest_bin = PublicBin(timeseries=timeseries, ifcb=ifcb, year=year, day=day, file=file)
+        nearest_bin.save()
     
     classes = None
     maxes = None
@@ -118,6 +121,8 @@ def create_public_targets(timeseries, year, day, file):
     except:
         pass
 
+    all_targets = PublicTarget.objects.all()
+    first_target = all_targets[len(all_targets)-1]
     for i in range(len(targets)):
         target = targets[i]
         class_name = 'Unclassified'
@@ -136,10 +141,14 @@ def create_public_targets(timeseries, year, day, file):
         nearest_bin.publictarget_set.create(number=num, width=width, height=height, \
             class_name=class_name, class_abbr=class_abbr, class_id=class_id, \
             date=date)
-        
-        autoclassifier = Classifier.objects.get(user='Auto Classifier')
-        classifier_targets = PublicTarget.objects.filter(bin=nearest_bin)
-        autoclassifier.targets.add(*classifier_targets)
+    all_targets = PublicTarget.objects.all()
+    last_target = all_targets[len(all_targets)-1]
+    autoclassifier = Classifier.objects.get(user='Auto Classifier')
+    classifier_targets = PublicTarget.objects.filter(id__range=(first_target.id, last_target.id))
+    autoclassifier.targets.add(*classifier_targets)
+    if bin_exists:
+        classifier = Classifier.objects.get(user=user)
+        classifier.targets.add(*classifier_targets)
     
     return ifcb
 

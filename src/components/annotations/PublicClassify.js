@@ -99,6 +99,70 @@ class PublicClassify extends React.Component {
         }) })
         .catch((err) => console.log(err));
   }
+
+  processTargets(timeseries, file) {
+    axios
+        .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
+        .then((targetResponse) => {
+            const initialClass = targetResponse.data[0].class_name;
+            const initialAbbr = targetResponse.data[0].class_abbr;
+            const categories = [...new Set(targetResponse.data.map(t => t.class_name))].filter(n => n!=='Unclassified');
+            this.setState({ 
+                targets: targetResponse.data,
+                targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
+                targetNumbers: targetResponse.data.map(t => t.number),
+                classPicker: initialClass,
+                classMark: initialAbbr,
+                initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
+                history: [JSON.stringify(targetResponse.data)],
+                categories: categories,
+                categoryIndices: this.state.classes.map((n,i) => (i)).filter((i) => categories.includes(this.state.classes[i])),
+                loading: false,
+            });
+            if (initialClass === 'Unclassified') {
+                axios
+                    .get('/sync/public/' + timeseries + '/' + this.state.bin.year + '/' + this.state.bin.day + '/' + this.state.bin.file + '/' + this.props.user.username + '/')
+                    .then((syncRes) => {
+                        axios
+                            .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
+                            .then((targetResponse) => {
+                                const initialClass = targetResponse.data[0].class_name;
+                                const initialAbbr = targetResponse.data[0].class_abbr;
+                                const categories = [...new Set(targetResponse.data.map(t => t.class_name))].filter(n => n!=='Unclassified');
+                                this.setState({ 
+                                    targets: targetResponse.data,
+                                    targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
+                                    targetNumbers: targetResponse.data.map(t => t.number),
+                                    classPicker: initialClass,
+                                    classMark: initialAbbr,
+                                    initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
+                                    history: [JSON.stringify(targetResponse.data)],
+                                    categories: categories,
+                                    categoryIndices: this.state.classes.map((n,i) => (i)).filter((i) => categories.includes(this.state.classes[i])),
+                                    loading: false,
+                                });
+                            });
+                    })
+                    .catch((err) => (console.log(err)));
+                if(initialClass === 'Unclassified') {
+                    this.setState({ emptyCategories: true });
+                }
+            }
+            if (!this.state.categorizeMode && this.state.targetSet.length < 1) {
+                this.setState({ emptyIdentifications: true });
+            }
+            axios
+                .get('/process/public/rows/' + timeseries + '/' + file + '/' + initialAbbr + '/' + this.props.user.username + '/')
+                .then((rowResponse) => {
+                    this.setState({ rows: rowResponse.data.options.rows });
+                    if (categories.length < 1) {
+                        this.setState({ initialClassIndex: 0 });
+                    } else {
+                        this.setState({ initialClassIndex: categories.findIndex(c => c === initialClass) });
+                    }
+                });
+    });
+  }
   
 
   componentDidMount() {
@@ -147,38 +211,7 @@ class PublicClassify extends React.Component {
                     filledDays: res.data.options.filled_days,
                     dayOption: res.data.bin.day,
                 })
-                axios
-                    .get('/process/public/targets/' + timeseries + '/' + file + '/' + this.props.user.username + '/')
-                    .then((targetResponse) => {
-                        const initialClass = targetResponse.data[0].class_name;
-                        const initialAbbr = targetResponse.data[0].class_abbr;
-                        var categories = [...new Set(targetResponse.data.map(t => t.class_name))].filter(n => n!=='Unclassified');
-                        this.setState({ 
-                            targets: targetResponse.data,
-                            targetSet: targetResponse.data.filter(t => t.class_name === initialClass),
-                            targetNumbers: targetResponse.data.map(t => t.number),
-                            classPicker: initialClass,
-                            classMark: initialAbbr,
-                            initialClassIndex: this.state.classes.findIndex(c => c === initialClass),
-                            history: [JSON.stringify(targetResponse.data)],
-                            categories: categories,
-                            categoryIndices: this.state.classes.map((n,i) => (i)).filter((i) => categories.includes(this.state.classes[i])),
-                            loading: false,
-                        });
-                        if (initialClass === 'Unclassified') {
-                            this.setState({ emptyCategories: true });
-                        }
-                        axios
-                            .get('/process/public/rows/' + timeseries + '/' + file + '/' + initialAbbr + '/' + this.props.user.username + '/')
-                            .then((rowResponse) => {
-                                this.setState({ rows: rowResponse.data.options.rows });
-                                if (categories.length < 1) {
-                                    this.setState({ initialClassIndex: 0 });
-                                } else {
-                                    this.setState({ initialClassIndex: this.state.categories.findIndex(c => c === initialClass) });
-                                }
-                            });
-                });
+                this.processTargets(timeseries, file);
             })
             .catch((err) => {
                 console.log(err);
@@ -339,6 +372,7 @@ class PublicClassify extends React.Component {
     document.getElementById('mode-right').classList.toggle('mode-selected');
     document.getElementById('mode-left-text').classList.toggle('mode-text-selected');
     document.getElementById('mode-right-text').classList.toggle('mode-text-selected');
+    
     axios
         .get('/process/public/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/')
         .then((targetResponse) => {
@@ -384,6 +418,7 @@ class PublicClassify extends React.Component {
                     }
                 });
     });
+
   }
 
   handlePlanktonClick(i) {

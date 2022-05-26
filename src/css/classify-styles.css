@@ -583,6 +583,32 @@ li {
 	margin-left: 1vw !important;
 }
 
+.sync-community {
+	background-image: url('../icons/sync-gray.png');
+	background-size: contain;
+    background-repeat: no-repeat;
+	width: 1.5vw;
+	height: 1.5vw;
+	border: none;
+	margin: 0 0 0 0.5vw;
+	cursor: pointer;
+}
+
+.sync-community:hover {
+	background-image: url('../icons/sync-bright-green.png');
+}
+
+.sync-container {
+	display: flex;
+	margin: 1.5vw 0 0 0;
+}
+
+.sync-text {
+	margin: auto 0 auto 0.5vw;
+	font-weight: 500;
+	color: #a1a1a1;
+}
+
 .akashiwo-character {
 	height: 9vw;
 	margin: 7vw 2vw 0 0;

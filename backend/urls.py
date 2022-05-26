@@ -57,6 +57,7 @@ urlpatterns = [
     path('process/public/rows/<str:timeseries>/<str:file>/<str:classification>/<str:user>/', publicviews.new_rows),
     path('process/public/targets/<str:timeseries>/<str:file>/<str:user>/', publicviews.new_targets),
     path('edit/public/target/<str:timeseries>/<str:file>/<str:number>/<str:user>', publicviews.edit_target),
+    path('sync/public/<str:timeseries>/<str:year>/<str:day>/<str:file>/<str:user>/', publicviews.sync),
     path('complete/public/categorization/<str:timeseries>/<str:file>/<str:user>/', publicviews.complete_categorization),
     path('complete/public/identification/<str:timeseries>/<str:file>/<str:user>/', publicviews.complete_identification),
     path('complete/public/status/<str:timeseries>/<str:file>/<str:user>/', publicviews.get_completion_status),

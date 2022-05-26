@@ -342,6 +342,7 @@ def sync(request, timeseries, year, day, file):
     b = Bin.objects.get(timeseries=timeseries, file=file)
     b.delete()
     create_targets(timeseries, year, day, file)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(('PUT',))
@@ -437,9 +438,7 @@ def new_file(request, timeseries, file, sort, scale, phytoguide):
     if not Bin.objects.filter(file=file):
         ifcb = create_targets(timeseries, year, day, file)
     
-    file_options = get_files(volume, date=year+'-'+day)
-    
-    num_targets = len(Target.objects.filter(bin=Bin.objects.get(timeseries=timeseries, file=file)))
+    file_options = get_files(volume, date=year + '-' + day)
 
     b = Bin.objects.get(file=file)
     ifcb = b.ifcb

@@ -392,7 +392,7 @@ class Annotations extends React.Component {
 
   handleSyncClick() {
     document.getElementById('sync').classList.toggle('syncing');
-    this.setState({ rows: [] });
+    this.setState({ rows: [], loading: true });
     this.props.sync(this.state.bin.timeseries, this.state.bin.year, this.state.bin.day, this.state.bin.file);
     axios
         .get('/process/targets/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.preferences.sort + '/')
@@ -403,8 +403,8 @@ class Annotations extends React.Component {
              });
         });
     axios
-        .get('process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
-            '/' + this.props.preferences.sort + '/' + Math.round(this.state.scale * 1000) + '/' +
+        .get('/process/rows/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + 
+            '/' + this.props.preferences.sort + '/' + Math.round(this.props.preferences.scale * 1000) + '/' +
             this.props.preferences.phytoguide + '/')
         .then((res) => {this.setState({ 
             rows: res.data.options.rows,
@@ -585,7 +585,7 @@ class Annotations extends React.Component {
 
   renderSync() {
     return(
-        <div className="round-button sync" id="sync-button" onClick={() => this.handleSyncClick()}></div>
+        <div className="round-button sync" id="sync" onClick={() => this.handleSyncClick()}></div>
     );
   }
 

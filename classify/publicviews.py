@@ -126,6 +126,15 @@ def new_rows(request, timeseries, file, classification, user):
     
     return Response(front_end_package.data)
 
+@api_view(('GET',))
+def sync(request, timeseries, year, day, file, user):
+    b = PublicBin.objects.get(timeseries=timeseries, file=file)
+    c = Classifier.objects.get(user='Auto Classifier')
+    targets = PublicTarget.objects.filter(bin=b, classifier=c)
+    targets.delete()
+    create_public_targets(timeseries, year, day, file, bin_exists=True, user=user)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 ####### TIME NAVIGATION #######
 
