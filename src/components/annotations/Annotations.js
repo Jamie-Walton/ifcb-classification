@@ -522,7 +522,7 @@ class Annotations extends React.Component {
   handleCompleteClick() {
     this.setState({ complete: !this.state.complete });
     axios
-        .get('/complete/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/')
+        .get('/complete/' + this.state.bin.timeseries + '/' + this.state.bin.file + '/' + this.props.user.username + '/')
         .catch((err) => console.log(err));
 
   }

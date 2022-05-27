@@ -32,11 +32,15 @@ class LabFilePreview extends Component {
         if(this.props.complete) {
             appearance = 'community-file-preview-categorized';
         }
+
+        // <p className="community-file-classifier">{this.props.classifier.length > 0 ? 'Completed by' + this.props.classifier : ''}</p>
+
         return (
             <div className={"community-file-preview-container " + appearance}>
                 <div>
                     <p className="community-file-date">{this.getDate(this.props.file)}</p>
                     <p className="community-file-file">{this.props.file}</p>
+                    <p className="community-file-classifier">{this.props.classifier !== null ? 'Completed by ' + this.props.classifier : ''}</p>
                 </div>
                 <div className="community-file-preview-buttons">
                     <div className="round-button download community-download" onClick={() => this.handleDownload()}>
@@ -156,6 +160,7 @@ class LabReview extends Component {
                                 timeseries={files[(rowIndex*4)+columnIndex].timeseries}
                                 file={files[(rowIndex*4)+columnIndex].file}
                                 ifcb={files[(rowIndex*4)+columnIndex].ifcb}
+                                classifier={files[(rowIndex*4)+columnIndex].completion_marker}
                                 complete={files[(rowIndex*4)+columnIndex].complete}
                                 onClick={() => this.handleFileClick(files[(rowIndex*4)+columnIndex].timeseries, files[(rowIndex*4)+columnIndex].file)}
                             /> : 

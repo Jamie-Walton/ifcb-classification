@@ -513,8 +513,13 @@ def new_year(request, timeseries, year):
 ####### BIN COMPLETION #######
 
 @api_view(('GET',))
-def complete(request, timeseries, file):
+def complete(request, timeseries, file, user):
     b = Bin.objects.get(timeseries=timeseries, file=file)
+    if b.complete == False:
+        completion_marker = user
+    else:
+        completion_marker = ''
     b.complete = not b.complete
+    b.completion_marker = completion_marker
     b.save()
     return Response(status=status.HTTP_204_NO_CONTENT)

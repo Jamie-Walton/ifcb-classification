@@ -30,6 +30,7 @@ class Bin(models.Model):
     file = models.CharField(max_length=17)
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
+    completion_marker = models.CharField(max_length=50, blank=True, null=True)
 
     def _str_(self):
         return self.file

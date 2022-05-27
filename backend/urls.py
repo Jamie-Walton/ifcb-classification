@@ -46,7 +46,7 @@ urlpatterns = [
     path('communityfiles/', views.get_community_files),
     path('process/rows/community/<str:timeseries>/<str:file>/<str:user>/', views.new_community_rows),
     path('lastedit/<str:user>/', views.get_last_edit),
-    path('complete/<str:timeseries>/<str:file>/', views.complete),
+    path('complete/<str:timeseries>/<str:file>/<str:user>/', views.complete),
     path('bins/', views.retrieve_bins),
 
     # Community Paths
