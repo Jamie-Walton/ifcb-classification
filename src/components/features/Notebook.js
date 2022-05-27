@@ -60,6 +60,7 @@ class Notebook extends Component {
                 {type: 'Target Note'}
             ],
             appliedFilters: [],
+            rowCount: 0,
         }
     }
 
@@ -70,7 +71,7 @@ class Notebook extends Component {
         notes: PropTypes.array,
         filterNotebook: PropTypes.func,
         receiveNotesChange: PropTypes.func,
-        noteChangeFlag: PropTypes.bool
+        noteChangeFlag: PropTypes.bool,
     }
 
     getNotebook(filters) {
@@ -81,6 +82,7 @@ class Notebook extends Component {
                     this.setState({ 
                         notes: res.data,
                         flags: Array(res.data.length).fill(''),
+                        rowCount: Math.ceil(res.data.length/3),
                     });
                 })
                 .catch((err) => console.log(err));
@@ -104,15 +106,17 @@ class Notebook extends Component {
             .catch((err) => console.log(err));
     }
 
-    componentDidUpdate() {
-        if (this.props.noteChangeFlag) {
+    componentDidUpdate(prevProps) {
+        if(this.props.noteChangeFlag) {
             this.getNotebook(this.state.appliedFilters);
             this.props.receiveNotesChange();
         }
-    }
 
-    handleFilterClick() {
-        document.getElementById('filter_dropdown').classList.toggle('show');
+        if(this.props.notes !== prevProps.notes) {
+            console.log(prevProps.notes);
+            console.log(this.props.notes);
+            this.setState({ notes: this.props.notes });
+        }
     }
 
     onChange = e => this.setState({ searchTerms: e.target.value })
@@ -126,14 +130,16 @@ class Notebook extends Component {
 
     handleFilterChoiceClick(option) {
         document.getElementById(option + '-plus').classList.toggle('rotate-plus');
-        document.getElementById(option + '-dropdown').classList.toggle('show');
+        document.getElementById(option + '-dropdown').classList.toggle('show-filter-dropdown');
     }
 
     handleApplyFilter(category, choice) {
+        console.log('Applying filter!');
         const duplicates = this.state.appliedFilters.filter(entry => (entry['category'] === category) && (entry['choice'] === choice))
         if (duplicates.length === 0) {
             const newAppliedFilters = this.state.appliedFilters.concat([ {category: category, choice: choice} ])
             this.getNotebook(newAppliedFilters);
+            console.log(this.props.notes);
             this.setState({ appliedFilters: newAppliedFilters });
         }
     }
@@ -300,7 +306,6 @@ class Notebook extends Component {
                         <div>
                             <div className="notebook-heading">
                                 <h1 className="notebook-header">Notebook</h1>
-                                <div className="filter-button" onClick={() => this.handleFilterClick()}>Filter</div>
                             </div>
                             <div className="day-dropdown withmargin" id='filter_dropdown'>
                                 <form className="search-form" id="search-form" onSubmit={this.onSubmit}>
@@ -332,10 +337,10 @@ class Notebook extends Component {
                                         columnWidth={document.documentElement.clientWidth*0.29}
                                         rowHeight={cache.rowHeight}
                                         deferredMeasurementCache={cache}
-                                        rowCount={Math.ceil(this.state.notes.length/3)}
+                                        rowCount={this.state.rowCount}
                                         height={height}
                                         width={width}
-                                        notes={this.props.notes}
+                                        notes={this.state.notes}
                                     />
                                 )}
                                 </AutoSizer>
@@ -354,7 +359,8 @@ const mapStateToProps = state => ({
     onLearn: state.menu.onLearn,
     onClassify: state.menu.onClassify,
     onAnalysis: state.menu.onAnalysis,
-    noteChangeFlag: state.classify.noteChangeFlag
+    noteChangeFlag: state.classify.noteChangeFlag,
+    notes: state.classify.notes,
  });
 
 export default connect(mapStateToProps, {filterNotebook, receiveNotesChange})(Notebook);

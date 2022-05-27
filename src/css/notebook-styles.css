@@ -118,8 +118,8 @@
 	cursor: pointer;
 }
 
-.show {
-	display: flex;
+.show-filter-dropdown {
+	display: inline-block;
 }
 
 .applied-filters {
