@@ -111,35 +111,34 @@ class LabReview extends Component {
         return dateString
     }
 
-    filterFiles() {
-        var files = [];
-        for (let filter of this.state.appliedFilters) {
-            switch(filter.category) {
-                case 'user':
-                    files = files.concat(this.state.originalFiles.filter(f => f.completion_marker === filter.choice))
-                    break
-                case 'day':
-                    var date = new Date(filter.choice)
-                    var day = date.toISOString().slice(5,10)
-                    var year = date.toISOString().slice(0,4)
-                    files = files.concat(this.state.originalFiles.filter(f => f.day === day).filter(f => f.year === year))
-                    break
-                case 'timeseries':
-                    files = files.concat(this.state.originalFiles.filter(f => f.timeseries === filter.choice))
-                    break
-                case 'ifcb':
-                    files = files.concat(this.state.originalFiles.filter(f => f.ifcb === filter.choice))
-                    break
-                case 'status':
-                    var status = (filter.choice === 'Complete') ? true : false
-                    files = files.concat(this.state.originalFiles.filter(f => f.complete === status))
-                    break
-                default:
-                    break
+    filterFiles(appliedFilters) {
+        var files = this.state.originalFiles;
+        var users = appliedFilters.filter(n => n.category === 'user').map(n => n.choice)
+        var days = appliedFilters.filter(n => n.category === 'day').map(n => n.choice)
+        var timeseries = appliedFilters.filter(n => n.category === 'timeseries').map(n => n.choice)
+        var ifcbs = appliedFilters.filter(n => n.category === 'ifcb').map(n => n.choice)
+        var statuses = appliedFilters.filter(n => n.category === 'status').map(n => n.choice)
+
+        if(users.length > 0) {
+            files = files.filter(n => users.includes(n.completion_marker));
+        }
+        if(days.length > 0) {
+            files = files.filter(n => days.includes(this.getDate(n.file)));
+        }
+        if(timeseries.length > 0) {
+            files = files.filter(n => timeseries.includes(n.timeseries));
+        }
+        if(ifcbs.length > 0) {
+            files = files.filter(n => ifcbs.includes(n.ifcb));
+        }
+        if(statuses.length === 1) {
+            if(statuses.includes('Complete')) {
+                files = files.filter(n => n.complete === true);
+            } else {
+                files = files.filter(n => n.complete === false);
             }
         }
-        files = [... new Set(files)]
-        files = files.sort((a, b) => (a.file < b.file) ? 1 : -1);
+       
         this.setState({ files: files });
     }
 
@@ -163,9 +162,11 @@ class LabReview extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        /*
         if(this.state.appliedFilters !== prevState.appliedFilters) {
             this.filterFiles();
         }
+        */
     }
 
     handleFileClick(timeseries, file) {
@@ -201,6 +202,7 @@ class LabReview extends Component {
             appliedFilters.push({category: category, choice: choice});
         }
         this.setState({ appliedFilters: appliedFilters });
+        this.filterFiles(appliedFilters);
     }
 
     handleRemoveFilter(filter) {
@@ -208,6 +210,7 @@ class LabReview extends Component {
         const index = applied.findIndex(entry => entry === filter);
         const newAppliedFilters = applied.slice(0, index).concat(applied.slice(index+1,applied.length));
         this.setState({ appliedFilters: newAppliedFilters });
+        this.filterFiles(newAppliedFilters);
     }
 
     renderFilterChoice(filter, options) {
