@@ -86,11 +86,13 @@ class ClassMenu extends React.Component {
                                 examples[this.state.indexHovered].map((image) => (
                                     <div>
                                         <img src={correctIcon} className='phyto-guide-icon'></img>
-                                        <img src={image} className="image" 
+                                        {image !== '' ?
+                                        <img src={`${process.env.PUBLIC_URL}/examples/` + image} className="image" 
                                             alt={classes[this.state.indexHovered] + ' example'}
                                             className="phyto-guide-image"
                                             >
-                                        </img>
+                                        </img> : <div/>
+                                        }
                                     </div>
                                 )) : <div></div>
                             }
@@ -101,7 +103,7 @@ class ClassMenu extends React.Component {
                                 nonexamples[this.state.indexHovered].map((image) => (
                                     <div>
                                         <img src={incorrectIcon} className='phyto-guide-icon'></img>
-                                        <img src={image} className="image" 
+                                        <img src={`${process.env.PUBLIC_URL}/nonexamples/` + image} className="image" 
                                             alt={classes[this.state.indexHovered] + ' non-example'}
                                             className="phyto-guide-image"
                                             >
