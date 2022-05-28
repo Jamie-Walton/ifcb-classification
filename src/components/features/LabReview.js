@@ -38,7 +38,8 @@ class LabFilePreview extends Component {
                 <div>
                     <p className="community-file-date">{this.getDate(this.props.file)}</p>
                     <p className="community-file-file">{this.props.file}</p>
-                    <p className="community-file-classifier">{this.props.classifier !== null ? 'Completed by ' + this.props.classifier : ''}</p>
+                    <p className="community-file-file">{this.props.timeseries}</p>
+                    <p className="community-file-classifier">{this.props.classifier !== null ? 'Completed by ' + this.props.classifier : <br/>}</p>
                 </div>
                 <div className="community-file-preview-buttons">
                     <div className="round-button download community-download" onClick={() => this.handleDownload()}>
@@ -159,14 +160,6 @@ class LabReview extends Component {
 
             })
             .catch((err) => console.log(err));
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        /*
-        if(this.state.appliedFilters !== prevState.appliedFilters) {
-            this.filterFiles();
-        }
-        */
     }
 
     handleFileClick(timeseries, file) {
@@ -325,7 +318,7 @@ class LabReview extends Component {
                                         width={document.documentElement.clientWidth*0.8}
                                         height={800}
                                         columnWidth={document.documentElement.clientWidth*0.8/4}
-                                        rowHeight={document.documentElement.clientWidth*0.11}
+                                        rowHeight={document.documentElement.clientWidth*0.13}
                                         rowCount={this.state.rowCount}
                                         columnCount={4}
                                         cellRenderer={cellRenderer}
